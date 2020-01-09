@@ -3,6 +3,7 @@
 from socket import *
 import threading
 import time
+import math
 import cv2
 import numpy as np
 import pyzbar.pyzbar as pyzbar
@@ -24,51 +25,72 @@ DEST_ADDR_QT = (DEST_HOST_QT, DEST_PORT_QT)
 udp_ser_sock = socket(AF_INET, SOCK_DGRAM)
 udp_ser_sock.bind(LOCAL_ADDR)
 
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
 
-
-data = 1
+time_data = "hello python"
+data = 0
 bar_code_data = 0
 camera_data_change_flage = 0
 
 def camera():
     global bar_code_data # 设定用为全局变量
     global camera_data_change_flage
+    global time_data
+    global data
+    color = []
     while True:
+        data = data + 1
+        time_data = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime());
+        # print(time_data)
         # 获得图片
-        ret, frame = cap.read()
-        
+        # ret, frame = cap.read()
+        frame = cv2.imread("7.jpg")
         # 转化为灰度图
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # 大津法二值化
         retval, dst = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
-        # cv2.imshow("capture", gray)
+
         # 检测QR
         barcodes = pyzbar.decode(gray)
         for barcode in barcodes:
             bar_code_data = barcode.data.decode("utf-8")
             camera_data_change_flage = 1 # 新数据产生标志位
-            print(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()),bar_code_data)
+            print(time_data + " " + str(data) + " " + bar_code_data)
 
         # 膨胀，白区域变大
-        dst = cv2.dilate(dst, None, iterations=2)
+        dst = cv2.dilate(dst, None, iterations=10)
         # # 腐蚀，白区域变小
         #dst = cv2.erode(dst, None, iterations=6)
-        #  cv2.imshow("capture", frame)
         # 按Q键退出程序
+        cv2.imshow("capture", dst)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             # 存储图片
             cv2.imwrite("camera.jpg", dst)
             break
-        # 单看第400行的像素值
-        color = dst[400]
-        # 找到白色的像素点个数
-        white_count = np.sum(color == 255)
-        # 找到白色的像素点索引
-        white_index = np.where(color == 255)
+        # 单看第300行的像素值
+        color = dst[100]
+        # 找到黑色的像素点个数
+        black_count = np.sum(color == 0)
+        # 找到黑色的像素点索引
+        black_index = np.where(color == 0)
+        # 防止black_count=0的报错
+        if black_count > 30:
+            # black_count = 1
+            # 找到黑色像素的中心点位置
+            black_center = int(black_index[0][0] + (black_index[0][len(black_index[0])-1] - black_index[0][0]) / 2)
+            print(time_data, end='')
+            print(" 中心坐标为：", end='')
+            print(black_center, end='')
+            # 如何中心点的像素是白色，则说明遇到岔路口
+            print(" 中心坐标的像素为：", end='')
+            print(color[black_center], end='')
+            if(color[black_center]==255):
+                print(" 遇到岔路口")
 
-    ##    time.sleep(0.02)
+        # print("white pix count :\n", black_count)
+        # print("white color cneter :\n", center)
 
+        time.sleep(0.5)
     cap.release()
     cv2.destroyAllWindows()
 
@@ -97,8 +119,6 @@ def udp_receive():
     global LOCAL_ADDR
     global DEST_ADDR_EQT
     global DEST_ADDR_QT
-    comm_data = [0xAA,0xBB,0xCC,0xDD]
-    rx = []
     while True:
         
         print("waiting for udp message")
@@ -133,13 +153,13 @@ def main():
     print("Apply three thread: udp send、udp receive and camera")
 
     # 此处并不会执行线程，而是将任务分发到每个线程，同步线程。等同步完成后再开始执行start方法
-    threads[0].start()
-    threads[1].start()
+    # threads[0].start()
+    # threads[1].start()
     threads[2].start()
 
     # 等待上述进程执行完毕
-    threads[0].join()
-    threads[1].join()
+    # threads[0].join()
+    # threads[1].join()
     threads[2].join()
 
 
