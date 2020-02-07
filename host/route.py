@@ -53,7 +53,9 @@ class PathRoute:
         print(self.cross_exit_coord)
 
     def get_path_info(self, current_node, target_node):
+        self.target_node_coord = [[0, 0], [0, 0]]
         loc = np.where(self.path_node == current_node)
+        print(self.target_node_coord)
         self.target_node_coord[0][0] = loc[0][0]
         self.target_node_coord[0][1] = loc[1][0]
         # 寻找目标节点的坐标
@@ -123,8 +125,10 @@ class PathRoute:
         loc = np.where(self.path_node == target_node)
         self.target_node_coord[1][0] = loc[0][0]
         self.target_node_coord[1][1] = loc[1][0]
-        print(str(current_node) + '和' + str(target_node) + '的坐标为：')
+        print('***********************************')
+        print(str(current_node) + '和' + str(target_node) + '的坐标为：', end='')
         print(self.target_node_coord)
+        print('***********************************')
         self.number_of_route_node.clear()
         # 起点A和终点B直接的路线有如下三种模型：
         # 1.直达模式：A -- x -- x -- B
@@ -272,7 +276,6 @@ class PathRoute:
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的反向步数为：', end='')
                         print(self.number_of_route_node[1])
-                        print('---------------------------------')
                         print('从A到B需要的正向步数为：', end='')
                         print(self.number_of_route_node[0])
                         print('从A到B需要的反向步数为：', end='')
@@ -303,7 +306,6 @@ class PathRoute:
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的反向步数为：', end='')
                         print(self.number_of_route_node[1])
-                        print('---------------------------------')
                         print('从A到B需要的正向步数为：', end='')
                         print(self.number_of_route_node[0])
                         print('从A到B需要的反向步数为：', end='')
@@ -374,7 +376,6 @@ class PathRoute:
                     self.number_of_route_node.append(tmp)
                     print('从A到B需要的反向步数为：', end='')
                     print(self.number_of_route_node[1])
-                    print('---------------------------------')
                     print('从A到B需要的正向步数为：', end='')
                     print(self.number_of_route_node[0])
                     print('从A到B需要的反向步数为：', end='')
@@ -433,7 +434,6 @@ class PathRoute:
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的反向步数为：', end='')
                         print(self.number_of_route_node[1])
-                        print('---------------------------------')
                         print('从A到B需要的正向步数为：', end='')
                         print(self.number_of_route_node[0])
                         print('从A到B需要的反向步数为：', end='')
@@ -478,7 +478,6 @@ class PathRoute:
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的反向步数为：', end='')
                         print(self.number_of_route_node[1])
-                        print('---------------------------------')
                         print('从A到B需要的正向步数为：', end='')
                         print(self.number_of_route_node[0])
                         print('从A到B需要的反向步数为：', end='')
@@ -525,7 +524,6 @@ class PathRoute:
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的反向步数为：', end='')
                         print(self.number_of_route_node[1])
-                        print('---------------------------------')
                         print('从A到B需要的正向步数为：', end='')
                         print(self.number_of_route_node[0])
                         print('从A到B需要的反向步数为：', end='')
@@ -580,7 +578,6 @@ class PathRoute:
                             self.number_of_route_node.append(tmp)
                             print('从A到B需要的反向步数为：', end='')
                             print(self.number_of_route_node[1])
-                            print('---------------------------------')
                             print('从A到B需要的正向步数为：', end='')
                             print(self.number_of_route_node[0])
                             print('从A到B需要的反向步数为：', end='')
@@ -601,7 +598,6 @@ class PathRoute:
                             self.number_of_route_node.append(tmp)
                             print('从A到B需要的反向步数为：', end='')
                             print(self.number_of_route_node[1])
-                            print('---------------------------------')
                             print('从A到B需要的正向步数为：', end='')
                             print(self.number_of_route_node[0])
                             print('从A到B需要的反向步数为：', end='')
@@ -620,7 +616,6 @@ class PathRoute:
                         self.number_of_route_node.append(99)
                         print('从A到B需要的反向步数为：', end='')
                         print(self.number_of_route_node[1])
-                        print('---------------------------------')
                         print('从A到B需要的正向步数为：', end='')
                         print(self.number_of_route_node[0])
                         print('从A到B需要的反向步数为：', end='')
