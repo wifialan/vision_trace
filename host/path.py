@@ -1,21 +1,22 @@
 # -*- coding:utf-8 -*-
 # using python 3.8
-import fun
+import route
 import simplejson as json
 import numpy as np
 
-path = fun.PathRoute()
+path = route.PathRoute()
 # path.path_node_restore()
 if 0:
     data_1 = path.get_path_info(1, 5)
 # tmp = path.plan_path_route(1, 9)
 # path.path_node_restore()
 else:
-    arry_len = 144 - 12
+    path_node = 12
+    arry_len = path_node * (path_node - 1)
     data = [[] for _ in range(arry_len)]
     k = 0
-    for i in range(1, 13):
-        for j in range(1, 13):
+    for i in range(1, path_node + 1):
+        for j in range(1, path_node + 1):
             if i == j:
                 continue
             tmp = path.get_path_info(i, j)
