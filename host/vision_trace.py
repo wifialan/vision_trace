@@ -7,6 +7,7 @@ import math
 import cv2
 import numpy as np
 import pyzbar.pyzbar as pyzbar
+import route
 
 BUFSIZ = 1024
 
@@ -26,6 +27,7 @@ DEST_ADDR_QT = (DEST_HOST_QT, DEST_PORT_QT)
 #udp_ser_sock.bind(LOCAL_ADDR)
 
 cap = cv2.VideoCapture(0)
+path = route.PathRoute()
 
 time_data = "hello python"
 data = 0
@@ -38,6 +40,7 @@ def camera():
     global time_data
     global data
     color = []
+    path_route = path.get_path_info(1, 5)
     while True:
         data = data + 1
         time_data = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime());

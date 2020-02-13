@@ -7,6 +7,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QMessageBox>
 #include <QtSerialPort/QSerialPortInfo>
+#include "ros.h"
 
 #define             PYTHON_IP               (tr("127.0.0.1"))
 #define             PYTHON_PORT             ((quint16)8877)
@@ -24,6 +25,7 @@
 #define             CMD_LEFT                0x03
 #define             CMD_RIGHT               0x04
 #define             CMD_STOP                0x05
+#define             CMD_TURN                0x09
 #define             CMD_QR                  0x06
 #define             CMD_REQUEST             0x07
 #define             CMD_ACK                 0x08
@@ -53,6 +55,7 @@ public:
 private:
     Ui::MainWindow *ui;
 
+    Ros *ros;
     QSerialPort *serial;
     QUdpSocket  *socket;
     QString     ip;
@@ -88,6 +91,18 @@ private slots:
     void on_pushButton_down_clicked();
     void on_pushButton_left_clicked();
     void on_pushButton_right_clicked();
+
+
+    void on_pushButton_stop_clicked();
+
+signals:
+    void turltebot_up();
+    void turltebot_down();
+    void turltebot_right();
+    void turltebot_left();
+    void turltebot_turn();
+    void turltebot_stop();
+
 };
 
 #endif // MAINWINDOW_H

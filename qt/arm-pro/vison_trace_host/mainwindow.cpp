@@ -7,11 +7,25 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ros = new Ros();
     serial = new QSerialPort();
     socket = new QUdpSocket();
     connect_state  =  false;
     this->port = PYTHON_PORT;
     this->ip = HOST_IP;
+
+    ros->pub_cmd_vel_topic =  "/cmd_vel_mux/input/navi";
+    ros->pub_cmd_vel = ros->n.advertise<geometry_msgs::Twist>(ros->pub_cmd_vel_topic, 1);
+    //    ros->loopRate(5);
+    ros->speed_x = 0.1;
+    ros->flag = 1;
+    ros->move_mode = 0;
+    connect( this, SIGNAL(turltebot_up() ), (QObject*)this->ros, SLOT(on_turltebot_up()));
+    connect( this, SIGNAL(turltebot_down() ), (QObject*)this->ros, SLOT(on_turltebot_down()));
+    connect( this, SIGNAL(turltebot_right() ), (QObject*)this->ros, SLOT(on_turltebot_right()));
+    connect( this, SIGNAL(turltebot_left() ), (QObject*)this->ros, SLOT(on_turltebot_left()));
+    connect( this, SIGNAL(turltebot_turn() ), (QObject*)this->ros, SLOT(on_turltebot_turn()));
+
     socket_connect();
     connect(socket,                 \
             SIGNAL( readyRead() ), \
@@ -23,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, \
             SLOT( on_read_serial()  )
             );
+
+
 }
 
 MainWindow::~MainWindow()
@@ -93,18 +109,27 @@ void MainWindow::on_read_network()
 
     case CMD_DOWN:
         ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
+        emit turltebot_down();
         break;
     case CMD_LEFT:
         ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
+        emit turltebot_left();
         break;
     case CMD_UP:
         ui->textBrowser->append("SYSTEM: send cmd [UP]");
+        emit turltebot_up();
         break;
     case CMD_RIGHT:
         ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
+        emit turltebot_right();
         break;
     case CMD_STOP:
         ui->textBrowser->append("SYSTEM: send cmd [STOP]");
+        emit turltebot_stop();
+        break;
+    case CMD_TURN:
+        ui->textBrowser->append("SYSTEM: send cmd [TURN]");
+        emit turltebot_turn();
         break;
 
     case CMD_REQUEST:
@@ -166,7 +191,7 @@ COM_PAC MainWindow::decode_protocal(QByteArray array)
     tail_array.append(0xCC);
     tail_array.append(0xFF);
     if ( !(array.contains( header_array ) && array.contains( tail_array )
-         && array.indexOf( header_array ) < array.indexOf( tail_array ))
+           && array.indexOf( header_array ) < array.indexOf( tail_array ))
          ) {
         qDebug() << "cmd array illegel: ";
         qDebug() << " ||||||  " << array << " ||||||";
@@ -234,6 +259,7 @@ void MainWindow::on_pushButton_discon_serial_clicked()
 {
     serial->close();
     ui->pushButton_con_serial->setEnabled( true );
+
 }
 
 void MainWindow::on_pushButton_con_net_clicked()
@@ -248,26 +274,48 @@ void MainWindow::on_pushButton_discon_net_clicked()
 
 void MainWindow::on_pushButton_up_clicked()
 {
-    send_cmd_serial(CMD_UP);
+
     ui->textBrowser->append("SYSTEM: send cmd [UP]");
+//    emit turltebot_up();
+    ros->move_mode = TURTLEBOT_UP;
+    ros->terminate();
+    while(!ros->wait());
+    ros->start();
+    //    loopRate.sleep();
 }
 
 void MainWindow::on_pushButton_down_clicked()
 {
-    send_cmd_serial(CMD_DOWN);
+    //    send_cmd_serial(CMD_DOWN);
+
     ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
+
+//    emit turltebot_down();
+    ros->move_mode = TURTLEBOT_DOWN;
+    ros->terminate();
+    while(!ros->wait());
+    ros->start();
+
 }
 
 void MainWindow::on_pushButton_left_clicked()
 {
     send_cmd_serial(CMD_LEFT);
     ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
+    ros->move_mode = TURTLEBOT_LEFT;
+    ros->terminate();
+    while(!ros->wait());
+    ros->start();
 }
 
 void MainWindow::on_pushButton_right_clicked()
 {
     send_cmd_serial(CMD_RIGHT);
     ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
+    ros->move_mode = TURTLEBOT_RIGHT;
+    ros->terminate();
+    while(!ros->wait());
+    ros->start();
 }
 
 void MainWindow::send_cmd_serial(quint8 cmd)
@@ -277,4 +325,15 @@ void MainWindow::send_cmd_serial(quint8 cmd)
     array.append(0xBB);
     array.append(cmd);
     array.append(0xCC);
+}
+
+
+void MainWindow::on_pushButton_stop_clicked()
+{
+    ui->textBrowser->append("SYSTEM: send cmd [STOP]");
+    ros->terminate();
+    while(!ros->wait());
+    ros->speed.linear.x = 0; //
+    ros->speed.angular.z = 0; //
+    ros->pub_cmd_vel.publish(ros->speed); //
 }
