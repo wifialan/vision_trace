@@ -21,9 +21,15 @@ udp_ser_sock.bind(LOCAL_ADDR)
 
 judgedataflag = '0'
 data_str =""
+qr_data = '0'
+qr_data_flag = '0'
 udp_send_flag = 1
 
 
+def hexStringTobytes(str):
+        str = str.upper()
+        str = str.replace(" ", "")
+        return bytes.fromhex(str)
 
 while True:
 
@@ -31,22 +37,38 @@ while True:
     while udp_send_flag:
         try:
             #file.flush()
-            file = open("data.txt", 'r')
+            file = open("data.txt", 'r')  
             data_line = file.readlines()
-            lines = len(data_line)
+            lines = len(data_line)            
             judgedata = data_line[0]  # 第一行为标志位，用于检测数据是否更新
             
             if judgedata != judgedataflag:  # 如果数据已经更新，则发送>数据，否则跳过不发送数据
                 judgedataflag = judgedata  # 更新标志位
                 print("This is " + judgedata.strip('\n') + " data")
                 #data_str = data_str + judgedata.strip('\n') + ' '
-                data_str = data_str + data_line[1].strip('\n')
-                data_str = data_str + ' ' + data_line[2]
+                                
+                qr_data = data_line[1].strip('\n')
+                print(qr_data)
+                print(qr_data_flag)
+                if qr_data != qr_data_flag:
+                    qr_data_flag = qr_data
+                    data_str = 'AABBCCDD010601'
+                    data_str = data_str + qr_data
+                    data_str = data_str + 'CCFF'
+                    data_str = bytes.fromhex(data_str)
+                    udp_ser_sock.sendto(data_str, DEST_ADDR_EQT)
+                    udp_ser_sock.sendto(data_str, DEST_ADDR_QT)
+                    print(data_str)
+                data_str = 'AABBCCDD01'
+                data_str = data_str + data_line[2]
+                data_str = data_str + '0101CCFF'
+                data_str = bytes.fromhex(data_str)
+                print(data_str)
                 #print(time.strftime("%H:%M:%S",time.localtime()) +' - '+ str(judgedata))
-                udp_ser_sock.sendto(data_str.encode(), DEST_ADDR_EQT)
-                udp_ser_sock.sendto(data_str.encode(), DEST_ADDR_QT)
+                udp_ser_sock.sendto(data_str, DEST_ADDR_EQT)
+                udp_ser_sock.sendto(data_str, DEST_ADDR_QT)
             else:
-                time.sleep(0.001)
+                time.sleep(0.005)
         except IOError:
             print('----------------Losing connect!------------------')
             file.close()

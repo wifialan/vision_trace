@@ -9,11 +9,33 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include "ros.h"
 
+/*
+// cmd
+#define             CMD_ALTER_ID            0x01
+#define             CMD_UP                  0x01
+#define             CMD_DOWN                0x02
+#define             CMD_LEFT                0x03
+#define             CMD_RIGHT               0x04
+#define             CMD_STOP                0x05
+#define             CMD_QR                  0x06
+#define             CMD_REQUEST             0x07
+#define             CMD_ACK                 0x08
+
+//protocal
+0xAA 0xBB 0xCC 0xDD
+0x(alter_id)
+0x(cmd)
+0x(length)
+0x(payload)
+0xcc
+0xff
+*/
+
 #define             PYTHON_IP               (tr("127.0.0.1"))
 #define             PYTHON_PORT             ((quint16)8877)
 
-#define             HOST_IP                 (tr("192.168.1.216"))
-#define             HOST_PORT               ((quint16)8877)
+#define             HOST_IP                 (tr("127.0.0.1"))
+#define             HOST_PORT               ((quint16)8399)
 #define             SEND_RETRY              10
 #define             ERROR_USER_INPUT            ((qint16)0x01)
 #define             ERROR_NO_ERROR              ((qint16)0x00)

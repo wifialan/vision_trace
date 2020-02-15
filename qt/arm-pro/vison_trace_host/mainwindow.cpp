@@ -51,7 +51,7 @@ qint16 MainWindow::socket_connect()
 {
     if ( ip.isEmpty() | port > 9999 )
         return ERROR_USER_INPUT;
-    if ( socket->bind(QHostAddress(PYTHON_IP), (quint16)8399) )
+    if ( socket->bind(QHostAddress(HOST_IP), (quint16)HOST_PORT) )
         return ERROR_NO_ERROR;
     else {
         connect_state = true;
@@ -102,6 +102,7 @@ void MainWindow::on_read_network()
     qDebug() <<  "cmd:" << pac.cmd;
     qDebug() <<  "id:" << pac.alter_id;
     qDebug() <<  "len:" << pac.len;
+    qDebug() <<  "payload" << QString(pac.payload.toHex());
     switch (pac.cmd) {
     case CMD_ACK:
 
@@ -130,6 +131,9 @@ void MainWindow::on_read_network()
     case CMD_TURN:
         ui->textBrowser->append("SYSTEM: send cmd [TURN]");
         emit turltebot_turn();
+        break;
+    case CMD_QR:
+        ui->textBrowser->append("SYSTEM: Current QR code is: " + QString(pac.payload.toHex()));
         break;
 
     case CMD_REQUEST:
@@ -190,6 +194,7 @@ COM_PAC MainWindow::decode_protocal(QByteArray array)
     header_array.append(0xDD);
     tail_array.append(0xCC);
     tail_array.append(0xFF);
+    qDebug() << header_array;
     if ( !(array.contains( header_array ) && array.contains( tail_array )
            && array.indexOf( header_array ) < array.indexOf( tail_array ))
          ) {
@@ -206,6 +211,7 @@ COM_PAC MainWindow::decode_protocal(QByteArray array)
     pac.cmd =  array.at( header_index + 2 );
     pac.len =  array.at( header_index + 3 );
     pac.payload = array.mid( header_index + 4, pac.len );
+    qDebug() << "pay: " << pac.payload;
 
     return pac;
 }

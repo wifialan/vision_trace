@@ -16,7 +16,7 @@ Ros::~Ros(){
 
 void Ros::move(float velocity, float angular){
 
-    qDebug() << "line velocity: " << velocity << "angular velocity" << angular;
+    //qDebug() << "line velocity: " << velocity << "angular velocity" << angular;
     this->speed.linear.x = velocity; //
     this->speed.angular.z = angular; //
     this->pub_cmd_vel.publish(this->speed); //
@@ -24,32 +24,32 @@ void Ros::move(float velocity, float angular){
 
 
 void Ros::run(){
-    ros::Rate loopRate(10);
-    while(1){
-        loopRate.sleep();
-        switch (this->move_mode) {
-        case TURTLEBOT_UP:
-            this->move(0.1, 0.0);
-            break;
-        case TURTLEBOT_DOWN:
-            this->move(-0.1, 0.0);
-            break;
-        case TURTLEBOT_RIGHT:
-            this->move(0.1, -0.5);
-            break;
-        case TURTLEBOT_LEFT:
-            this->move(0.1, 1);
-            break;
-        case TURTLEBOT_TURN:
-            this->move(0.0, 0.0);
-            break;
-        case TURTLEBOT_STOP:
-            this->move(0.0, 0.0);
-            break;
-        default:
-            break;
-        }
+//    ros::Rate loopRate(10);
+    //    while(1){
+    //        loopRate.sleep();
+    switch (this->move_mode) {
+    case TURTLEBOT_UP:
+        this->move(0.1, 0.0);
+        break;
+    case TURTLEBOT_DOWN:
+        this->move(-0.1, 0.0);
+        break;
+    case TURTLEBOT_RIGHT:
+        this->move(0.01, -0.3);
+        break;
+    case TURTLEBOT_LEFT:
+        this->move(0.01, 0.3);
+        break;
+    case TURTLEBOT_TURN:
+        this->move(0.0, 0.1);
+        break;
+    case TURTLEBOT_STOP:
+        this->move(0.0, 0.0);
+        break;
+    default:
+        break;
     }
+    //    }
 
 }
 

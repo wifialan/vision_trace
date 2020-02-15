@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#!/usr/bin/python3
 
 from socket import *
 import threading
@@ -33,27 +34,33 @@ time_data = "hello python"
 data = 0
 bar_code_data = 0
 camera_data_change_flage = 0
+move_flag = 0
+
 
 def camera():
+
     global bar_code_data # 设定用为全局变量
     global camera_data_change_flage
     global time_data
     global data
+    global move_flag
     color = []
     path_route = path.get_path_info(1, 5)
     while True:
+        move_flag = 0
         data = data + 1
         time_data = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime());
+        print(time_data, end='')
         # print(time_data)
         # 获得图片
-        #ret, frame = cap.read()
-        frame = cv2.imread("10.jpg")
+        ret, frame = cap.read()
+        #frame = cv2.imread("2.jpg")
         # 转化为灰度图
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # 大津法二值化
         retval, dst = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
 
-        #cv2.imshow("capture", dst)
+        # cv2.imshow("capture", dst)
         # 检测QR
         barcodes = pyzbar.decode(gray)
         file = open("data.txt", "w")
@@ -67,47 +74,64 @@ def camera():
         file.write('\n')
 
         # 膨胀，白区域变大
-        dst = cv2.dilate(dst, None, iterations=10)
+        dst = cv2.dilate(dst, None, iterations=20)
         # # 腐蚀，白区域变小
         #dst = cv2.erode(dst, None, iterations=6)
         # 按Q键退出程序
-        
+        cv2.imshow("capture", dst)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             # 存储图片
             cv2.imwrite("camera.jpg", dst)
             break
-        # 单看第300行的像素值
+        # 单看第100行的像素值
         color = dst[100]
         color_line_len = len(dst[100])
         # 找到黑色的像素点个数
         black_count = np.sum(color == 0)
         # 找到黑色的像素点索引
         black_index = np.where(color == 0)
+        #print('Black pixel number: ' + str(black_count))
         # 防止black_count=0的报错
-        if black_count > 30:
+        if black_count > 20:
             # black_count = 1
             # 找到黑色像素的中心点位置
             black_center = int(black_index[0][0] + (black_index[0][len(black_index[0])-1] - black_index[0][0]) / 2)
-            if black_center < int(color_line_len/2 - 10):  # 小车向轨道左边偏离，发指令让小车右转
-                file.write("right")
-            if black_center > int(color_line_len/2 + 10):  # 小车向轨道右边偏离，发指令让小车左转
-                file.write("left ")
-            
+            if black_center < int(color_line_len/2 - 10):  # 小车向轨道右边偏离，发指令让小车左转
+                file.write("03")
+                move_flag = 1
+                print(' left ', end='')
+            elif black_center > int(color_line_len/2 + 10):  # 小车向轨道左边偏离，发指令让小车右转
+                file.write("04")
+                move_flag = 1
+                print(' right ', end='')
+            if(color[black_center]==255):
+                print(color[black_center], end='')
+                print(" 遇到岔路口", end='')
+                file.write("05")
+                move_flag = 1
+                print(' stop ', end='')
+            else:
+                pass
+                #print(color[black_center], end='')
+                
+            if move_flag == 0:
+                file.write("01")
+                print(' UP ', end='')
+
             if camera_data_change_flage == 1:
                 camera_data_change_flage = 0
-            else:
-                print(time_data, end='')
-            print(" 中心坐标为：", end='')
+            #else:
+            #    print(time_data, end='')
+            print("中心坐标为：", end='')
             print(black_center, end='')
             # 如何中心点的像素是白色，则说明遇到岔路口
             print(" 中心坐标的像素为：", end='')
+            print(color[black_center])
+        else:
+            print(' stop')
+            file.write('05')
             
-            if(color[black_center]==255):
-                print(color[black_center], end='')
-                print(" 遇到岔路口")
-                file.write(" stop")
-            else:
-                print(color[black_center])
         file.flush()
         file.close()
         # print("white pix count :\n", black_count)
@@ -131,10 +155,10 @@ def udp_send():
             udp_ser_sock.sendto(bar_code_data.encode(), DEST_ADDR_EQT)
             udp_ser_sock.sendto(bar_code_data.encode(), DEST_ADDR_QT)
             camera_data_change_flage = 0
-            
+
     udp_ser_sock.close()
-    
-    
+
+
 def udp_receive():
     global bar_code_data # 设定用为全局变量
     global camera_data_change_flage
@@ -143,7 +167,7 @@ def udp_receive():
     global DEST_ADDR_EQT
     global DEST_ADDR_QT
     while True:
-        
+
         print("waiting for udp message")
         data, addr = udp_ser_sock.recvfrom(BUFSIZ)
         print(addr)
@@ -155,10 +179,10 @@ def udp_receive():
             print(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()), "Send Data     ",DEST_ADDR_QT,data)
 
 #        print(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()), "Received from ", addr, data)
-        
+
 #        udp_ser_sock.sendto(data, DEST_ADDR_EQT)
 #        print(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()), "Retrun Data   ",DEST_ADDR_EQT,data)
-    
+
     udp_ser_sock.close()
 
 
