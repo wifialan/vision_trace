@@ -7,7 +7,9 @@
 #include <QtSerialPort/QSerialPort>
 #include <QMessageBox>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QTimer>
 #include "ros.h"
+#include "camera.h"
 
 /*
 // cmd
@@ -77,7 +79,14 @@ public:
 private:
     Ui::MainWindow *ui;
 
-    Ros *ros;
+//    VideoCapture capture;
+//    QImage image;
+//    QTimer *timer;
+//    Mat frame;
+//    double rate; //FPS
+
+    Camera      *cam;
+    Ros         *ros;
     QSerialPort *serial;
     QUdpSocket  *socket;
     QString     ip;
@@ -113,6 +122,8 @@ private slots:
     void on_pushButton_down_clicked();
     void on_pushButton_left_clicked();
     void on_pushButton_right_clicked();
+private slots:
+   void on_show_frame(QImage);
 
 
     void on_pushButton_stop_clicked();

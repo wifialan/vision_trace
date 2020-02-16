@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->label_cam->setScaledContents(true);
+    cam = new Camera();
     ros = new Ros();
     serial = new QSerialPort();
     socket = new QUdpSocket();
@@ -20,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ros->speed_x = 0.1;
     ros->flag = 1;
     ros->move_mode = 0;
+    connect( (QObject*)this->cam, SIGNAL(show_frame(QImage)), this, SLOT(on_show_frame(QImage)));
     connect( this, SIGNAL(turltebot_up() ), (QObject*)this->ros, SLOT(on_turltebot_up()));
     connect( this, SIGNAL(turltebot_down() ), (QObject*)this->ros, SLOT(on_turltebot_down()));
     connect( this, SIGNAL(turltebot_right() ), (QObject*)this->ros, SLOT(on_turltebot_right()));
@@ -282,7 +285,7 @@ void MainWindow::on_pushButton_up_clicked()
 {
 
     ui->textBrowser->append("SYSTEM: send cmd [UP]");
-//    emit turltebot_up();
+    //    emit turltebot_up();
     ros->move_mode = TURTLEBOT_UP;
     ros->terminate();
     while(!ros->wait());
@@ -296,7 +299,7 @@ void MainWindow::on_pushButton_down_clicked()
 
     ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
 
-//    emit turltebot_down();
+    //    emit turltebot_down();
     ros->move_mode = TURTLEBOT_DOWN;
     ros->terminate();
     while(!ros->wait());
@@ -334,6 +337,7 @@ void MainWindow::send_cmd_serial(quint8 cmd)
 }
 
 
+
 void MainWindow::on_pushButton_stop_clicked()
 {
     ui->textBrowser->append("SYSTEM: send cmd [STOP]");
@@ -342,4 +346,13 @@ void MainWindow::on_pushButton_stop_clicked()
     ros->speed.linear.x = 0; //
     ros->speed.angular.z = 0; //
     ros->pub_cmd_vel.publish(ros->speed); //
+
+    cam->open();
+
+}
+
+void MainWindow::on_show_frame(QImage image)
+{
+    qDebug() << "show image";
+    ui->label_cam->setPixmap(QPixmap::fromImage(image));
 }

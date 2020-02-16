@@ -6,211 +6,243 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>726</width>
-    <height>467</height>
+    <width>1121</width>
+    <height>492</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="title">
-         <string>config</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QPushButton" name="pushButton_con_serial">
-           <property name="text">
-            <string>connect serial</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_con_net">
-           <property name="text">
-            <string>connect to net</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_discon_serial">
-           <property name="text">
-            <string>disconnect serial</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_discon_net">
-           <property name="text">
-            <string>disconnect to net</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>ctrl</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QPushButton" name="pushButton_stop">
-           <property name="text">
-            <string>STOP</string>
-           </property>
-           <property name="shortcut">
-            <string>Space</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="2">
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="pushButton_down">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>DOWN</string>
-             </property>
-             <property name="shortcut">
-              <string>Down</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="pushButton_left">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>LEFT</string>
-             </property>
-             <property name="shortcut">
-              <string>Left</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="pushButton_up">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>UP</string>
-             </property>
-             <property name="shortcut">
-              <string>Up</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="pushButton_right">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>80</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>RIGHT</string>
-             </property>
-             <property name="shortcut">
-              <string>Right</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Infomation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="textBrowser">
-        <property name="minimumSize">
-         <size>
-          <width>420</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
+   <widget class="QLabel" name="label_cam">
+    <property name="geometry">
+     <rect>
+      <x>616</x>
+      <y>36</y>
+      <width>471</width>
+      <height>381</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>471</width>
+      <height>381</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>381</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>280</width>
+      <height>413</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>config</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_con_serial">
+          <property name="text">
+           <string>connect serial</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton_con_net">
+          <property name="text">
+           <string>connect to net</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pushButton_discon_serial">
+          <property name="text">
+           <string>disconnect serial</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="pushButton_discon_net">
+          <property name="text">
+           <string>disconnect to net</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>ctrl</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QPushButton" name="pushButton_stop">
+          <property name="text">
+           <string>STOP</string>
+          </property>
+          <property name="shortcut">
+           <string>Space</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="1" column="1">
+           <widget class="QPushButton" name="pushButton_down">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>DOWN</string>
+            </property>
+            <property name="shortcut">
+             <string>Down</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButton_left">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>LEFT</string>
+            </property>
+            <property name="shortcut">
+             <string>Left</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="pushButton_up">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>UP</string>
+            </property>
+            <property name="shortcut">
+             <string>Up</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="pushButton_right">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>RIGHT</string>
+            </property>
+            <property name="shortcut">
+             <string>Right</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>296</x>
+      <y>10</y>
+      <width>301</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Infomation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTextBrowser" name="textBrowser"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>726</width>
-     <height>19</height>
+     <width>1121</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
