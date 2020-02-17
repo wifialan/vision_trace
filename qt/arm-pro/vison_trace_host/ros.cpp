@@ -2,104 +2,105 @@
 
 Ros::Ros(){
 
-    //    connect( this, SIGNAL(turltebot_up() ), this, SLOT(on_turltebot_up()));
-    //    connect( this, SIGNAL(turltebot_down() ), this, SLOT(on_turltebot_down()));
-    //    connect( this, SIGNAL(turltebot_right() ), this, SLOT(on_turltebot_right()));
-    //    connect( this, SIGNAL(turltebot_left() ), this, SLOT(on_turltebot_left()));
-    //    connect( this, SIGNAL(turltebot_turn() ), this, SLOT(on_turltebot_turn()));
-
 }
 
 Ros::~Ros(){
 
 }
 
-void Ros::move(float velocity, float angular){
+void Ros::move(){
 
     //qDebug() << "line velocity: " << velocity << "angular velocity" << angular;
-    this->speed.linear.x = velocity; //
-    this->speed.angular.z = angular; //
+//    this->speed.linear.x = linear; // m/s
+//    this->speed.angular.z = angular; // rad/s
     this->pub_cmd_vel.publish(this->speed); //
 }
 
-
 void Ros::run(){
-//    ros::Rate loopRate(10);
-    //    while(1){
-    //        loopRate.sleep();
-    switch (this->move_mode) {
-    case TURTLEBOT_UP:
-        this->move(0.1, 0.0);
-        break;
-    case TURTLEBOT_DOWN:
-        this->move(-0.1, 0.0);
-        break;
-    case TURTLEBOT_RIGHT:
-        this->move(0.01, -0.3);
-        break;
-    case TURTLEBOT_LEFT:
-        this->move(0.01, 0.3);
-        break;
-    case TURTLEBOT_TURN:
-        this->move(0.0, 0.1);
-        break;
-    case TURTLEBOT_STOP:
-        this->move(0.0, 0.0);
-        break;
-    default:
-        break;
-    }
-    //    }
+
+    this->move();
+
+//    switch (this->move_mode) {
+//    case TURLTEBOT_UP:
+//        this->move(0.05, 0.0);
+//        break;
+//    case TURLTEBOT_DOWN:
+//        this->move(-0.05, 0.0);
+//        break;
+//    case TURLTEBOT_RIGHT:
+//        this->move(0.05, -0.08);
+//        break;
+//    case TURLTEBOT_LEFT:
+//        this->move(0.05, 0.08);
+//        break;
+//    case TURLTEBOT_TURN:
+//        this->move(0, 0.1);
+//        break;
+//    case TURLTEBOT_STOP:
+//        this->move(0.0, 0.0);
+//        break;
+//    default:
+//        break;
+//    }
 
 }
 
-void Ros::on_turltebot_up(){
+void Ros::on_turltebot_up(double linear, double angular){
 
-    this->move_mode = TURTLEBOT_UP;
+    this->speed.linear.x = linear;
+    this->speed.angular.z = 0;
     this->terminate();
     while(!this->wait());
     this->start();
 }
 
-void Ros::on_turltebot_down(){
+void Ros::on_turltebot_down(double linear, double angular){
 
-    this->move_mode = TURTLEBOT_DOWN;
-    this->terminate();
-    while(!this->wait());
-    this->start();
-
-}
-
-void Ros::on_turltebot_right(){
-
-    this->move_mode = TURTLEBOT_RIGHT;
+    this->speed.linear.x = -linear;
+    this->speed.angular.z = 0;
+    this->move_mode = TURLTEBOT_DOWN;
     this->terminate();
     while(!this->wait());
     this->start();
 
 }
 
-void Ros::on_turltebot_left(){
+void Ros::on_turltebot_right(double linear, double angular){
 
-    this->move_mode = TURTLEBOT_LEFT;
+    this->speed.linear.x = linear;
+    this->speed.angular.z = -angular;
+    this->move_mode = TURLTEBOT_RIGHT;
     this->terminate();
     while(!this->wait());
     this->start();
 
 }
 
-void Ros::on_turltebot_turn(){
+void Ros::on_turltebot_left(double linear, double angular){
 
-    this->move_mode = TURTLEBOT_TURN;
+    this->speed.linear.x = linear;
+    this->speed.angular.z = angular;
+    this->move_mode = TURLTEBOT_LEFT;
     this->terminate();
     while(!this->wait());
     this->start();
 
 }
 
-void Ros::on_turltebot_stop(){
+void Ros::on_turltebot_turn(double linear, double angular){
 
-    this->move_mode = TURTLEBOT_UP;
+    this->speed.linear.x = 0;
+    this->speed.angular.z = angular;
+    this->move_mode = TURLTEBOT_TURN;
+    this->terminate();
+    while(!this->wait());
+    this->start();
+
+}
+
+void Ros::on_turltebot_stop(double linear, double angular){
+
+    this->move_mode = TURLTEBOT_UP;
     this->terminate();
     while(!this->wait());
     this->speed.linear.x = 0; //

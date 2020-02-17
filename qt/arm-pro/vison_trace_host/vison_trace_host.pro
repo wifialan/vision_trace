@@ -52,6 +52,8 @@ LIBS += -L/usr/local/lib/ -lopencv_videoio
 ## QR
 #include(/home/alan/work/vision_trace/qt/QZXing/source/QZXing.pri)
 include(../qzxing-master/src/QZXing.pri)
+INCLUDEPATH += -I /usr/local/zbar/include
+LIBS += -L/usr/local/zbar/lib/ -lzbar
 
 ## ROS
 

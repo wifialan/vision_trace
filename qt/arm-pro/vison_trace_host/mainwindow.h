@@ -10,6 +10,7 @@
 #include <QTimer>
 #include "ros.h"
 #include "camera.h"
+#include "pathplan.h"
 
 /*
 // cmd
@@ -87,6 +88,7 @@ private:
 
     Camera      *cam;
     Ros         *ros;
+//    Pathplan    *path;
     QSerialPort *serial;
     QUdpSocket  *socket;
     QString     ip;
@@ -124,17 +126,11 @@ private slots:
     void on_pushButton_right_clicked();
 private slots:
    void on_show_frame(QImage);
+   void on_show_tutlebot_status(qint16);
 
 
     void on_pushButton_stop_clicked();
 
-signals:
-    void turltebot_up();
-    void turltebot_down();
-    void turltebot_right();
-    void turltebot_left();
-    void turltebot_turn();
-    void turltebot_stop();
 
 };
 

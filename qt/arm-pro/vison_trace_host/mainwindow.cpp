@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->label_cam->setScaledContents(true);
     cam = new Camera();
     ros = new Ros();
+    //    path = new Pathplan();
     serial = new QSerialPort();
     socket = new QUdpSocket();
     connect_state  =  false;
@@ -22,12 +23,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ros->speed_x = 0.1;
     ros->flag = 1;
     ros->move_mode = 0;
+    //    connect( (QObject*)this->cam, SIGNAL(path_plan()), (QObject*)this->path, SLOT(on_path_plan()));
+    connect( (QObject*)this->cam, SIGNAL(show_tutlebot_status(qint16)), this, SLOT(on_show_tutlebot_status(qint16)));
     connect( (QObject*)this->cam, SIGNAL(show_frame(QImage)), this, SLOT(on_show_frame(QImage)));
-    connect( this, SIGNAL(turltebot_up() ), (QObject*)this->ros, SLOT(on_turltebot_up()));
-    connect( this, SIGNAL(turltebot_down() ), (QObject*)this->ros, SLOT(on_turltebot_down()));
-    connect( this, SIGNAL(turltebot_right() ), (QObject*)this->ros, SLOT(on_turltebot_right()));
-    connect( this, SIGNAL(turltebot_left() ), (QObject*)this->ros, SLOT(on_turltebot_left()));
-    connect( this, SIGNAL(turltebot_turn() ), (QObject*)this->ros, SLOT(on_turltebot_turn()));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_up(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_up(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_down(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_down(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_right(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_right(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_left(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_left(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_turn(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_turn(double, double)));
 
     socket_connect();
     connect(socket,                 \
@@ -113,27 +116,21 @@ void MainWindow::on_read_network()
 
     case CMD_DOWN:
         ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
-        emit turltebot_down();
         break;
     case CMD_LEFT:
         ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
-        emit turltebot_left();
         break;
     case CMD_UP:
         ui->textBrowser->append("SYSTEM: send cmd [UP]");
-        emit turltebot_up();
         break;
     case CMD_RIGHT:
         ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
-        emit turltebot_right();
         break;
     case CMD_STOP:
         ui->textBrowser->append("SYSTEM: send cmd [STOP]");
-        emit turltebot_stop();
         break;
     case CMD_TURN:
         ui->textBrowser->append("SYSTEM: send cmd [TURN]");
-        emit turltebot_turn();
         break;
     case CMD_QR:
         ui->textBrowser->append("SYSTEM: Current QR code is: " + QString(pac.payload.toHex()));
@@ -285,8 +282,8 @@ void MainWindow::on_pushButton_up_clicked()
 {
 
     ui->textBrowser->append("SYSTEM: send cmd [UP]");
-    //    emit turltebot_up();
-    ros->move_mode = TURTLEBOT_UP;
+    //    emit TURTLEBOT_up();
+    ros->move_mode = TURLTEBOT_UP;
     ros->terminate();
     while(!ros->wait());
     ros->start();
@@ -299,8 +296,8 @@ void MainWindow::on_pushButton_down_clicked()
 
     ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
 
-    //    emit turltebot_down();
-    ros->move_mode = TURTLEBOT_DOWN;
+    //    emit TURTLEBOT_down();
+    ros->move_mode = TURLTEBOT_DOWN;
     ros->terminate();
     while(!ros->wait());
     ros->start();
@@ -311,7 +308,7 @@ void MainWindow::on_pushButton_left_clicked()
 {
     send_cmd_serial(CMD_LEFT);
     ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
-    ros->move_mode = TURTLEBOT_LEFT;
+    ros->move_mode = TURLTEBOT_LEFT;
     ros->terminate();
     while(!ros->wait());
     ros->start();
@@ -321,7 +318,7 @@ void MainWindow::on_pushButton_right_clicked()
 {
     send_cmd_serial(CMD_RIGHT);
     ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
-    ros->move_mode = TURTLEBOT_RIGHT;
+    ros->move_mode = TURLTEBOT_RIGHT;
     ros->terminate();
     while(!ros->wait());
     ros->start();
@@ -341,11 +338,11 @@ void MainWindow::send_cmd_serial(quint8 cmd)
 void MainWindow::on_pushButton_stop_clicked()
 {
     ui->textBrowser->append("SYSTEM: send cmd [STOP]");
-    ros->terminate();
-    while(!ros->wait());
-    ros->speed.linear.x = 0; //
-    ros->speed.angular.z = 0; //
-    ros->pub_cmd_vel.publish(ros->speed); //
+//    ros->terminate();
+//    while(!ros->wait());
+//    ros->speed.linear.x = 0; //
+//    ros->speed.angular.z = 0; //
+//    ros->pub_cmd_vel.publish(ros->speed); //
 
     cam->open();
 
@@ -353,6 +350,30 @@ void MainWindow::on_pushButton_stop_clicked()
 
 void MainWindow::on_show_frame(QImage image)
 {
-    qDebug() << "show image";
+    //    qDebug() << "show image";
     ui->label_cam->setPixmap(QPixmap::fromImage(image));
+}
+
+void MainWindow::on_show_tutlebot_status(qint16 status)
+{
+    qDebug() << "***********************";
+    switch (status) {
+    case TURLTEBOT_UP:
+        ui->textBrowser->append("SYSTEM: send cmd [UP]");
+        break;
+    case TURLTEBOT_LEFT:
+        ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
+        break;
+    case TURLTEBOT_RIGHT:
+        ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
+        break;
+    case TURLTEBOT_STOP:
+        ui->textBrowser->append("SYSTEM: send cmd [STOP]");
+        break;
+    case TURLTEBOT_TURN:
+        ui->textBrowser->append("SYSTEM: send cmd [TURN]");
+        break;
+    default:
+        break;
+    }
 }

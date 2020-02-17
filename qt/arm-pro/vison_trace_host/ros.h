@@ -8,12 +8,12 @@
 #include <QDebug>
 #include <QThread>
 
-#define TURTLEBOT_UP        1
-#define TURTLEBOT_DOWN      2
-#define TURTLEBOT_RIGHT     3
-#define TURTLEBOT_LEFT      4
-#define TURTLEBOT_TURN      5
-#define TURTLEBOT_STOP      6
+#define TURLTEBOT_UP        1
+#define TURLTEBOT_DOWN      2
+#define TURLTEBOT_RIGHT     3
+#define TURLTEBOT_LEFT      4
+#define TURLTEBOT_TURN      5
+#define TURLTEBOT_STOP      6
 
 
 class Ros : public QThread{
@@ -42,17 +42,18 @@ public:
 
 private:
     void move(float , float );
+    void move();
 
 protected:
     void run();
 
 private slots:
-    void on_turltebot_up();
-    void on_turltebot_down();
-    void on_turltebot_right();
-    void on_turltebot_left();
-    void on_turltebot_turn();
-    void on_turltebot_stop();
+    void on_turltebot_up(double, double);
+    void on_turltebot_down(double, double);
+    void on_turltebot_right(double, double);
+    void on_turltebot_left(double, double);
+    void on_turltebot_turn(double, double);
+    void on_turltebot_stop(double, double);
 
 
 };

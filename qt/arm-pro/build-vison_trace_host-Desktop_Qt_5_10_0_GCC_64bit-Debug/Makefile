@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQZXING_LIBRARY -DZXING_ICONV_CONST -DDISABLE_LIBRARY_FEATURES -DENABLE_DECODER_1D_BARCODES -DENABLE_DECODER_QR_CODE -DENABLE_ENCODER_QR_CODE -DENABLE_DECODER_DATA_MATRIX -DENABLE_DECODER_AZTEC -DENABLE_DECODER_PDF17 -DENABLE_ENCODER_GENERIC -DNOFMAXL -DNO_ICONV -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SERIALPORT_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_QML_DEBUG
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../vison_trace_host -I. -isystem /usr/local/include -isystem /usr/local/include/opencv -isystem /usr/local/include/opencv2 -I../qzxing-master/src -I../qzxing-master/src/zxing -I-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../vison_trace_host -I. -isystem /usr/local/include -isystem /usr/local/include/opencv -isystem /usr/local/include/opencv2 -I../qzxing-master/src -I../qzxing-master/src/zxing -I-I -I/usr/local/zbar/include -I-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt5.10.0/5.10.0/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -38,7 +38,7 @@ DISTNAME      = vison_trace_host1.0.0
 DISTDIR = /home/alan/work/vision_trace/qt/arm-pro/build-vison_trace_host-Desktop_Qt_5_10_0_GCC_64bit-Debug/.tmp/vison_trace_host1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.10.0/5.10.0/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/usr/local/lib/ -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lopencv_ml -lopencv_videoio -L /opt/ros/kinetic/lib/ -lroscpp -lroslib -lroscpp_serialization -lrostime -lrosconsole -lrosconsole_log4cxx -lrosconsole_backend_interface -lxmlrpcpp -L/opt/Qt5.10.0/5.10.0/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5SerialPort -lQt5Network -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/usr/local/lib/ -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lopencv_ml -lopencv_videoio -L/usr/local/zbar/lib/ -lzbar -L /opt/ros/kinetic/lib/ -lroscpp -lroslib -lroscpp_serialization -lrostime -lrosconsole -lrosconsole_log4cxx -lrosconsole_backend_interface -lxmlrpcpp -L/opt/Qt5.10.0/5.10.0/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5SerialPort -lQt5Network -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -1467,10 +1467,21 @@ moc_mainwindow.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariantList \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QElapsedTimer \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qelapsedtimer.h \
+		/usr/local/zbar/include/zbar.h \
+		/usr/local/zbar/include/zbar/Exception.h \
+		/usr/local/zbar/include/zbar/Decoder.h \
+		/usr/local/zbar/include/zbar/Scanner.h \
+		/usr/local/zbar/include/zbar/Symbol.h \
+		/usr/local/zbar/include/zbar/Image.h \
+		/usr/local/zbar/include/zbar/ImageScanner.h \
+		/usr/local/zbar/include/zbar/Video.h \
+		/usr/local/zbar/include/zbar/Window.h \
+		/usr/local/zbar/include/zbar/Processor.h \
+		../vison_trace_host/pathplan.h \
 		../vison_trace_host/mainwindow.h \
 		moc_predefs.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vison_trace_host/mainwindow.h -o moc_mainwindow.cpp
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/usr/local/zbar/include -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vison_trace_host/mainwindow.h -o moc_mainwindow.cpp
 
 moc_ros.cpp: /opt/ros/kinetic/include/ros/ros.h \
 		/opt/ros/kinetic/include/ros/time.h \
@@ -1604,7 +1615,7 @@ moc_ros.cpp: /opt/ros/kinetic/include/ros/ros.h \
 		../vison_trace_host/ros.h \
 		moc_predefs.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vison_trace_host/ros.h -o moc_ros.cpp
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/usr/local/zbar/include -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vison_trace_host/ros.h -o moc_ros.cpp
 
 moc_camera.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qobject.h \
@@ -1705,10 +1716,83 @@ moc_camera.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariantList \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QElapsedTimer \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qelapsedtimer.h \
+		/usr/local/zbar/include/zbar.h \
+		/usr/local/zbar/include/zbar/Exception.h \
+		/usr/local/zbar/include/zbar/Decoder.h \
+		/usr/local/zbar/include/zbar/Scanner.h \
+		/usr/local/zbar/include/zbar/Symbol.h \
+		/usr/local/zbar/include/zbar/Image.h \
+		/usr/local/zbar/include/zbar/ImageScanner.h \
+		/usr/local/zbar/include/zbar/Video.h \
+		/usr/local/zbar/include/zbar/Window.h \
+		/usr/local/zbar/include/zbar/Processor.h \
+		../vison_trace_host/ros.h \
+		/opt/ros/kinetic/include/ros/ros.h \
+		/opt/ros/kinetic/include/ros/time.h \
+		/opt/ros/kinetic/include/ros/platform.h \
+		/opt/ros/kinetic/include/ros/exception.h \
+		/opt/ros/kinetic/include/ros/duration.h \
+		/opt/ros/kinetic/include/ros/rostime_decl.h \
+		/opt/ros/kinetic/include/ros/macros.h \
+		/opt/ros/kinetic/include/ros/rate.h \
+		/opt/ros/kinetic/include/ros/console.h \
+		/opt/ros/kinetic/include/ros/console_backend.h \
+		/opt/ros/kinetic/include/rosconsole/macros_generated.h \
+		/opt/ros/kinetic/include/ros/assert.h \
+		/opt/ros/kinetic/include/ros/static_assert.h \
+		/opt/ros/kinetic/include/ros/common.h \
+		/opt/ros/kinetic/include/ros/forwards.h \
+		/opt/ros/kinetic/include/ros/exceptions.h \
+		/opt/ros/kinetic/include/ros/datatypes.h \
+		/opt/ros/kinetic/include/ros/serialized_message.h \
+		/opt/ros/kinetic/include/ros/roscpp_serialization_macros.h \
+		/opt/ros/kinetic/include/ros/types.h \
+		/opt/ros/kinetic/include/ros/node_handle.h \
+		/opt/ros/kinetic/include/ros/publisher.h \
+		/opt/ros/kinetic/include/ros/message.h \
+		/opt/ros/kinetic/include/ros/serialization.h \
+		/opt/ros/kinetic/include/ros/message_traits.h \
+		/opt/ros/kinetic/include/ros/message_forward.h \
+		/opt/ros/kinetic/include/ros/builtin_message_traits.h \
+		/opt/ros/kinetic/include/ros/subscriber.h \
+		/opt/ros/kinetic/include/ros/subscription_callback_helper.h \
+		/opt/ros/kinetic/include/ros/parameter_adapter.h \
+		/opt/ros/kinetic/include/ros/message_event.h \
+		/opt/ros/kinetic/include/ros/service_server.h \
+		/opt/ros/kinetic/include/ros/service_client.h \
+		/opt/ros/kinetic/include/ros/service_traits.h \
+		/opt/ros/kinetic/include/ros/timer.h \
+		/opt/ros/kinetic/include/ros/timer_options.h \
+		/opt/ros/kinetic/include/ros/wall_timer.h \
+		/opt/ros/kinetic/include/ros/wall_timer_options.h \
+		/opt/ros/kinetic/include/ros/steady_timer.h \
+		/opt/ros/kinetic/include/ros/steady_timer_options.h \
+		/opt/ros/kinetic/include/ros/advertise_options.h \
+		/opt/ros/kinetic/include/ros/advertise_service_options.h \
+		/opt/ros/kinetic/include/ros/service_callback_helper.h \
+		/opt/ros/kinetic/include/ros/subscribe_options.h \
+		/opt/ros/kinetic/include/ros/transport_hints.h \
+		/opt/ros/kinetic/include/ros/service_client_options.h \
+		/opt/ros/kinetic/include/ros/spinner.h \
+		/opt/ros/kinetic/include/ros/init.h \
+		/opt/ros/kinetic/include/xmlrpcpp/XmlRpcValue.h \
+		/opt/ros/kinetic/include/xmlrpcpp/XmlRpcDecl.h \
+		/opt/ros/kinetic/include/ros/single_subscriber_publisher.h \
+		/opt/ros/kinetic/include/ros/service.h \
+		/opt/ros/kinetic/include/ros/names.h \
+		/opt/ros/kinetic/include/ros/master.h \
+		/opt/ros/kinetic/include/ros/this_node.h \
+		/opt/ros/kinetic/include/ros/param.h \
+		/opt/ros/kinetic/include/ros/topic.h \
+		/opt/ros/kinetic/include/geometry_msgs/Twist.h \
+		/opt/ros/kinetic/include/ros/message_operations.h \
+		/opt/ros/kinetic/include/geometry_msgs/Vector3.h \
+		/opt/ros/kinetic/include/geometry_msgs/TwistStamped.h \
+		/opt/ros/kinetic/include/std_msgs/Header.h \
 		../vison_trace_host/camera.h \
 		moc_predefs.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vison_trace_host/camera.h -o moc_camera.cpp
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/usr/local/zbar/include -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vison_trace_host/camera.h -o moc_camera.cpp
 
 moc_ImageHandler.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qobject.h \
@@ -1792,7 +1876,7 @@ moc_ImageHandler.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
 		../qzxing-master/src/ImageHandler.h \
 		moc_predefs.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../qzxing-master/src/ImageHandler.h -o moc_ImageHandler.cpp
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/usr/local/zbar/include -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../qzxing-master/src/ImageHandler.h -o moc_ImageHandler.cpp
 
 moc_QZXing.cpp: ../qzxing-master/src/QZXing_global.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QtGlobal \
@@ -1887,7 +1971,7 @@ moc_QZXing.cpp: ../qzxing-master/src/QZXing_global.h \
 		../qzxing-master/src/QZXing.h \
 		moc_predefs.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../qzxing-master/src/QZXing.h -o moc_QZXing.cpp
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src -I/home/alan/work/vision_trace/qt/arm-pro/qzxing-master/src/zxing -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/usr/local/zbar/include -I/home/alan/work/vision_trace/qt/arm-pro/vison_trace_host/-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../qzxing-master/src/QZXing.h -o moc_QZXing.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -2112,6 +2196,17 @@ main.o: ../vison_trace_host/main.cpp ../vison_trace_host/mainwindow.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariantList \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QElapsedTimer \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qelapsedtimer.h \
+		/usr/local/zbar/include/zbar.h \
+		/usr/local/zbar/include/zbar/Exception.h \
+		/usr/local/zbar/include/zbar/Decoder.h \
+		/usr/local/zbar/include/zbar/Scanner.h \
+		/usr/local/zbar/include/zbar/Symbol.h \
+		/usr/local/zbar/include/zbar/Image.h \
+		/usr/local/zbar/include/zbar/ImageScanner.h \
+		/usr/local/zbar/include/zbar/Video.h \
+		/usr/local/zbar/include/zbar/Window.h \
+		/usr/local/zbar/include/zbar/Processor.h \
+		../vison_trace_host/pathplan.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QApplication \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qapplication.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
@@ -2323,67 +2418,18 @@ mainwindow.o: ../vison_trace_host/mainwindow.cpp ../vison_trace_host/mainwindow.
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariantList \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QElapsedTimer \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qelapsedtimer.h \
-		ui_mainwindow.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariant \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QAction \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qaction.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qactiongroup.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QApplication \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qapplication.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qeventloop.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qguiapplication.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qinputmethod.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QButtonGroup \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qbuttongroup.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QGridLayout \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qgridlayout.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlayout.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qboxlayout.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QGroupBox \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qgroupbox.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qframe.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QHeaderView \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qheaderview.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractitemview.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qabstractitemmodel.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qitemselectionmodel.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstyleoption.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qvalidator.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qregularexpression.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qslider.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractslider.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstyle.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtabbar.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qrubberband.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QLabel \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlabel.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QMenuBar \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qmenubar.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qmenu.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QPushButton \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qpushbutton.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QSpacerItem \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QStatusBar \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstatusbar.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QTextBrowser \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtextbrowser.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtextedit.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextdocument.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextoption.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextcursor.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextformat.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpen.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QToolBar \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtoolbar.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QVBoxLayout \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QWidget
+		/usr/local/zbar/include/zbar.h \
+		/usr/local/zbar/include/zbar/Exception.h \
+		/usr/local/zbar/include/zbar/Decoder.h \
+		/usr/local/zbar/include/zbar/Scanner.h \
+		/usr/local/zbar/include/zbar/Symbol.h \
+		/usr/local/zbar/include/zbar/Image.h \
+		/usr/local/zbar/include/zbar/ImageScanner.h \
+		/usr/local/zbar/include/zbar/Video.h \
+		/usr/local/zbar/include/zbar/Window.h \
+		/usr/local/zbar/include/zbar/Processor.h \
+		../vison_trace_host/pathplan.h \
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../vison_trace_host/mainwindow.cpp
 
 ros.o: ../vison_trace_host/ros.cpp ../vison_trace_host/ros.h \
@@ -2617,7 +2663,80 @@ camera.o: ../vison_trace_host/camera.cpp ../vison_trace_host/camera.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QtGlobal \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariantList \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QElapsedTimer \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qelapsedtimer.h
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qelapsedtimer.h \
+		/usr/local/zbar/include/zbar.h \
+		/usr/local/zbar/include/zbar/Exception.h \
+		/usr/local/zbar/include/zbar/Decoder.h \
+		/usr/local/zbar/include/zbar/Scanner.h \
+		/usr/local/zbar/include/zbar/Symbol.h \
+		/usr/local/zbar/include/zbar/Image.h \
+		/usr/local/zbar/include/zbar/ImageScanner.h \
+		/usr/local/zbar/include/zbar/Video.h \
+		/usr/local/zbar/include/zbar/Window.h \
+		/usr/local/zbar/include/zbar/Processor.h \
+		../vison_trace_host/ros.h \
+		/opt/ros/kinetic/include/ros/ros.h \
+		/opt/ros/kinetic/include/ros/time.h \
+		/opt/ros/kinetic/include/ros/platform.h \
+		/opt/ros/kinetic/include/ros/exception.h \
+		/opt/ros/kinetic/include/ros/duration.h \
+		/opt/ros/kinetic/include/ros/rostime_decl.h \
+		/opt/ros/kinetic/include/ros/macros.h \
+		/opt/ros/kinetic/include/ros/rate.h \
+		/opt/ros/kinetic/include/ros/console.h \
+		/opt/ros/kinetic/include/ros/console_backend.h \
+		/opt/ros/kinetic/include/rosconsole/macros_generated.h \
+		/opt/ros/kinetic/include/ros/assert.h \
+		/opt/ros/kinetic/include/ros/static_assert.h \
+		/opt/ros/kinetic/include/ros/common.h \
+		/opt/ros/kinetic/include/ros/forwards.h \
+		/opt/ros/kinetic/include/ros/exceptions.h \
+		/opt/ros/kinetic/include/ros/datatypes.h \
+		/opt/ros/kinetic/include/ros/serialized_message.h \
+		/opt/ros/kinetic/include/ros/roscpp_serialization_macros.h \
+		/opt/ros/kinetic/include/ros/types.h \
+		/opt/ros/kinetic/include/ros/node_handle.h \
+		/opt/ros/kinetic/include/ros/publisher.h \
+		/opt/ros/kinetic/include/ros/message.h \
+		/opt/ros/kinetic/include/ros/serialization.h \
+		/opt/ros/kinetic/include/ros/message_traits.h \
+		/opt/ros/kinetic/include/ros/message_forward.h \
+		/opt/ros/kinetic/include/ros/builtin_message_traits.h \
+		/opt/ros/kinetic/include/ros/subscriber.h \
+		/opt/ros/kinetic/include/ros/subscription_callback_helper.h \
+		/opt/ros/kinetic/include/ros/parameter_adapter.h \
+		/opt/ros/kinetic/include/ros/message_event.h \
+		/opt/ros/kinetic/include/ros/service_server.h \
+		/opt/ros/kinetic/include/ros/service_client.h \
+		/opt/ros/kinetic/include/ros/service_traits.h \
+		/opt/ros/kinetic/include/ros/timer.h \
+		/opt/ros/kinetic/include/ros/timer_options.h \
+		/opt/ros/kinetic/include/ros/wall_timer.h \
+		/opt/ros/kinetic/include/ros/wall_timer_options.h \
+		/opt/ros/kinetic/include/ros/steady_timer.h \
+		/opt/ros/kinetic/include/ros/steady_timer_options.h \
+		/opt/ros/kinetic/include/ros/advertise_options.h \
+		/opt/ros/kinetic/include/ros/advertise_service_options.h \
+		/opt/ros/kinetic/include/ros/service_callback_helper.h \
+		/opt/ros/kinetic/include/ros/subscribe_options.h \
+		/opt/ros/kinetic/include/ros/transport_hints.h \
+		/opt/ros/kinetic/include/ros/service_client_options.h \
+		/opt/ros/kinetic/include/ros/spinner.h \
+		/opt/ros/kinetic/include/ros/init.h \
+		/opt/ros/kinetic/include/xmlrpcpp/XmlRpcValue.h \
+		/opt/ros/kinetic/include/xmlrpcpp/XmlRpcDecl.h \
+		/opt/ros/kinetic/include/ros/single_subscriber_publisher.h \
+		/opt/ros/kinetic/include/ros/service.h \
+		/opt/ros/kinetic/include/ros/names.h \
+		/opt/ros/kinetic/include/ros/master.h \
+		/opt/ros/kinetic/include/ros/this_node.h \
+		/opt/ros/kinetic/include/ros/param.h \
+		/opt/ros/kinetic/include/ros/topic.h \
+		/opt/ros/kinetic/include/geometry_msgs/Twist.h \
+		/opt/ros/kinetic/include/ros/message_operations.h \
+		/opt/ros/kinetic/include/geometry_msgs/Vector3.h \
+		/opt/ros/kinetic/include/geometry_msgs/TwistStamped.h \
+		/opt/ros/kinetic/include/std_msgs/Header.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o camera.o ../vison_trace_host/camera.cpp
 
 CameraImageWrapper.o: ../qzxing-master/src/CameraImageWrapper.cpp ../qzxing-master/src/CameraImageWrapper.h \

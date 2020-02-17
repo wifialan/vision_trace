@@ -27,7 +27,7 @@ DEST_ADDR_QT = (DEST_HOST_QT, DEST_PORT_QT)
 #udp_ser_sock = socket(AF_INET, SOCK_DGRAM)
 #udp_ser_sock.bind(LOCAL_ADDR)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 path = route.PathRoute()
 
 time_data = "hello python"
@@ -60,7 +60,7 @@ def camera():
         # 大津法二值化
         retval, dst = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
 
-        # cv2.imshow("capture", dst)
+        cv2.imshow("capture", dst)
         # 检测QR
         barcodes = pyzbar.decode(gray)
         file = open("data.txt", "w")
@@ -78,7 +78,7 @@ def camera():
         # # 腐蚀，白区域变小
         #dst = cv2.erode(dst, None, iterations=6)
         # 按Q键退出程序
-        cv2.imshow("capture", dst)
+        #cv2.imshow("capture", dst)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             # 存储图片

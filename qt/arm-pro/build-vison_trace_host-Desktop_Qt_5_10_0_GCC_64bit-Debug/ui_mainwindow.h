@@ -65,14 +65,14 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(1121, 492);
+        MainWindow->resize(1198, 492);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         label_cam = new QLabel(centralWidget);
         label_cam->setObjectName(QStringLiteral("label_cam"));
-        label_cam->setGeometry(QRect(616, 36, 471, 381));
-        label_cam->setMinimumSize(QSize(471, 381));
-        label_cam->setMaximumSize(QSize(381, 16777215));
+        label_cam->setGeometry(QRect(620, 20, 550, 400));
+        label_cam->setMinimumSize(QSize(550, 400));
+        label_cam->setMaximumSize(QSize(550, 400));
         layoutWidget = new QWidget(centralWidget);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
         layoutWidget->setGeometry(QRect(0, 0, 280, 413));
@@ -185,7 +185,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1121, 22));
+        menuBar->setGeometry(QRect(0, 0, 1198, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));

@@ -61,20 +61,20 @@ static const uint qt_meta_data_Ros[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   44,    2, 0x08 /* Private */,
-       3,    0,   45,    2, 0x08 /* Private */,
-       4,    0,   46,    2, 0x08 /* Private */,
-       5,    0,   47,    2, 0x08 /* Private */,
-       6,    0,   48,    2, 0x08 /* Private */,
-       7,    0,   49,    2, 0x08 /* Private */,
+       1,    2,   44,    2, 0x08 /* Private */,
+       3,    2,   49,    2, 0x08 /* Private */,
+       4,    2,   54,    2, 0x08 /* Private */,
+       5,    2,   59,    2, 0x08 /* Private */,
+       6,    2,   64,    2, 0x08 /* Private */,
+       7,    2,   69,    2, 0x08 /* Private */,
 
  // slots: parameters
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
 
        0        // eod
 };
@@ -85,16 +85,15 @@ void Ros::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         Ros *_t = static_cast<Ros *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->on_turltebot_up(); break;
-        case 1: _t->on_turltebot_down(); break;
-        case 2: _t->on_turltebot_right(); break;
-        case 3: _t->on_turltebot_left(); break;
-        case 4: _t->on_turltebot_turn(); break;
-        case 5: _t->on_turltebot_stop(); break;
+        case 0: _t->on_turltebot_up((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 1: _t->on_turltebot_down((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 2: _t->on_turltebot_right((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 3: _t->on_turltebot_left((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 4: _t->on_turltebot_turn((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 5: _t->on_turltebot_stop((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObject Ros::staticMetaObject = {

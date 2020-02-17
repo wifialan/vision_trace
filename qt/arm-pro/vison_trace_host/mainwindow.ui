@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1121</width>
+    <width>1198</width>
     <height>492</height>
    </rect>
   </property>
@@ -17,22 +17,22 @@
    <widget class="QLabel" name="label_cam">
     <property name="geometry">
      <rect>
-      <x>616</x>
-      <y>36</y>
-      <width>471</width>
-      <height>381</height>
+      <x>620</x>
+      <y>20</y>
+      <width>550</width>
+      <height>400</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>471</width>
-      <height>381</height>
+      <width>550</width>
+      <height>400</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>381</width>
-      <height>16777215</height>
+      <width>550</width>
+      <height>400</height>
      </size>
     </property>
     <property name="text">
@@ -241,7 +241,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1121</width>
+     <width>1198</width>
      <height>22</height>
     </rect>
    </property>
