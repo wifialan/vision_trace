@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this, \
             SLOT( on_read_serial()  )
             );
+    cam->open();
 
 
 }
@@ -281,6 +282,8 @@ void MainWindow::on_pushButton_discon_net_clicked()
 void MainWindow::on_pushButton_up_clicked()
 {
 
+    ros->speed.linear.x = 0.1;
+    ros->speed.angular.z = 0;
     ui->textBrowser->append("SYSTEM: send cmd [UP]");
     //    emit TURTLEBOT_up();
     ros->move_mode = TURLTEBOT_UP;
@@ -294,10 +297,13 @@ void MainWindow::on_pushButton_down_clicked()
 {
     //    send_cmd_serial(CMD_DOWN);
 
+    ros->speed.linear.x = -0.1;
+    ros->speed.angular.z = 0;
     ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
 
     //    emit TURTLEBOT_down();
     ros->move_mode = TURLTEBOT_DOWN;
+
     ros->terminate();
     while(!ros->wait());
     ros->start();
@@ -306,6 +312,8 @@ void MainWindow::on_pushButton_down_clicked()
 
 void MainWindow::on_pushButton_left_clicked()
 {
+    ros->speed.linear.x = 0.1;
+    ros->speed.angular.z = 0.4;
     send_cmd_serial(CMD_LEFT);
     ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
     ros->move_mode = TURLTEBOT_LEFT;
@@ -316,6 +324,8 @@ void MainWindow::on_pushButton_left_clicked()
 
 void MainWindow::on_pushButton_right_clicked()
 {
+    ros->speed.linear.x = 0.1;
+    ros->speed.angular.z = -0.4;
     send_cmd_serial(CMD_RIGHT);
     ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
     ros->move_mode = TURLTEBOT_RIGHT;
@@ -338,13 +348,13 @@ void MainWindow::send_cmd_serial(quint8 cmd)
 void MainWindow::on_pushButton_stop_clicked()
 {
     ui->textBrowser->append("SYSTEM: send cmd [STOP]");
-//    ros->terminate();
-//    while(!ros->wait());
-//    ros->speed.linear.x = 0; //
-//    ros->speed.angular.z = 0; //
-//    ros->pub_cmd_vel.publish(ros->speed); //
+    ros->terminate();
+    while(!ros->wait());
+    ros->speed.linear.x = 0; //
+    ros->speed.angular.z = 0; //
+    ros->pub_cmd_vel.publish(ros->speed); //
 
-    cam->open();
+
 
 }
 

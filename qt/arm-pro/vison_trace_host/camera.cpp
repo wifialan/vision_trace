@@ -65,7 +65,7 @@ void Camera::open()
     qDebug() << "start cap";
     if (capture.isOpened())
         capture.release();     //decide if capture is already opened; if so,close it
-    capture.open(1);           //open the default camera
+    capture.open(0);           //open the default camera
     qDebug() << "open cap";
     if (capture.isOpened())
     {
@@ -189,21 +189,22 @@ void Camera::path_plan(Mat image)
 
     }
     if (qAbs( qAbs(black_index_100[0] - black_index_300[0]) - \
-              qAbs(black_index_300[0] - black_index_500[0]) < 5)
+              qAbs(black_index_300[0] - black_index_500[0]) < 4)
             )
     {
         qDebug() << "Straight Line";
-        this->speed_line = 0.2;
-        this->speed_angular = 0.05;
+        this->speed_line = 0.15;
+        this->speed_angular = this->speed_line / 2;
     } else {
         qDebug() << "*********************************\nCurve Line";
-        this->speed_line = 0.2;
+        this->speed_line = 0.15;
         this->speed_angular = this->speed_line * 3.5;
     }
     if (black_index_100[0] < 100 || black_index_100[black_count_100 - 1] > len - 100) {
-        this->speed_angular += this->speed_line * 1.5;
+        qDebug() << "########### Angular up ###########";
+        this->speed_angular += this->speed_line * 2.5;
     }
-    qDebug() << "Black pix sum  : " << black_count_100;
+    qDebug() << "Black pix sum  :" << black_count_100;
     qDebug() << "Black pix coord:" << black_index_100[0] << " " << black_index_100[black_count_100 - 1];
     if (black_count_100 > PATH_STRAIGHT_ROAD) {
 
