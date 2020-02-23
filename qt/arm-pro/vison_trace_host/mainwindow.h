@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QTimer>
+#include <QPainter>
 #include "ros.h"
 #include "camera.h"
 #include "pathplan.h"
@@ -88,6 +89,7 @@ private:
 
     Camera      *cam;
     Ros         *ros;
+    Pathplan    *path;
 //    Pathplan    *path;
     QSerialPort *serial;
     QUdpSocket  *socket;
@@ -113,11 +115,9 @@ public slots:
     void        on_read_network();
     void        on_read_serial();
 
-
 private slots:
     void on_pushButton_clicked();
-    void on_pushButton_con_serial_clicked();
-    void on_pushButton_discon_serial_clicked();
+
     void on_pushButton_con_net_clicked();
     void on_pushButton_discon_net_clicked();
     void on_pushButton_up_clicked();

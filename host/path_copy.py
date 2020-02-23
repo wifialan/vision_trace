@@ -3,9 +3,6 @@
 import route
 import simplejson as json
 import numpy as np
-import sys
-
-print(sys.path)
 
 path = route.PathRoute()
 # path.path_node_restore()

@@ -3,13 +3,10 @@
 import route
 import simplejson as json
 import numpy as np
-import sys
-
-print(sys.path)
 
 path = route.PathRoute()
 # path.path_node_restore()
-if 0:
+if 1:
     data_1 = path.get_path_info(1, 5)
 # tmp = path.plan_path_route(1, 9)
 # path.path_node_restore()

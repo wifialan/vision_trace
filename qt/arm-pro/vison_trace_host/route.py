@@ -6,7 +6,7 @@ import simplejson as json
 
 class PathRoute:
     def __init__(self):
-        with open('/home/alan/work/vision_trace/host/path_node.json', 'r') as file:
+        with open('path_node.json', 'r') as file:
             self.json_data = json.load(file)
         self.json_data_index = ['1st line', '2nd line', '3rd line', '4th line', '5th line', '6th line']
         print(self.json_data)
@@ -51,6 +51,12 @@ class PathRoute:
         print(self.cross_entry_coord)
         print('岔道口出口坐标：', end='')
         print(self.cross_exit_coord)
+        # write crossraod node to file
+        if self.len_row > 1:
+            crossraod_node = open("crossraod_node.txt", 'w')
+            crossraod_node.write(str(self.path_node[0][self.cross_entry_coord]) + ',')
+            crossraod_node.write(str(self.path_node[0][self.cross_exit_coord]))
+            crossraod_node.close()
 
     def get_path_info(self, current_node, target_node):
         self.target_node_coord = [[0, 0], [0, 0]]
@@ -73,8 +79,8 @@ class PathRoute:
                 min(self.target_node_coord[0][1], self.target_node_coord[1][1]) <= self.cross_entry_coord <= \
                 self.cross_exit_coord <= max(self.target_node_coord[0][1], self.target_node_coord[1][1]):
             if self.target_node_coord[0][1] < self.target_node_coord[1][1]:
-                print('前三个节点为正向')
-                if path_node.index((min(min(path_node[0:self.len_row]), path_node[self.len_row]))) < 3:
+                print('前' + str(self.len_row) + '个节点为正向')
+                if path_node.index((min(min(path_node[0:self.len_row]), path_node[self.len_row]))) < self.len_row:
                     print('选择正向')
                     self.forward = 1
                     self.backward = 0
@@ -228,7 +234,7 @@ class PathRoute:
                         tmp = self.target_node_coord[0][1] + abs(self.target_node_coord[1][1] - self.len_col) - blank
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的步数为：', end='')
-                        print(self.number_of_route_node[3])
+                        print(self.number_of_route_node[self.len_row])
                         self.target_node_coord[0][1] = addr
                         self.target_node_coord[1][1] = dest
                         print('---------------------------------')
@@ -562,10 +568,10 @@ class PathRoute:
                         self.number_of_route_node.append(tmp)
                         print('从A到B需要的步数为：', end='')
                         print(self.number_of_route_node[0])
-                        print('开始反向规划，需经过岔道出口')
+                        print('开始反向规划，需经过岔道入口')
                         print('岔道入口坐标为：', end='')
                         print(self.cross_entry_coord)
-                        if self.target_node_coord[1][1] < self.cross_entry_coord:
+                        if self.target_node_coord[1][1] <= self.cross_entry_coord:
                             print('B在入口左边')
                             blank = 0
                             for i in range(self.cross_entry_coord, self.target_node_coord[0][1]):
@@ -573,8 +579,7 @@ class PathRoute:
                                     blank = blank + 1
                             print('A和入口之间的伪节点数为：', end='')
                             print(blank)
-                            tmp = abs(self.target_node_coord[0][1] - self.cross_entry_coord) + \
-                                  self.target_node_coord[1][1] - blank
+                            tmp = abs(self.target_node_coord[0][1] - self.target_node_coord[1][1] - blank)
                             self.number_of_route_node.append(tmp)
                             print('从A到B需要的反向步数为：', end='')
                             print(self.number_of_route_node[1])
@@ -664,56 +669,321 @@ class PathRoute:
                     print('正向规划')
                     if coord_col_A < coord_col_B:
                         print('A在B左边')
-                        blank = 0
-                        for i in range(coord_col_A, coord_col_B):
-                            if self.path_node[coord_row_A][i] == 99:
-                                blank = blank + 1
-                        print('A和B之间伪节点数：', end='')
-                        print(blank)
-                        for i in range(coord_col_A, coord_col_B - blank):
-                            self.path_plan_indicate.append('UP')
+                        if coord_col_A < self.cross_entry_coord:
+                            print('A在岔道口左边')
+                            if coord_col_B <= self.cross_entry_coord:
+                                print('B也在岔道口左边')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, coord_col_B):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道入口和B之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_A, self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_entry_coord < coord_col_B <= self.cross_exit_coord:
+                                print('B在岔道口内')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, coord_col_B):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道入口和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_A, self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                for i in range(self.cross_entry_coord, coord_col_B - blank):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_exit_coord < coord_col_B:
+                                print('B在岔道口右边')
+                                for i in range(coord_col_A, self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道出口和入口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                for i in range(self.cross_exit_coord, coord_col_B):
+                                    self.path_plan_indicate.append('UP')
+                        elif self.cross_entry_coord <= coord_col_A < self.cross_exit_coord:
+                            print('A在岔道之间')
+                            if coord_col_B <= self.cross_exit_coord:
+                                print('B在岔道出口左边')
+                                blank = 0
+                                for i in range(coord_col_A, coord_col_B):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('A和B之间伪节点数：', end='')
+                                print(blank)
+                                if coord_col_A == self.cross_entry_coord:
+                                    self.path_plan_indicate.append('LEFT')
+                                for i in range(coord_col_A, coord_col_B - blank):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_exit_coord < coord_col_B:
+                                print('B在岔道出口右边')
+                                blank = 0
+                                for i in range(coord_col_A, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('A和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_A, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                for i in range(self.cross_exit_coord, coord_col_B):
+                                    self.path_plan_indicate.append('UP')
+                            elif coord_col_A >= self.cross_exit_coord:
+                                print('A在岔道出口右边')
+                                for i in range(coord_col_A, coord_col_B):
+                                    self.path_plan_indicate.append('UP')
+                        elif coord_col_A >= self.cross_exit_coord:
+                            print('A在岔道口右边')
+                            for i in range(coord_col_A, coord_col_B):
+                                self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
                     else:
                         print('A在B右边')
-                        blank = 0
-                        for i in range(coord_col_A, self.len_col):
-                            if self.path_node[coord_row_A][i] == 99:
-                                blank = blank + 1
-                        for i in range(0, coord_col_B):
-                            if self.path_node[coord_row_B][i] == 99:
-                                blank = blank + 1
-                        print('A和B之间伪节点数：', end='')
-                        print(blank)
-                        for i in range(0, self.len_col - coord_col_A + coord_col_B - blank):
-                            self.path_plan_indicate.append('UP')
+                        if coord_col_A <= self.cross_entry_coord:
+                            print('A在岔道出口左边')
+                            for i in range(coord_col_A, self.cross_entry_coord):
+                                self.path_plan_indicate.append('UP')
+                            self.path_plan_indicate.append('LEFT')
+                            blank = 0
+                            for i in range(self.cross_entry_coord, self.cross_entry_coord):
+                                if self.path_node[coord_row_B][i] == 99:
+                                    blank = blank + 1
+                            print('岔道入口和出口之间伪节点数：', end='')
+                            print(blank)
+                            for i in range(self.cross_entry_coord, self.cross_exit_coord - blank):
+                                self.path_plan_indicate.append('UP')
+                            self.path_plan_indicate.append('LEFT')
+                            for i in range(0, self.len_col - self.cross_exit_coord + coord_col_B):
+                                self.path_plan_indicate.append('UP')
+
+                        elif self.cross_entry_coord < coord_col_A < self.cross_exit_coord:
+                            print('A在岔道之间')
+                            if coord_col_B <= self.cross_entry_coord:
+                                print('B在岔道入口左边')
+                                blank = 0
+                                for i in range(coord_col_A, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('A和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_A, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                for i in range(0, self.len_col - self.cross_exit_coord + coord_col_B):
+                                    self.path_plan_indicate.append('UP')
+
+                        elif coord_col_A >= self.cross_exit_coord:
+                            print('A在岔道出口右边')
+                            for i in range(coord_col_A, self.cross_exit_coord):
+                                self.path_plan_indicate.append('UP')
+                            if coord_col_B <= self.cross_entry_coord:
+                                print("B在入口左边")
+                                for i in range(0, coord_col_B):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_entry_coord < coord_col_B <= self.cross_exit_coord:
+                                print('B在岔道内')
+                                for i in range(0, self.len_col - coord_col_A + self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, coord_col_B):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('B和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, coord_col_B - blank):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_exit_coord < coord_col_B:
+                                print('B在岔道出口右边')
+                                for i in range(0, self.len_col - coord_col_A + self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道入口和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('LEFT')
+                                for i in range(self.cross_exit_coord, coord_col_B):
+                                    self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
                 elif self.forward == 0 and self.backward == 1:
                     print('反向规划')
                     self.path_plan_indicate.append('TURN')
                     if coord_col_A < coord_col_B:
                         print('A在B左边')
-                        blank = 0
-                        for i in range(0, coord_col_A):
-                            if self.path_node[coord_row_A][i] == 99:
-                                blank = blank + 1
-                        for i in range(coord_col_B, self.len_col):
-                            if self.path_node[coord_row_B][i] == 99:
-                                blank = blank + 1
-                        print('A和B之间伪节点数：', end='')
-                        print(blank)
-                        for i in range(0, self.len_col - coord_col_B + coord_col_A - blank):
-                            self.path_plan_indicate.append('UP')
+                        if coord_col_A <= self.cross_entry_coord:
+                            print('A在岔道口左边')
+                            if coord_col_B <= self.cross_entry_coord:
+                                for i in range(0, self.len_col - self.cross_exit_coord + coord_col_A):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道入口和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                for i in range(coord_col_B, self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_entry_coord < coord_col_B < self.cross_exit_coord:
+                                print('B在岔道内')
+                                for i in range(0, coord_col_A):
+                                    self.path_plan_indicate.append('UP')
+                                for i in range(self.cross_exit_coord, self.len_col):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                blank = 0
+                                for i in range(coord_col_B, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('B和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_B, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                            elif coord_col_B >= self.cross_exit_coord:
+                                print('B在岔道口右边')
+                                for i in range(0, coord_col_A):
+                                    self.path_plan_indicate.append('UP')
+                                for i in range(coord_col_B, self.cross_exit_coord):
+                                    self.path_plan_indicate.append('UP')
+                        elif self.cross_entry_coord < coord_col_A <= self.cross_exit_coord:
+                            print('A在岔道内')
+                            if coord_col_B < self.cross_exit_coord:
+                                print('B也在岔道内')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, coord_col_A):
+                                    if self.path_node[coord_row_A][i] == 99:
+                                        blank = blank + 1
+                                print('A和岔道入口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, coord_col_A - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                for i in range(0, self.len_col - self.cross_exit_coord + self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                blank = 0
+                                for i in range(coord_col_B, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('B和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_B, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                            elif coord_col_B >= self.cross_exit_coord:
+                                print('B在岔道右边')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, coord_col_A):
+                                    if self.path_node[coord_row_A][i] == 99:
+                                        blank = blank + 1
+                                print('A和岔道入口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, coord_col_A - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                for i in range(0, self.len_col - coord_col_B + self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                        elif coord_col_A > self.cross_exit_coord:
+                            print('A在岔道口右边')
+                            for i in range(self.cross_exit_coord, coord_col_A):
+                                self.path_plan_indicate.append('UP')
+                            self.path_plan_indicate.append('RIGHT')
+                            blank = 0
+                            for i in range(self.cross_entry_coord, self.cross_exit_coord):
+                                if self.path_node[coord_row_B][i] == 99:
+                                    blank = blank + 1
+                            print('岔道入口和岔道出口之间伪节点数：', end='')
+                            print(blank)
+                            for i in range(self.cross_entry_coord, self.cross_exit_coord - blank):
+                                self.path_plan_indicate.append('UP')
+                            self.path_plan_indicate.append('RIGHT')
+                            for i in range(0, self.len_col - coord_col_B + self.cross_entry_coord):
+                                self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
-                    else:
+                    elif coord_col_A > coord_col_B:
                         print('A在B右边')
-                        blank = 0
-                        for i in range(coord_col_B, coord_col_A):
-                            if self.path_node[coord_row_A][i] == 99:
-                                blank = blank + 1
-                        print('A和B之间伪节点数：', end='')
-                        print(blank)
-                        for i in range(coord_col_B, coord_col_A - blank):
-                            self.path_plan_indicate.append('UP')
+                        if coord_col_A <= self.cross_entry_coord:
+                            print('A在岔道口入口左边')
+                            for i in range(coord_col_B, coord_col_A):
+                                self.path_plan_indicate.append('UP')
+                        elif self.cross_entry_coord < coord_col_A <= self.cross_exit_coord:
+                            print('A在岔道内')
+                            if coord_col_B < self.cross_entry_coord:
+                                print('B在岔道口入口左边')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, coord_col_A):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道入口和A之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, coord_col_A - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                for i in range(coord_col_B, self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                            elif coord_col_B >= self.cross_entry_coord:
+                                print('B也在岔道内')
+                                blank = 0
+                                for i in range(coord_col_B, coord_col_A):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('A和B之间伪节点数：', end='')
+                                print(blank)
+                                if coord_col_A == self.cross_exit_coord:
+                                    self.path_plan_indicate.append('RIGHT')
+                                for i in range(coord_col_B, coord_col_A - blank):
+                                    self.path_plan_indicate.append('UP')
+                        elif coord_col_A > self.cross_exit_coord:
+                            print('A在岔道出口右边')
+                            if coord_col_B < self.cross_entry_coord:
+                                print('B在岔道入口左边')
+                                for i in range(self.cross_exit_coord, coord_col_A):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                blank = 0
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('岔道入口和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(self.cross_entry_coord, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                                self.path_plan_indicate.append('RIGHT')
+                                for i in range(coord_col_B, self.cross_entry_coord):
+                                    self.path_plan_indicate.append('UP')
+                            elif self.cross_entry_coord <= coord_col_B < self.cross_exit_coord:
+                                print('B在岔道内')
+                                for i in range(self.cross_exit_coord, coord_col_A):
+                                    self.path_plan_indicate.append('UP')
+                                blank = 0
+                                self.path_plan_indicate.append('RIGHT')
+                                for i in range(coord_col_B, self.cross_exit_coord):
+                                    if self.path_node[coord_row_B][i] == 99:
+                                        blank = blank + 1
+                                print('B和岔道出口之间伪节点数：', end='')
+                                print(blank)
+                                for i in range(coord_col_B, self.cross_exit_coord - blank):
+                                    self.path_plan_indicate.append('UP')
+                            elif coord_col_B >= self.cross_exit_coord:
+                                print('B也在岔道口右边')
+                                for i in range(coord_col_B, coord_col_A):
+                                    self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
             elif self.select_path != 0:
                 print('多条路线警告')
@@ -728,6 +998,8 @@ class PathRoute:
                                     blank = blank + 1
                             print('A和B之间伪节点数：', end='')
                             print(blank)
+                            if coord_col_A == self.cross_entry_coord:
+                                self.path_plan_indicate.append('LEFT')
                             for i in range(coord_col_A, coord_col_B - blank):
                                 self.path_plan_indicate.append('UP')
                             print(self.path_plan_indicate)
@@ -958,7 +1230,7 @@ class PathRoute:
                         print(blank)
                         for i in range(coord_col_A, self.cross_exit_coord - blank):
                             self.path_plan_indicate.append('UP')
-                        for i in range(coord_row_A, coord_row_B):
+                        for i in range(coord_row_A, self.len_row - coord_row_B):
                             self.path_plan_indicate.append('RIGHT')
                         blank = 0
                         for i in range(coord_col_B, self.cross_exit_coord):
@@ -975,7 +1247,7 @@ class PathRoute:
                             self.path_plan_indicate.append('UP')
                         for i in range(0, self.cross_entry_coord):
                             self.path_plan_indicate.append('UP')
-                        for i in range(coord_row_A, coord_row_B):
+                        for i in range(coord_row_A, coord_row_B - 1):
                             self.path_plan_indicate.append('RIGHT')
                         blank = 0
                         for i in range(self.cross_entry_coord, coord_col_B):
@@ -996,25 +1268,28 @@ class PathRoute:
                                 blank = blank + 1
                         print('A和出口之间伪节点数：', end='')
                         print(blank)
-                        for i in range(coord_col_A, self.cross_exit_coord - blank):
-                            self.path_plan_indicate.append('UP')
-                        blank = 0
+                        blank_2 = 0
                         for i in range(0, coord_col_B):
                             if self.path_node[coord_row_B][i] == 99:
-                                blank = blank + 1
+                                blank_2 = blank_2 + 1
                         tmp_1 = abs(self.cross_exit_coord - self.len_col) + \
-                                coord_col_B - blank
-                        blank = 0
+                                coord_col_B - blank_2
+                        blank_3 = 0
                         for i in range(coord_col_B, self.cross_exit_coord):
                             if self.path_node[coord_row_B][i] == 99:
-                                blank = blank + 1
-                        tmp_2 = abs(self.cross_exit_coord - coord_col_B) - blank
+                                blank_3 = blank_3 + 1
+                        tmp_2 = abs(self.cross_exit_coord - coord_col_B) - blank_3
                         if tmp_1 <= tmp_2:
-                            for i in range(tmp_1):
+                            for i in range(coord_col_A, self.cross_exit_coord - blank):
+                                self.path_plan_indicate.append('UP')
+                            self.path_plan_indicate.append('RIGHT')
+                            for i in range(0, self.len_col - self.cross_exit_coord + coord_col_B):
                                 self.path_plan_indicate.append('UP')
                         elif tmp_1 > tmp_2:
-                            self.path_plan_indicate.append('TURN')
-                            for i in range(tmp_2):
+                            for i in range(coord_col_A, self.cross_exit_coord - blank):
+                                self.path_plan_indicate.append('UP')
+                            self.path_plan_indicate.append('LEFT')
+                            for i in range(0, self.cross_exit_coord - coord_col_B - blank_3):
                                 self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
                     elif coord_col_B >= self.cross_exit_coord:
@@ -1027,6 +1302,8 @@ class PathRoute:
                         print(blank)
                         for i in range(coord_col_A, self.cross_exit_coord - blank):
                             self.path_plan_indicate.append('UP')
+                        if self.target_node_coord[1][1] != self.cross_exit_coord:
+                            self.path_plan_indicate.append('RIGHT')
                         for i in range(self.cross_exit_coord, coord_col_B):
                             self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
@@ -1058,8 +1335,8 @@ class PathRoute:
                                 blank = blank + 1
                         for i in range(self.cross_entry_coord, coord_col_A - blank):
                             self.path_plan_indicate.append('UP')
-                        self.path_plan_indicate.append('TURN')
-                        for i in range(coord_row_A, coord_row_B):
+                        # self.path_plan_indicate.append('TURN')
+                        for i in range(coord_row_A, self.len_row - coord_row_B):
                             self.path_plan_indicate.append('RIGHT')
                         blank = 0
                         for i in range(self.cross_entry_coord, coord_col_B):
@@ -1091,6 +1368,9 @@ class PathRoute:
                                 blank = blank + 1
                         for i in range(self.cross_entry_coord, coord_col_A - blank):
                             self.path_plan_indicate.append('UP')
+                        # 排除目标在岔道口上这种情况
+                        if self.target_node_coord[1][1] != self.cross_entry_coord:
+                            self.path_plan_indicate.append('LEFT')
                         for i in range(coord_col_B, self.cross_entry_coord):
                             self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)
@@ -1116,7 +1396,7 @@ class PathRoute:
                             for i in range(tmp_1):
                                 self.path_plan_indicate.append('UP')
                         elif tmp_1 > tmp_2:
-                            self.path_plan_indicate.append('TURN')
+                            self.path_plan_indicate.append('RIGHT')
                             for i in range(tmp_2):
                                 self.path_plan_indicate.append('UP')
                         print(self.path_plan_indicate)

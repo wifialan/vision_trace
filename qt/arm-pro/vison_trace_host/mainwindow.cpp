@@ -1,29 +1,32 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <Python.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->label_cam->setScaledContents(true);
     cam = new Camera();
     ros = new Ros();
-    //    path = new Pathplan();
+    path = new Pathplan();
     serial = new QSerialPort();
     socket = new QUdpSocket();
     connect_state  =  false;
     this->port = PYTHON_PORT;
     this->ip = HOST_IP;
 
+    ui->lineEdit->setText("1");
+    ui->lineEdit_2->setText("3");
     ros->pub_cmd_vel_topic =  "/cmd_vel_mux/input/navi";
     ros->pub_cmd_vel = ros->n.advertise<geometry_msgs::Twist>(ros->pub_cmd_vel_topic, 1);
     //    ros->loopRate(5);
     ros->speed_x = 0.1;
     ros->flag = 1;
     ros->move_mode = 0;
-    //    connect( (QObject*)this->cam, SIGNAL(path_plan()), (QObject*)this->path, SLOT(on_path_plan()));
+    connect( (QObject*)this->path, SIGNAL(read_path_plan()), (QObject*)this->cam, SLOT(on_read_path_plan()));
     connect( (QObject*)this->cam, SIGNAL(show_tutlebot_status(qint16)), this, SLOT(on_show_tutlebot_status(qint16)));
     connect( (QObject*)this->cam, SIGNAL(show_frame(QImage)), this, SLOT(on_show_frame(QImage)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_up(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_up(double, double)));
@@ -31,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( (QObject*)this->cam, SIGNAL(turltebot_right(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_right(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_left(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_left(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_turn(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_turn(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_stop() ), (QObject*)this->ros, SLOT(on_turltebot_stop()));
 
     socket_connect();
     connect(socket,                 \
@@ -38,12 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this,               \
             SLOT( on_read_network() )
             );
-    connect(serial,     \
-            SIGNAL( readyRead() ), \
-            this, \
-            SLOT( on_read_serial()  )
-            );
-    cam->open();
+
+//    cam->open();
 
 
 }
@@ -222,52 +222,6 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-void MainWindow::on_pushButton_con_serial_clicked()
-{
-    QString serial_name = "/dev/ttyUSB0";
-    QString portName;
-    QString uartName;
-    QSerialPortInfo info;
-
-    qDebug() << "Debug: Refresh the list...";
-    foreach ( info , QSerialPortInfo::availablePorts()) {
-        serial->setPort(info);
-        portName = info.portName();
-        uartName = info.description();
-        qDebug() << tr("SYSTEM: Scan the uart device: ")+uartName + "("+portName+")"+tr(" has been added to the available list! ");
-    }
-    serial->setBaudRate(QSerialPort::Baud115200);
-    serial->setStopBits(QSerialPort::OneStop);
-    serial->setParity( QSerialPort::NoParity );
-    serial->setDataBits(QSerialPort::Data8);
-    serial->setFlowControl(QSerialPort::NoFlowControl);
-    serial->setPortName(serial_name);
-    if (!serial->open(QIODevice::ReadWrite)) {
-        QMessageBox::warning(this,"Warring","Open serial port fail!\n Please see the the information window to solve problem.");
-        qDebug() << tr("SYSTEM: The serial port failed to open,Please check as follows: ");
-        qDebug() << tr("        1> if the serial port is occupied by other software? ");
-        qDebug() << tr("        2> if the serial port connection is normal?");
-        qDebug() << tr("        3> if the program is run at root user? You can use the cmd sudo ./(programname) and type your password to be done.");
-        ui->textBrowser->append("SYSTEM: The serial port failed to open,Please check as follows: ");
-        ui->textBrowser->append("        1> if the serial port is occupied by other software? ");
-        ui->textBrowser->append("        2> if the serial port connection is normal?");
-        ui->textBrowser->append("        3> if the program is run at root user? You can use the cmd sudo ./(programname) and type your password to be done.");
-        ui->pushButton_con_serial->setEnabled( true );
-        ui->statusBar->showMessage("Open serial port fail!", 3000);
-    } else {
-        qDebug() << tr("SYSTEM: The system has been connected with ")+serial_name+" " ;
-        QMessageBox::information(this,"Information", "UART: "+ serial_name+" has been connected! \n"+"Wait device signals.");
-        ui->pushButton_con_serial->setEnabled( false );
-        ui->statusBar->showMessage("Open serial port succuss!", 3000);
-    }
-}
-
-void MainWindow::on_pushButton_discon_serial_clicked()
-{
-    serial->close();
-    ui->pushButton_con_serial->setEnabled( true );
-
-}
 
 void MainWindow::on_pushButton_con_net_clicked()
 {
@@ -282,14 +236,15 @@ void MainWindow::on_pushButton_discon_net_clicked()
 void MainWindow::on_pushButton_up_clicked()
 {
 
-    ros->speed.linear.x = 0.1;
+    ros->speed.linear.x = 0.06;
     ros->speed.angular.z = 0;
     ui->textBrowser->append("SYSTEM: send cmd [UP]");
+    ros->pub_cmd_vel.publish(ros->speed); //
     //    emit TURTLEBOT_up();
-    ros->move_mode = TURLTEBOT_UP;
-    ros->terminate();
-    while(!ros->wait());
-    ros->start();
+//    ros->move_mode = TURLTEBOT_UP;
+//    ros->terminate();
+//    while(!ros->wait());
+//    ros->start();
     //    loopRate.sleep();
 }
 
@@ -297,41 +252,44 @@ void MainWindow::on_pushButton_down_clicked()
 {
     //    send_cmd_serial(CMD_DOWN);
 
-    ros->speed.linear.x = -0.1;
+    ros->speed.linear.x = -0.06;
     ros->speed.angular.z = 0;
     ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
+    ros->pub_cmd_vel.publish(ros->speed); //
 
     //    emit TURTLEBOT_down();
-    ros->move_mode = TURLTEBOT_DOWN;
+//    ros->move_mode = TURLTEBOT_DOWN;
 
-    ros->terminate();
-    while(!ros->wait());
-    ros->start();
+//    ros->terminate();
+//    while(!ros->wait());
+//    ros->start();
 
 }
 
 void MainWindow::on_pushButton_left_clicked()
 {
-    ros->speed.linear.x = 0.1;
-    ros->speed.angular.z = 0.4;
+    ros->speed.linear.x = 0.04;
+    ros->speed.angular.z = 0.2;
     send_cmd_serial(CMD_LEFT);
     ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
-    ros->move_mode = TURLTEBOT_LEFT;
-    ros->terminate();
-    while(!ros->wait());
-    ros->start();
+    ros->pub_cmd_vel.publish(ros->speed); //
+//    ros->move_mode = TURLTEBOT_LEFT;
+//    ros->terminate();
+//    while(!ros->wait());
+//    ros->start();
 }
 
 void MainWindow::on_pushButton_right_clicked()
 {
-    ros->speed.linear.x = 0.1;
-    ros->speed.angular.z = -0.4;
+    ros->speed.linear.x = 0.04;
+    ros->speed.angular.z = -0.2;
     send_cmd_serial(CMD_RIGHT);
     ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
-    ros->move_mode = TURLTEBOT_RIGHT;
-    ros->terminate();
-    while(!ros->wait());
-    ros->start();
+    ros->pub_cmd_vel.publish(ros->speed); //
+//    ros->move_mode = TURLTEBOT_RIGHT;
+//    ros->terminate();
+//    while(!ros->wait());
+//    ros->start();
 }
 
 void MainWindow::send_cmd_serial(quint8 cmd)
@@ -347,12 +305,25 @@ void MainWindow::send_cmd_serial(quint8 cmd)
 
 void MainWindow::on_pushButton_stop_clicked()
 {
+
     ui->textBrowser->append("SYSTEM: send cmd [STOP]");
     ros->terminate();
     while(!ros->wait());
     ros->speed.linear.x = 0; //
     ros->speed.angular.z = 0; //
     ros->pub_cmd_vel.publish(ros->speed); //
+
+    QFile file("node.txt");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream stream(&file);
+    stream.seek(file.size());
+    QString start_point = ui->lineEdit->text();
+    stream << start_point << "\n";
+    QString stop_point = ui->lineEdit_2->text();
+    stream << stop_point;
+    file.flush();
+    file.close();
+    path->path_plan();
 
 
 
@@ -362,11 +333,15 @@ void MainWindow::on_show_frame(QImage image)
 {
     //    qDebug() << "show image";
     ui->label_cam->setPixmap(QPixmap::fromImage(image));
+//    QPainter painter(this->ui->label_cam);
+//    painter.setPen(QPen(Qt::red,2));
+//    painter.drawRect(QRect(x,y,w,h));
+//    //画线条
+//    painter.drawLine(100,200);
 }
 
 void MainWindow::on_show_tutlebot_status(qint16 status)
 {
-    qDebug() << "***********************";
     switch (status) {
     case TURLTEBOT_UP:
         ui->textBrowser->append("SYSTEM: send cmd [UP]");

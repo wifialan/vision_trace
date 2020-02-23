@@ -55,31 +55,63 @@
         <string>config</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_con_serial">
-          <property name="text">
-           <string>connect serial</string>
+        <item row="3" column="1">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-         </widget>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
-        <item row="1" column="0">
+        <item row="0" column="1" colspan="3">
          <widget class="QPushButton" name="pushButton_con_net">
           <property name="text">
            <string>connect to net</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="pushButton_discon_serial">
-          <property name="text">
-           <string>disconnect serial</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
+        <item row="1" column="1" colspan="3">
          <widget class="QPushButton" name="pushButton_discon_net">
           <property name="text">
            <string>disconnect to net</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QLineEdit" name="lineEdit"/>
+        </item>
+        <item row="3" column="3">
+         <widget class="QLineEdit" name="lineEdit_2"/>
+        </item>
+        <item row="2" column="1">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>STOP:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>STATR:</string>
           </property>
          </widget>
         </item>

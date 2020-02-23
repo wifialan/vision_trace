@@ -3,17 +3,35 @@
 #include <QObject>
 #include <QThread>
 #include <QDebug>
-#include <QImage>
 #include <QTimer>
 #include <QDateTime>
-#include <opencv2/core/core.hpp>
+#include <Python.h>
+#include <QFile>
+#include <QProcess>
+#include <camera.h>
 
-class Pathplan
+class Pathplan : public QThread
 {
-
+    Q_OBJECT
 public:
     Pathplan();
-    void on_path_plan();
+
+
+protected:
+    void run();
+
+public:
+    void path_plan();
+
+private:
+    qint8 flag;
+    QProcess *proc;
+//    QFile *file;
+
+signals:
+    void read_path_plan();
+
+
 
 
 };

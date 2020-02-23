@@ -40,7 +40,7 @@ public:
     quint8 flag;
     quint8 move_mode;
 
-private:
+public:
     void move(float , float );
     void move();
 
@@ -53,7 +53,7 @@ private slots:
     void on_turltebot_right(double, double);
     void on_turltebot_left(double, double);
     void on_turltebot_turn(double, double);
-    void on_turltebot_stop(double, double);
+    void on_turltebot_stop();
 
 
 };

@@ -27,15 +27,34 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     ros.cpp \
-    camera.cpp
+    camera.cpp \
+    pathplan.cpp
 
 HEADERS += \
         mainwindow.h \
     ros.h \
-    camera.h
+    camera.h \
+    pathplan.h
 
 FORMS += \
         mainwindow.ui
+
+
+UI_DIR=./UI
+
+## Add LIBS rules:
+## find the libs full name: e.g: libpython3.5.so
+## The Qt LIBS on the linux platform need cut the character "lib" on the front of the full name and cut the last ".so"
+## then add "-l" on the head.
+
+## Python
+DISTFILES += \
+        path.py \
+        route.py \
+        path_node.json
+
+INCLUDEPATH += -I /usr/include/python3.5
+LIBS += -L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5
 
 ## OpenCv
 INCLUDEPATH += /usr/local/include \
@@ -51,7 +70,7 @@ LIBS += -L/usr/local/lib/ -lopencv_videoio
 
 ## QR
 #include(/home/alan/work/vision_trace/qt/QZXing/source/QZXing.pri)
-include(../qzxing-master/src/QZXing.pri)
+#include(../qzxing-master/src/QZXing.pri)
 INCLUDEPATH += -I /usr/local/zbar/include
 LIBS += -L/usr/local/zbar/lib/ -lzbar
 
@@ -71,4 +90,5 @@ LIBS += -L /opt/ros/kinetic/lib/ -lrosconsole
 LIBS += -L /opt/ros/kinetic/lib/ -lrosconsole_log4cxx
 LIBS += -L /opt/ros/kinetic/lib/ -lrosconsole_backend_interface
 LIBS += -L /opt/ros/kinetic/lib/ -lxmlrpcpp
+
 

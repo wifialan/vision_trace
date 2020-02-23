@@ -8,9 +8,29 @@ import sys
 print(sys.path)
 
 path = route.PathRoute()
+
+target_path_node = open("node.txt", 'r');
+line = target_path_node.readlines()
+path_start = line[0].strip('\n')
+path_stop  = line[1]
+
+target_path_node.close()
+
+print(path_start)
+print(path_stop)
+
+path_plan = open("path_plan.txt", 'w')
+
+
 # path.path_node_restore()
-if 0:
-    data_1 = path.get_path_info(1, 5)
+if 1:
+    pass
+    data = path.get_path_info(int(path_start), int(path_stop))
+    #Convert list to strings
+    dat = ','.join(data)
+    path_plan.write(dat)
+#    path_plan.flush()
+    path_plan.close()
 # tmp = path.plan_path_route(1, 9)
 # path.path_node_restore()
 else:
@@ -39,5 +59,4 @@ else:
 #     dat = json.load(file)
 # print(len(dat))
 # print(dat["1st line"])
-
 
