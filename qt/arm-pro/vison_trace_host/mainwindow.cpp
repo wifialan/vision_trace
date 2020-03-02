@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->label_cam->setScaledContents(true);
+    ui->label_cam_2->setScaledContents(true);
     cam = new Camera();
     ros = new Ros();
     path = new Pathplan();
@@ -29,12 +30,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( (QObject*)this->path, SIGNAL(read_path_plan()), (QObject*)this->cam, SLOT(on_read_path_plan()));
     connect( (QObject*)this->cam, SIGNAL(show_tutlebot_status(qint16)), this, SLOT(on_show_tutlebot_status(qint16)));
     connect( (QObject*)this->cam, SIGNAL(show_frame(QImage)), this, SLOT(on_show_frame(QImage)));
+    connect( (QObject*)this->cam, SIGNAL(show_frame_2(QImage)), this, SLOT(on_show_frame_2(QImage)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_up(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_up(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_down(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_down(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_right(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_right(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_left(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_left(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_turn(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_turn(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_stop() ), (QObject*)this->ros, SLOT(on_turltebot_stop()));
+    connect( (QObject*)this->cam, SIGNAL(show_command(QByteArray)), this, SLOT(on_show_command(QByteArray)));
 
     socket_connect();
     connect(socket,                 \
@@ -333,11 +336,12 @@ void MainWindow::on_show_frame(QImage image)
 {
     //    qDebug() << "show image";
     ui->label_cam->setPixmap(QPixmap::fromImage(image));
-//    QPainter painter(this->ui->label_cam);
-//    painter.setPen(QPen(Qt::red,2));
-//    painter.drawRect(QRect(x,y,w,h));
-//    //画线条
-//    painter.drawLine(100,200);
+}
+
+void MainWindow::on_show_frame_2(QImage image)
+{
+    //    qDebug() << "show image";
+    ui->label_cam_2->setPixmap(QPixmap::fromImage(image));
 }
 
 void MainWindow::on_show_tutlebot_status(qint16 status)
@@ -361,4 +365,8 @@ void MainWindow::on_show_tutlebot_status(qint16 status)
     default:
         break;
     }
+}
+
+void MainWindow::on_show_command(QByteArray path_plan_array){
+    ui->lineEdit_command->setText(QString(path_plan_array));
 }

@@ -126,7 +126,9 @@ private slots:
     void on_pushButton_right_clicked();
 private slots:
    void on_show_frame(QImage);
+   void on_show_frame_2(QImage);
    void on_show_tutlebot_status(qint16);
+   void on_show_command(QByteArray);
 
 
     void on_pushButton_stop_clicked();

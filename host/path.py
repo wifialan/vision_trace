@@ -14,7 +14,7 @@ if 0:
 # tmp = path.plan_path_route(1, 9)
 # path.path_node_restore()
 else:
-    path_node = 12
+    path_node = 9
     arry_len = path_node * (path_node - 1)
     data = [[] for _ in range(arry_len)]
     k = 0

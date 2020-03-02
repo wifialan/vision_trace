@@ -5,8 +5,6 @@ import simplejson as json
 import numpy as np
 import sys
 
-print(sys.path)
-
 path = route.PathRoute()
 
 target_path_node = open("node.txt", 'r');

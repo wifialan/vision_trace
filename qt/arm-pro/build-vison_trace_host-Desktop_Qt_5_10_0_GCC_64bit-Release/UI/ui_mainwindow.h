@@ -61,6 +61,9 @@ public:
     QGridLayout *gridLayout_3;
     QLabel *label;
     QTextBrowser *textBrowser;
+    QLabel *label_cam_2;
+    QLineEdit *lineEdit_command;
+    QLabel *label_4;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -70,7 +73,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(1198, 492);
+        MainWindow->resize(1754, 531);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         label_cam = new QLabel(centralWidget);
@@ -205,10 +208,21 @@ public:
 
         gridLayout_3->addWidget(textBrowser, 1, 0, 1, 1);
 
+        label_cam_2 = new QLabel(centralWidget);
+        label_cam_2->setObjectName(QStringLiteral("label_cam_2"));
+        label_cam_2->setGeometry(QRect(1180, 20, 550, 400));
+        label_cam_2->setMinimumSize(QSize(550, 400));
+        label_cam_2->setMaximumSize(QSize(550, 400));
+        lineEdit_command = new QLineEdit(centralWidget);
+        lineEdit_command->setObjectName(QStringLiteral("lineEdit_command"));
+        lineEdit_command->setGeometry(QRect(90, 430, 511, 25));
+        label_4 = new QLabel(centralWidget);
+        label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setGeometry(QRect(10, 430, 71, 17));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1198, 22));
+        menuBar->setGeometry(QRect(0, 0, 1754, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -256,6 +270,8 @@ public:
         pushButton_right->setShortcut(QApplication::translate("MainWindow", "Right", nullptr));
 #endif // QT_NO_SHORTCUT
         label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Infomation</span></p></body></html>", nullptr));
+        label_cam_2->setText(QString());
+        label_4->setText(QApplication::translate("MainWindow", "Command", nullptr));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 
