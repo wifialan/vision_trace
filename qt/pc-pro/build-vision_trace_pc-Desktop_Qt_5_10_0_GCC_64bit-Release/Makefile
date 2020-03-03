@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../vision_trace_pc -I. -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt5.10.0/5.10.0/gcc_64/bin/qmake
 DEL_FILE      = rm -f
@@ -35,7 +35,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = vision_trace_pc1.0.0
-DISTDIR = /home/carlos/workspace/Qt/T01_VISION_TRACE_PC_QT/pro/build-vision_trace_pc-Desktop_Qt_5_10_0_GCC_64bit-Release/.tmp/vision_trace_pc1.0.0
+DISTDIR = /home/alan/work/vision_trace/qt/pc-pro/build-vision_trace_pc-Desktop_Qt_5_10_0_GCC_64bit-Release/.tmp/vision_trace_pc1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-rpath,/opt/Qt5.10.0/5.10.0/gcc_64/lib
 LIBS          = $(SUBLIBS) -L/opt/Qt5.10.0/5.10.0/gcc_64/lib -lQt5QuickWidgets -lQt5Quick -lQt5Widgets -lQt5Gui -lQt5Qml -lQt5Network -lQt5Core -lGL -lpthread 
@@ -94,8 +94,6 @@ DIST          = /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_charts.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_charts_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_concurrent.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_core.pri \
@@ -132,8 +130,6 @@ DIST          = /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_network.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_network_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_networkauth.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_networkauth_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_nfc.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_opengl.pri \
@@ -161,14 +157,6 @@ DIST          = /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quicktemplates2_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_remoteobjects.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_remoteobjects_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_repparser.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_repparser_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_script.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_script_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scripttools.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scxml.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scxml_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_sensors.pri \
@@ -285,8 +273,6 @@ Makefile: ../vision_trace_pc/vision_trace_pc.pro /opt/Qt5.10.0/5.10.0/gcc_64/mks
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_charts.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_charts_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_concurrent.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_core.pri \
@@ -323,8 +309,6 @@ Makefile: ../vision_trace_pc/vision_trace_pc.pro /opt/Qt5.10.0/5.10.0/gcc_64/mks
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_network.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_network_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_networkauth.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_networkauth_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_nfc.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_opengl.pri \
@@ -352,14 +336,6 @@ Makefile: ../vision_trace_pc/vision_trace_pc.pro /opt/Qt5.10.0/5.10.0/gcc_64/mks
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quicktemplates2_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_remoteobjects.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_remoteobjects_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_repparser.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_repparser_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_script.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_script_private.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scripttools.pri \
-		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scxml.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scxml_private.pri \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_sensors.pri \
@@ -473,8 +449,6 @@ Makefile: ../vision_trace_pc/vision_trace_pc.pro /opt/Qt5.10.0/5.10.0/gcc_64/mks
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_charts.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_charts_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_concurrent.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_core.pri:
@@ -511,8 +485,6 @@ Makefile: ../vision_trace_pc/vision_trace_pc.pro /opt/Qt5.10.0/5.10.0/gcc_64/mks
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_network.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_network_private.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_networkauth.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_networkauth_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_nfc.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_opengl.pri:
@@ -540,14 +512,6 @@ Makefile: ../vision_trace_pc/vision_trace_pc.pro /opt/Qt5.10.0/5.10.0/gcc_64/mks
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quicktemplates2_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_remoteobjects.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_remoteobjects_private.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_repparser.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_repparser_private.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_script.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_script_private.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scripttools.pri:
-/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scxml.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_scxml_private.pri:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/modules/qt_lib_sensors.pri:
@@ -677,7 +641,7 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/data/dummy.cpp
-	g++ -pipe -O2 -Wall -W -dM -E -o moc_predefs.h /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/data/dummy.cpp
+	g++ -pipe -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: moc_mainwindow.cpp
 compiler_moc_header_clean:
@@ -788,10 +752,39 @@ moc_mainwindow.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/QQuickItem \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qquickitem.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquickglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqmlglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqml-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquick-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqml.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlprivate.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlparserstatus.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlpropertyvaluesource.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmllist.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qmetaobject.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlcomponent.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlerror.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qjsvalue.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QList \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qaccessible.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/QUdpSocket \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qudpsocket.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qhostaddress.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QTimer \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qtimer.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qbasictimer.h \
 		../vision_trace_pc/mainwindow.h \
 		moc_predefs.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/carlos/workspace/Qt/T01_VISION_TRACE_PC_QT/pro/vision_trace_pc -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/local/fftw/include -I/usr/local/qwt-6.1.3/include -I. -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vision_trace_pc/mainwindow.h -o moc_mainwindow.cpp
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++ -I/home/alan/work/vision_trace/qt/pc-pro/vision_trace_pc -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -I/usr/local/fftw/include -I/usr/local/qwt-6.1.3/include -I. -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../vision_trace_pc/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -801,8 +794,7 @@ compiler_uic_make_all: ui_mainwindow.h
 compiler_uic_clean:
 	-$(DEL_FILE) ui_mainwindow.h
 ui_mainwindow.h: ../vision_trace_pc/mainwindow.ui \
-		/opt/Qt5.10.0/5.10.0/gcc_64/bin/uic \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets/QQuickWidget
+		/opt/Qt5.10.0/5.10.0/gcc_64/bin/uic
 	/opt/Qt5.10.0/5.10.0/gcc_64/bin/uic ../vision_trace_pc/mainwindow.ui -o ui_mainwindow.h
 
 compiler_yacc_decl_make_all:
@@ -922,10 +914,37 @@ main.o: ../vision_trace_pc/main.cpp ../vision_trace_pc/mainwindow.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qicon.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QApplication \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/QQuickItem \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qquickitem.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquickglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqmlglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqml-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquick-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqml.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlprivate.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlparserstatus.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlpropertyvaluesource.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmllist.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qmetaobject.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlcomponent.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlerror.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qjsvalue.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QList \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qaccessible.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/QUdpSocket \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qudpsocket.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qhostaddress.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QTimer \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qtimer.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qbasictimer.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qapplication.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qdesktopwidget.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qguiapplication.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qinputmethod.h
@@ -1038,6 +1057,35 @@ mainwindow.o: ../vision_trace_pc/mainwindow.cpp ../vision_trace_pc/mainwindow.h 
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtouchdevice.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtabwidget.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qicon.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/QQuickItem \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qquickitem.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquickglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqmlglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqml-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquick-config.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqml.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlprivate.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlparserstatus.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlpropertyvaluesource.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmllist.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qmetaobject.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlcomponent.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlerror.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qjsvalue.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QList \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qaccessible.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/QUdpSocket \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qudpsocket.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qhostaddress.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QTimer \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qtimer.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qbasictimer.h \
 		ui_mainwindow.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariant \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QAction \
@@ -1045,8 +1093,6 @@ mainwindow.o: ../vision_trace_pc/mainwindow.cpp ../vision_trace_pc/mainwindow.h 
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qactiongroup.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QApplication \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qapplication.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qeventloop.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qdesktopwidget.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qguiapplication.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qinputmethod.h \
@@ -1085,6 +1131,8 @@ mainwindow.o: ../vision_trace_pc/mainwindow.cpp ../vision_trace_pc/mainwindow.h 
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QPushButton \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qpushbutton.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QRadioButton \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qradiobutton.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QSpacerItem \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QStatusBar \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstatusbar.h \
@@ -1099,45 +1147,7 @@ mainwindow.o: ../vision_trace_pc/mainwindow.cpp ../vision_trace_pc/mainwindow.h 
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QToolBar \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtoolbar.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QVBoxLayout \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QWidget \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets/QQuickWidget \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets/qquickwidget.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qquickwindow.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquickglobal.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqmlglobal.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qtqml-config.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetworkglobal.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qtnetwork-config.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qtquick-config.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qsgrendererinterface.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qsgnode.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuick/qsggeometry.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qopengl.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qt_windows.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qopengles2ext.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qopenglext.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QRectF \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/QMatrix4x4 \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qmatrix4x4.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qvector3d.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qvector4d.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qquaternion.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qgenericmatrix.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qwindow.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QObject \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QEvent \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QMargins \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QRect \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qsurface.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qsurfaceformat.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqml.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlprivate.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlparserstatus.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmlpropertyvaluesource.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmllist.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qmetaobject.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQml/qqmldebug.h \
-		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtQuickWidgets/qtquickwidgetsglobal.h
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../vision_trace_pc/mainwindow.cpp
 
 qrc_resouce.o: qrc_resouce.cpp 

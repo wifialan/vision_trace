@@ -55,19 +55,6 @@
         <string>config</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="3" column="1">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="1" colspan="3">
          <widget class="QPushButton" name="pushButton_con_net">
           <property name="text">
@@ -82,26 +69,14 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="3">
-         <widget class="QLineEdit" name="lineEdit"/>
-        </item>
-        <item row="3" column="3">
-         <widget class="QLineEdit" name="lineEdit_2"/>
-        </item>
         <item row="2" column="1">
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>STATR:</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
-        <item row="3" column="2">
+        <item row="3" column="1">
          <widget class="QLabel" name="label_2">
           <property name="text">
            <string>STOP:</string>
@@ -109,9 +84,15 @@
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLabel" name="label_3">
+         <widget class="QComboBox" name="comboBox_start_node"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QComboBox" name="comboBox_stop_node"/>
+        </item>
+        <item row="2" column="3">
+         <widget class="QPushButton" name="pushButton_go">
           <property name="text">
-           <string>STATR:</string>
+           <string>GO</string>
           </property>
          </widget>
         </item>

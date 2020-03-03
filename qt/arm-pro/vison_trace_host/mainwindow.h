@@ -9,6 +9,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QTimer>
 #include <QPainter>
+#include <QNetworkInterface>
 #include "ros.h"
 #include "camera.h"
 #include "pathplan.h"
@@ -35,8 +36,8 @@
 0xff
 */
 
-#define             PYTHON_IP               (tr("127.0.0.1"))
-#define             PYTHON_PORT             ((quint16)8877)
+#define             PC_IP               (tr("192.168.127.134"))
+#define             PC_PORT             ((quint16)8799)
 
 #define             HOST_IP                 (tr("127.0.0.1"))
 #define             HOST_PORT               ((quint16)8399)
@@ -65,7 +66,32 @@ class MainWindow;
 }
 typedef struct {
     bool   flag;
-    quint8 alter_id;
+    quint8 info_type;
+#define             INFO_STATUS             0x01
+#define             TURLTEBOT_FORWARD                 0x00
+#define             TURLTEBOT_BACKWARD                0x01
+    quint8 direction;
+    quint8 start_node;
+    quint8 stop_node;
+    quint8 current_node;
+
+#define             INFO_PING               0x02
+#define             ARM_QT_FLAG             0x66
+#define             PC_QT_FLAG              0x55
+#define             PING_BACK_TRUE          0x01
+#define             PING_BAC_FALSE          0x02
+    quint8 ping_flag;
+    quint8 ping_back;
+
+#define             INFO_COMMAND            0x03
+    quint8 ctrl_command;
+    quint8 move_info;
+#define             INFO_PATH_NODE          0x04
+    QByteArray path_node;
+
+#define             INFO_UPDATE             0x05
+
+
     quint8 cmd;
     quint8 len;
     QByteArray payload;
@@ -98,6 +124,9 @@ private:
     bool        connect_state;
     QByteArray *socket_array;
 
+public:
+    void update_remote_turltebot_status(qint16);
+
 private:
 
     qint16      socket_connect();
@@ -110,7 +139,15 @@ private:
     void        send_cmd_serial  (quint8 cmd);
     void        send_cmd_to_udp( quint8 cmd, QByteArray &value );
     void        send_cmd_to_udp( quint8 cmd );
+    void        send_cmd_to_udp(QByteArray);
     COM_PAC     decode_protocal( QByteArray array );
+    QString     get_localhost_ip();
+
+    void        analyze_info_status(COM_PAC);
+    void        analyze_info_ping(COM_PAC);
+    void        analyze_info_command(COM_PAC);
+    void        analyze_info_update();
+
 public slots:
     void        on_read_network();
     void        on_read_serial();
@@ -127,13 +164,21 @@ private slots:
 private slots:
    void on_show_frame(QImage);
    void on_show_frame_2(QImage);
-   void on_show_tutlebot_status(qint16);
+   void on_show_tutlebot_status(qint8);
    void on_show_command(QByteArray);
+   void on_send_info_to_pc(QByteArray);
+   void on_update_path_node(QByteArray);
 
 
     void on_pushButton_stop_clicked();
 
 
+    void on_pushButton_go_clicked();
+
+
+
+signals:
+    void lanuch_turltebot_go();
 };
 
 #endif // MAINWINDOW_H

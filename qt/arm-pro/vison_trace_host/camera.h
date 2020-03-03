@@ -28,6 +28,10 @@ using namespace cv;
 #define PATH_STRAIGHT_ROAD_LEN       30
 #define SPEED_LINE               0.05
 
+typedef struct{
+
+} status;
+
 class Camera : public QThread
 {
     Q_OBJECT
@@ -52,6 +56,11 @@ public:
     bool crossroad_check_black_center();
     void leave_crossroad();
     void turltebot_direction_judgement();
+
+    void send_path_node_to_pc();
+    void send_status_to_pc();
+    void send_ping_to_pc();
+    void send_ctrl_to_pc(quint8);
 
     VideoCapture capture;
     QTimer *timer;
@@ -94,10 +103,12 @@ public:
     bool flag_turn_tail_start;
     bool flag_on_timer_turn_tail_over;
     bool flag_path_plan;
+    bool turltebot_go;
 
     bool arrived_flag;
     qint16 pix_offset_qr;
     bool turltebot_direction;
+    bool update_path_node_flag;
 //    qint16 check_qr_contains_cross_road_node_counter;
     qint16 check_qr_contains_cross_road_node_number;
 
@@ -143,11 +154,12 @@ private slots:
     void on_timer_turn_tail();
     void on_timer_through_crossroad();
     void on_timer_crossroad_qr();
+    void on_send_path_info_to_camera(QByteArray);
 
 signals:
     void show_frame(QImage);
     void show_frame_2(QImage);
-    void show_tutlebot_status(qint16);
+    void show_tutlebot_status(qint8);
     void turltebot_up(double, double);
     void turltebot_down(double, double);
     void turltebot_right(double, double);
@@ -155,6 +167,8 @@ signals:
     void turltebot_turn(double, double);
     void turltebot_stop();
     void show_command(QByteArray);
+    void send_info_to_pc(QByteArray);
+    void update_path_node(QByteArray);
     //    void path_plan();
 
 

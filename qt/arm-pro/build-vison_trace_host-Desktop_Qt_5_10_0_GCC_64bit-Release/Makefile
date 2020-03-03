@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SERIALPORT_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../vison_trace_host -I. -I-I -isystem /usr/include/python3.5 -isystem /usr/local/include -isystem /usr/local/include/opencv -isystem /usr/local/include/opencv2 -I-I -I/usr/local/zbar/include -I-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -IUI -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../vison_trace_host -I. -I-I -isystem /usr/include/python3.5 -isystem /usr/local/include -isystem /usr/local/include/opencv -isystem /usr/local/include/opencv2 -I-I -I/usr/local/zbar/include -I-I -I/opt/ros/kinetic/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtSerialPort -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork -I/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++
 QMAKE         = /opt/Qt5.10.0/5.10.0/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -70,6 +70,7 @@ OBJECTS       = main.o \
 DIST          = ../vison_trace_host/path.py \
 		../vison_trace_host/route.py \
 		../vison_trace_host/path_node.json \
+		../vison_trace_host/path_plan_pre.py \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/common/linux.conf \
@@ -252,7 +253,7 @@ TARGET        = vison_trace_host
 first: all
 ####### Build rules
 
-$(TARGET): UI/ui_mainwindow.h $(OBJECTS)  
+$(TARGET): ui_mainwindow.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../vison_trace_host/vison_trace_host.pro /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
@@ -780,6 +781,8 @@ moc_mainwindow.cpp: /opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QMainWindow \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpainter.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/QNetworkInterface \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		../vison_trace_host/ros.h \
 		/opt/ros/kinetic/include/ros/ros.h \
 		/opt/ros/kinetic/include/ros/time.h \
@@ -1370,12 +1373,12 @@ compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: UI/ui_mainwindow.h
+compiler_uic_make_all: ui_mainwindow.h
 compiler_uic_clean:
-	-$(DEL_FILE) UI/ui_mainwindow.h
-UI/ui_mainwindow.h: ../vison_trace_host/mainwindow.ui \
+	-$(DEL_FILE) ui_mainwindow.h
+ui_mainwindow.h: ../vison_trace_host/mainwindow.ui \
 		/opt/Qt5.10.0/5.10.0/gcc_64/bin/uic
-	/opt/Qt5.10.0/5.10.0/gcc_64/bin/uic ../vison_trace_host/mainwindow.ui -o UI/ui_mainwindow.h
+	/opt/Qt5.10.0/5.10.0/gcc_64/bin/uic ../vison_trace_host/mainwindow.ui -o ui_mainwindow.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
@@ -1516,6 +1519,8 @@ main.o: ../vison_trace_host/main.cpp ../vison_trace_host/mainwindow.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpainter.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/QNetworkInterface \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		../vison_trace_host/ros.h \
 		/opt/ros/kinetic/include/ros/ros.h \
 		/opt/ros/kinetic/include/ros/time.h \
@@ -1742,6 +1747,8 @@ mainwindow.o: ../vison_trace_host/mainwindow.cpp ../vison_trace_host/mainwindow.
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpainter.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextoption.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qpen.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/QNetworkInterface \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtNetwork/qnetworkinterface.h \
 		../vison_trace_host/ros.h \
 		/opt/ros/kinetic/include/ros/ros.h \
 		/opt/ros/kinetic/include/ros/time.h \
@@ -1830,7 +1837,7 @@ mainwindow.o: ../vison_trace_host/mainwindow.cpp ../vison_trace_host/mainwindow.
 		../vison_trace_host/pathplan.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QProcess \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qprocess.h \
-		UI/ui_mainwindow.h
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../vison_trace_host/mainwindow.cpp
 
 ros.o: ../vison_trace_host/ros.cpp ../vison_trace_host/ros.h \
@@ -2317,7 +2324,16 @@ pathplan.o: ../vison_trace_host/pathplan.cpp ../vison_trace_host/pathplan.h \
 		/opt/ros/kinetic/include/ros/message_operations.h \
 		/opt/ros/kinetic/include/geometry_msgs/Vector3.h \
 		/opt/ros/kinetic/include/geometry_msgs/TwistStamped.h \
-		/opt/ros/kinetic/include/std_msgs/Header.h
+		/opt/ros/kinetic/include/std_msgs/Header.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QJsonArray \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qjsonarray.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qjsonvalue.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QJsonDocument \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qjsondocument.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QJsonObject \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qjsonobject.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QJsonParseError \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QJsonValue
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pathplan.o ../vison_trace_host/pathplan.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

@@ -18,7 +18,7 @@ Camera::Camera()
     QRData_old = "FFFF";
     init_status();
     this->counter = 0;
-    //    path = new Pathplan();
+    this->open();
 }
 
 void Camera::run()
@@ -75,7 +75,6 @@ void Camera::open()
             connect(timer_turn, SIGNAL(timeout()), this, SLOT(on_timer_turn_tail()));
             connect(timer_crossroad, SIGNAL(timeout()), this, SLOT(on_timer_through_crossroad()));
             connect(timer_crossroad_qr, SIGNAL(timeout()), this, SLOT(on_timer_crossroad_qr()));
-
             timer->start();
         }
     }
@@ -137,6 +136,7 @@ void Camera::on_next_frame()
         int n = scanner.scan(imageZbar);
         //        QString QRData;
         QRData_current_update.clear();
+
         if (n > 0){
             // extract results
             for (zbar::Image::SymbolIterator symbol = imageZbar.symbol_begin();
@@ -144,7 +144,10 @@ void Camera::on_next_frame()
                  ++symbol) {
                 // do something useful with results
                 QRData_current_update = QString::fromStdString(symbol->get_data());
-                //                qDebug() << "QR Code: " << QRData;
+                if (turltebot_go == false) {
+                    qDebug() << "QR Code: " << QRData_current_update;
+                    return;
+                }
             }
             if(QRData_stable != QRData_current_update){
                 QRData_stable.clear();
@@ -152,6 +155,7 @@ void Camera::on_next_frame()
                 QRData_store.append(QRData_current_update + ',');
                 QRData_store_index ++;
                 turltebot_direction_judgement();
+                send_status_to_pc();
                 qDebug() << "新扫描的QR内容为：" << QRData_current_update;
                 // update path command
                 if(QRData_current_update != start_stop_node_array.split('\n').at(0) && \
@@ -164,8 +168,11 @@ void Camera::on_next_frame()
                         qDebug() << "完成更新当前路线指令...OK";
                     }
                 }
-                //                qDebug() << "path_plan_array.split(',').at(index)" << path_plan_array.split(',').at(index);
             }
+        }
+
+        if (turltebot_go == false) {
+            return;
         }
 
         if(QRData_current_update == (start_stop_node_array.split('\n').at(1)) && arrived_flag == false){
@@ -190,8 +197,13 @@ void Camera::on_next_frame()
                 qDebug() << "*****************************************";
                 qDebug() << "  Arrived terminate, stop the turltebot";
                 qDebug() << "*****************************************";
+                start_stop_node_array.append(QRData_stable);
+                start_stop_node_array.append('\n');
+                start_stop_node_array.append(" ");
+                send_status_to_pc();
                 timer_crossroad->stop();
                 timer_crossroad_start_flag = true;
+                turltebot_go = false;
                 //qDebug() << "on_timer_through_crossroad_counter is over:" << on_timer_through_crossroad_counter*200 << "ms" ;
                 on_timer_through_crossroad_counter = 0;
                 check_qr_contains_cross_road_node_counter = 0;
@@ -1688,6 +1700,106 @@ void Camera::on_timer_crossroad_qr(){
 
 }
 
+void Camera::on_send_path_info_to_camera(QByteArray path_info)
+{
+    qDebug() << path_info;
+    //"\x01,\x02,\x03,\x04,c,\x05,\x06,#\x00,\x00,\x07,\n,\t,\x00,\x00,#"
+    //计算路线条数
+    crossroad_number = path_info.split('#').length() - 1;
+    qDebug() << "crossroad_number" << crossroad_number;
+    //    qDebug() << path_info.split('#').at(1).split(',').length() - 1;
+    //寻找岔道口坐标和岔道口内邻居坐标
+    quint8 dat;
+    if (crossroad_number > 1) {
+        int crossroad_entry_index=0;
+        int crossroad_exit_index=0;
+
+        QByteArray arr_1;
+        QByteArray arr_2;
+        arr_1 = path_info.split('#').at(0);
+        arr_2 = path_info.split('#').at(1);
+        for (int i = 0; i < arr_2.length() - 1; i = i + 2) {
+            dat = arr_2.at(i);
+            if (dat != 0) {
+                crossroad_entry_index = i-2;
+                dat = arr_1.at(crossroad_entry_index);
+                //                qDebug() << QString::number(dat,10);
+                crossraod_node_array.append(QString::number(dat,10));
+                break;
+            }
+        }
+        crossraod_node_array.append(',');
+        //\x00,\x00,\x07,\n,\t,\x00,\x00,
+        for (int i = arr_2.length() - 2; i > 0; i = i - 2) {
+            dat = arr_2.at(i);
+            if (dat != 0) {
+                crossroad_exit_index = i + 2;
+                dat = arr_1.at(crossroad_exit_index);
+                //                qDebug() << QString::number(dat,10);
+                crossraod_node_array.append(QString::number(dat,10));
+                break;
+            }
+        }
+        qDebug() << "crossraod_node_array" << crossraod_node_array;
+        //寻找岔路口内相邻坐标
+        for (int i = 0; i < crossroad_number; ++i) {
+            dat = path_info.split('#').at(i).at(crossroad_entry_index + 2);
+            crossraod_node_near_array.append(QString::number(dat,10));
+            crossraod_node_near_array.append(',');
+            for (int j = crossroad_exit_index - 2; j >= 0; j = j - 2) {
+                dat = path_info.split('#').at(i).at(j);
+                if (dat == 99) {
+                    continue;
+                }
+                crossraod_node_near_array.append(QString::number(dat,10));
+                break;
+            }
+            crossraod_node_near_array.append('\n');
+        }
+        qDebug() << "crossraod_node_near_array" << crossraod_node_near_array;
+    }
+
+    //将所有节点都保存下来
+    path_node_distribute_info.clear();
+    for (int i = 0; i < crossroad_number; ++i) {
+        //#\x00,\x00,\x07,\n,\t,\x00,\x00,#
+        for (int j = 0; j < path_info.split('#').at(i).length(); j = j + 2) {
+            dat = path_info.split('#').at(i).at(j);
+            if (dat != 0 && dat != 99) {
+                path_node_distribute_info.append(QString::number(dat,10));
+                path_node_distribute_info.append(',');
+            }
+        }
+        path_node_distribute_info.append('\n');
+    }
+    for (int i = 0; i < crossroad_number; ++i) {
+        qDebug() << "第" << (i+1) << "行的节点为：" << path_node_distribute_info.split('\n').at(i);
+    }
+
+    // 从文件记录中获取小车朝向
+    QFile file("direction.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (file.isOpen()) {
+        qDebug() << "open direction.txt file";
+        QString str = file.readLine();
+        if (str == "0") {
+            turltebot_direction = FORWARD;
+            qDebug() << "小车朝向为正向";
+        } else {
+            turltebot_direction = BACKWARD;
+            qDebug() << "小车朝向为反向";
+        }
+        file.close();
+    }
+
+    arrived_flag = true;
+    turltebot_go = false;
+    update_path_node_flag = true;
+
+    send_path_node_to_pc();
+
+}
+
 void Camera::on_read_path_plan()
 {
     QRData_store_index = -1;
@@ -1702,7 +1814,8 @@ void Camera::on_read_path_plan()
     check_qr_contains_cross_road_node_counter = 0;
     path_plan_pre_flag = true;
     on_timer_through_crossroad_counter = 0;
-    crossroad_number = 0;
+    arrived_flag = false;
+    index = 0;
     QRData_stable.clear();
     QRData_store.clear();
     path_plan_array.clear();
@@ -1712,57 +1825,122 @@ void Camera::on_read_path_plan()
     file.close();
     qDebug() << "path plan: " << path_plan_array;
 
-
-    crossraod_node_array_info.clear();
-    crossraod_node_array.clear();
-    crossraod_node_near_array.clear();
-    QFile crossraod_node_file("crossraod_node.txt");
-    crossraod_node_file.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    while (!crossraod_node_file.atEnd()){
-        crossraod_node_array_info.append(crossraod_node_file.readLine());
-        crossroad_number ++;
-    }
-    crossroad_number --;
-    crossraod_node_file.close();
-    qDebug() << "crossraod node info: " << crossraod_node_array_info;
-    crossraod_node_array.append(crossraod_node_array_info.split('\n').at(0));
-    qDebug() << "crossraod_node_array: " << crossraod_node_array;
-    if(crossroad_number > 0) {
-        qDebug() << "crossroad number is:" << crossroad_number;
-        for (int i = 0; i < crossroad_number; ++i) {
-            crossraod_node_near_array.append(crossraod_node_array_info.split('\n').at(i+1));
-            crossraod_node_near_array.append('\n');
-        }
-        qDebug() << "crossraod_node_near_array: " << crossraod_node_near_array;
-    }
-    start_stop_node_array.clear();
-    QByteArray tmp;
-    QFile file_stop_node("node.txt");
-    file_stop_node.open(QIODevice::ReadOnly | QIODevice::Text);
-    tmp = file_stop_node.readLine();
-    //    tmp = tmp.mid(0,tmp.length()-1);
-    start_stop_node_array.append(tmp);
-    //    stop_node.append(
-    start_stop_node_array.append(file_stop_node.readLine());
-    file_stop_node.close();
-
     qDebug() << "start stop node: " << start_stop_node_array;
+    /*
+path plan:  "UP,LEFT,UP"
+crossraod node info:  "2,5\n3,4\n7,9"
+crossraod_node_array:  "2,5"
+crossroad number is: 2
+crossraod_node_near_array:  "3,4\n7,9\n"
+start stop node:  "1\n3"
+第 1 行的节点为： "1,2,3,4,5,6,"
+第 2 行的节点为： "7,10,9,"
+ */
+    send_status_to_pc();
+}
 
-    path_node_distribute_info.clear();
-    QFile file_path_node_distribute_info("path_node_distribute_info.txt");
-    file_path_node_distribute_info.open(QIODevice::ReadOnly | QIODevice::Text);
-    for (int i = 0; i < crossroad_number; ++i) {
-        path_node_distribute_info.append(file_path_node_distribute_info.readLine());
+void Camera::send_status_to_pc()
+{
+    QByteArray info_1;
+
+    // 信息类型
+    info_1.append(0x01);
+    // 小车朝向
+    QFile file("direction.txt");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream stream(&file);
+    stream.seek(file.size());
+    if (turltebot_direction == false) {
+        // forward
+        info_1.append(0x01);
+        stream << "0";
+    } else {
+        info_1.append(0x02);
+        stream << "1";
     }
-    for (int i = 0; i < crossroad_number; ++i) {
-        qDebug() << "第" << (i+1) << "行的节点为：" << path_node_distribute_info.split('\n').at(i);
+    file.flush();
+    file.close();
+    // 起始节点
+    if (!start_stop_node_array.isEmpty()) {
+        QString str;
+        str = start_stop_node_array.split('\n').at(0);
+        info_1.append(str.toInt());
+        // 终点节点
+        str = start_stop_node_array.split('\n').at(1);
+        info_1.append(str.toInt());
+    } else {
+        info_1.append(0xFF);
+        info_1.append(0xFF);
+    }
+    // 当前节点
+    if (QRData_stable.isEmpty()) {
+        info_1.append(0xFF);
+    } else {
+        info_1.append(QRData_stable.toInt());
     }
 
-    arrived_flag = false;
-    index = 0;
+    qDebug() << info_1;
 
-    this->open();
+    emit send_info_to_pc(info_1);
+}
+
+void Camera::send_ctrl_to_pc(quint8 command)
+{
+    QByteArray info_3;
+
+    // 信息类型
+    info_3.append(0x03);
+    info_3.append(command);
+
+    emit send_info_to_pc(info_3);
+}
+
+void Camera::send_path_node_to_pc()
+{
+    qDebug() << "path_node_distribute_info" << path_node_distribute_info;
+    qint16 path_node_1st_line_number = path_node_distribute_info.split('\n').at(0).split(',').length() - 1;
+    qint16 path_node_2nd_line_number = path_node_distribute_info.split('\n').at(1).split(',').length() - 1;
+    qint16 path_node_number = path_node_1st_line_number + path_node_2nd_line_number;
+    qDebug() << "path_node_number" << path_node_number;
+    qDebug() << "crossroad_number" << crossroad_number;
+    qDebug() << "path_node_distribute_info.split('\n').at(i).split(',').length()" << path_node_distribute_info.split('\n').at(0).split(',').length() - 1;
+    qint16 path_node[path_node_number + 2];
+    for (int i = 0; i < crossroad_number; ++i) {
+            for (int j = 0; j < path_node_distribute_info.split('\n').at(i).split(',').length() - 1; ++j) {
+                path_node[j + i * path_node_1st_line_number] = path_node_distribute_info.split('\n').at(i).split(',').at(j).toInt();
+                qDebug() << "***" << path_node_distribute_info.split('\n').at(i).split(',').at(j).toInt();
+        }
+    }
+    for (int i = 0; i < path_node_number; ++i) {
+        qDebug() << "path_node" << path_node[i];
+    }
+    qint16 tmp;
+    for (int i = 0; i < path_node_number - 1; ++i) {
+        if (path_node[i+1] < path_node[i]) {
+            tmp = path_node[i];
+            path_node[i] = path_node[i+1];
+            path_node[i+1] = tmp;
+        }
+    }
+
+
+    QByteArray path_node_array;
+    for (int i = 0; i < path_node_number; ++i) {
+        path_node_array.append(QString(path_node[i]));
+    }
+    qDebug() << "path_node_array" << path_node_array;
+
+    QByteArray info_4;
+    info_4.append(0x04);
+    info_4.append("#");
+    info_4.append(path_node_array);
+    info_4.append("#");
+    qDebug() << info_4;
+    emit send_info_to_pc(info_4);
+    if (update_path_node_flag == true) {
+        emit update_path_node(info_4);
+        update_path_node_flag = false;
+    }
 
 }
 

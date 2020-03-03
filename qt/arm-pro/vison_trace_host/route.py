@@ -51,26 +51,27 @@ class PathRoute:
         print(self.cross_entry_coord)
         print('岔道口出口坐标：', end='')
         print(self.cross_exit_coord)
-        # write path node distribute info to file
-        path_node_distribute_info = open("path_node_distribute_info.txt", 'w')
-        for i in range(self.len_row):
-            for j in range(self.len_col):
-                if self.path_node[i][j] != 0 and self.path_node[i][j] != 99:
-                    path_node_distribute_info.write(str(self.path_node[i][j]) + ',')
-            path_node_distribute_info.write('\n')
-        path_node_distribute_info.close()
-        # write crossraod node to file
-        if self.len_row > 1:
-            crossraod_node = open("crossraod_node.txt", 'w')
-            crossraod_node.write(str(self.path_node[0][self.cross_entry_coord]) + ',')
-            crossraod_node.write(str(self.path_node[0][self.cross_exit_coord]))
-            for i in range(0, self.len_row):
-                j = 1
-                while self.path_node[i][self.cross_exit_coord - j] == 99:
-                    j = j + 1
-                crossraod_node.write('\n' + str(self.path_node[i][self.cross_entry_coord + 1]) + ',')
-                crossraod_node.write(str(self.path_node[i][self.cross_exit_coord - j]))
-            crossraod_node.close()
+        if 0:
+            # write path node distribute info to file
+            path_node_distribute_info = open("path_node_distribute_info.txt", 'w')
+            for i in range(self.len_row):
+                for j in range(self.len_col):
+                    if self.path_node[i][j] != 0 and self.path_node[i][j] != 99:
+                        path_node_distribute_info.write(str(self.path_node[i][j]) + ',')
+                path_node_distribute_info.write('\n')
+            path_node_distribute_info.close()
+            # write crossraod node to file
+            if self.len_row > 1:
+                crossraod_node = open("crossraod_node.txt", 'w')
+                crossraod_node.write(str(self.path_node[0][self.cross_entry_coord]) + ',')
+                crossraod_node.write(str(self.path_node[0][self.cross_exit_coord]))
+                for i in range(0, self.len_row):
+                    j = 1
+                    while self.path_node[i][self.cross_exit_coord - j] == 99:
+                        j = j + 1
+                    crossraod_node.write('\n' + str(self.path_node[i][self.cross_entry_coord + 1]) + ',')
+                    crossraod_node.write(str(self.path_node[i][self.cross_exit_coord - j]))
+                crossraod_node.close()
 
     def get_path_info(self, current_node, target_node):
         self.target_node_coord = [[0, 0], [0, 0]]

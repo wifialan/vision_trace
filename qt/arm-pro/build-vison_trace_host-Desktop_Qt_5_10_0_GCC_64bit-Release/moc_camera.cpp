@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Camera_t {
-    QByteArrayData data[18];
-    char stringdata0[270];
+    QByteArrayData data[21];
+    char stringdata0[331];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -43,22 +43,26 @@ QT_MOC_LITERAL(8, 97, 14), // "turltebot_left"
 QT_MOC_LITERAL(9, 112, 14), // "turltebot_turn"
 QT_MOC_LITERAL(10, 127, 14), // "turltebot_stop"
 QT_MOC_LITERAL(11, 142, 12), // "show_command"
-QT_MOC_LITERAL(12, 155, 13), // "on_next_frame"
-QT_MOC_LITERAL(13, 169, 17), // "on_read_path_plan"
-QT_MOC_LITERAL(14, 187, 14), // "on_update_path"
-QT_MOC_LITERAL(15, 202, 18), // "on_timer_turn_tail"
-QT_MOC_LITERAL(16, 221, 26), // "on_timer_through_crossroad"
-QT_MOC_LITERAL(17, 248, 21) // "on_timer_crossroad_qr"
+QT_MOC_LITERAL(12, 155, 15), // "send_info_to_pc"
+QT_MOC_LITERAL(13, 171, 16), // "update_path_node"
+QT_MOC_LITERAL(14, 188, 13), // "on_next_frame"
+QT_MOC_LITERAL(15, 202, 17), // "on_read_path_plan"
+QT_MOC_LITERAL(16, 220, 14), // "on_update_path"
+QT_MOC_LITERAL(17, 235, 18), // "on_timer_turn_tail"
+QT_MOC_LITERAL(18, 254, 26), // "on_timer_through_crossroad"
+QT_MOC_LITERAL(19, 281, 21), // "on_timer_crossroad_qr"
+QT_MOC_LITERAL(20, 303, 27) // "on_send_path_info_to_camera"
 
     },
     "Camera\0show_frame\0\0show_frame_2\0"
     "show_tutlebot_status\0turltebot_up\0"
     "turltebot_down\0turltebot_right\0"
     "turltebot_left\0turltebot_turn\0"
-    "turltebot_stop\0show_command\0on_next_frame\0"
+    "turltebot_stop\0show_command\0send_info_to_pc\0"
+    "update_path_node\0on_next_frame\0"
     "on_read_path_plan\0on_update_path\0"
     "on_timer_turn_tail\0on_timer_through_crossroad\0"
-    "on_timer_crossroad_qr"
+    "on_timer_crossroad_qr\0on_send_path_info_to_camera"
 };
 #undef QT_MOC_LITERAL
 
@@ -68,43 +72,48 @@ static const uint qt_meta_data_Camera[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      16,   14, // methods
+      19,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      10,       // signalCount
+      12,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   94,    2, 0x06 /* Public */,
-       3,    1,   97,    2, 0x06 /* Public */,
-       4,    1,  100,    2, 0x06 /* Public */,
-       5,    2,  103,    2, 0x06 /* Public */,
-       6,    2,  108,    2, 0x06 /* Public */,
-       7,    2,  113,    2, 0x06 /* Public */,
-       8,    2,  118,    2, 0x06 /* Public */,
-       9,    2,  123,    2, 0x06 /* Public */,
-      10,    0,  128,    2, 0x06 /* Public */,
-      11,    1,  129,    2, 0x06 /* Public */,
+       1,    1,  109,    2, 0x06 /* Public */,
+       3,    1,  112,    2, 0x06 /* Public */,
+       4,    1,  115,    2, 0x06 /* Public */,
+       5,    2,  118,    2, 0x06 /* Public */,
+       6,    2,  123,    2, 0x06 /* Public */,
+       7,    2,  128,    2, 0x06 /* Public */,
+       8,    2,  133,    2, 0x06 /* Public */,
+       9,    2,  138,    2, 0x06 /* Public */,
+      10,    0,  143,    2, 0x06 /* Public */,
+      11,    1,  144,    2, 0x06 /* Public */,
+      12,    1,  147,    2, 0x06 /* Public */,
+      13,    1,  150,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      12,    0,  132,    2, 0x08 /* Private */,
-      13,    0,  133,    2, 0x08 /* Private */,
-      14,    0,  134,    2, 0x08 /* Private */,
-      15,    0,  135,    2, 0x08 /* Private */,
-      16,    0,  136,    2, 0x08 /* Private */,
-      17,    0,  137,    2, 0x08 /* Private */,
+      14,    0,  153,    2, 0x08 /* Private */,
+      15,    0,  154,    2, 0x08 /* Private */,
+      16,    0,  155,    2, 0x08 /* Private */,
+      17,    0,  156,    2, 0x08 /* Private */,
+      18,    0,  157,    2, 0x08 /* Private */,
+      19,    0,  158,    2, 0x08 /* Private */,
+      20,    1,  159,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QImage,    2,
     QMetaType::Void, QMetaType::QImage,    2,
-    QMetaType::Void, QMetaType::Short,    2,
+    QMetaType::Void, QMetaType::SChar,    2,
     QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
     QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
     QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
     QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
     QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QByteArray,    2,
+    QMetaType::Void, QMetaType::QByteArray,    2,
     QMetaType::Void, QMetaType::QByteArray,    2,
 
  // slots: parameters
@@ -114,6 +123,7 @@ static const uint qt_meta_data_Camera[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QByteArray,    2,
 
        0        // eod
 };
@@ -126,7 +136,7 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         switch (_id) {
         case 0: _t->show_frame((*reinterpret_cast< QImage(*)>(_a[1]))); break;
         case 1: _t->show_frame_2((*reinterpret_cast< QImage(*)>(_a[1]))); break;
-        case 2: _t->show_tutlebot_status((*reinterpret_cast< qint16(*)>(_a[1]))); break;
+        case 2: _t->show_tutlebot_status((*reinterpret_cast< qint8(*)>(_a[1]))); break;
         case 3: _t->turltebot_up((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
         case 4: _t->turltebot_down((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
         case 5: _t->turltebot_right((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
@@ -134,12 +144,15 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 7: _t->turltebot_turn((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
         case 8: _t->turltebot_stop(); break;
         case 9: _t->show_command((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
-        case 10: _t->on_next_frame(); break;
-        case 11: _t->on_read_path_plan(); break;
-        case 12: _t->on_update_path(); break;
-        case 13: _t->on_timer_turn_tail(); break;
-        case 14: _t->on_timer_through_crossroad(); break;
-        case 15: _t->on_timer_crossroad_qr(); break;
+        case 10: _t->send_info_to_pc((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 11: _t->update_path_node((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 12: _t->on_next_frame(); break;
+        case 13: _t->on_read_path_plan(); break;
+        case 14: _t->on_update_path(); break;
+        case 15: _t->on_timer_turn_tail(); break;
+        case 16: _t->on_timer_through_crossroad(); break;
+        case 17: _t->on_timer_crossroad_qr(); break;
+        case 18: _t->on_send_path_info_to_camera((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -159,7 +172,7 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
             }
         }
         {
-            typedef void (Camera::*_t)(qint16 );
+            typedef void (Camera::*_t)(qint8 );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Camera::show_tutlebot_status)) {
                 *result = 2;
                 return;
@@ -214,6 +227,20 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
                 return;
             }
         }
+        {
+            typedef void (Camera::*_t)(QByteArray );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Camera::send_info_to_pc)) {
+                *result = 10;
+                return;
+            }
+        }
+        {
+            typedef void (Camera::*_t)(QByteArray );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Camera::update_path_node)) {
+                *result = 11;
+                return;
+            }
+        }
     }
 }
 
@@ -242,13 +269,13 @@ int Camera::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 16)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 19;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 16)
+        if (_id < 19)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 16;
+        _id -= 19;
     }
     return _id;
 }
@@ -268,7 +295,7 @@ void Camera::show_frame_2(QImage _t1)
 }
 
 // SIGNAL 2
-void Camera::show_tutlebot_status(qint16 _t1)
+void Camera::show_tutlebot_status(qint8 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
@@ -320,6 +347,20 @@ void Camera::show_command(QByteArray _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 9, _a);
+}
+
+// SIGNAL 10
+void Camera::send_info_to_pc(QByteArray _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 10, _a);
+}
+
+// SIGNAL 11
+void Camera::update_path_node(QByteArray _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 11, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

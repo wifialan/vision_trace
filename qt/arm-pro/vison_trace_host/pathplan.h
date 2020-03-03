@@ -22,14 +22,19 @@ protected:
 
 public:
     void path_plan();
+    void read_json_file();
+
+public:
+    QProcess *proc;
+
 
 private:
     qint8 flag;
-    QProcess *proc;
 //    QFile *file;
 
 signals:
     void read_path_plan();
+    void send_path_info_to_camera(QByteArray);
 
 
 

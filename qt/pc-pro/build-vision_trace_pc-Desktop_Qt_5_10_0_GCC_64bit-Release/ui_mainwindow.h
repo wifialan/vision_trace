@@ -13,11 +13,12 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -35,17 +36,10 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout;
-    QVBoxLayout *verticalLayout_3;
-    QLabel *label;
-    QTextBrowser *textBrowser;
+    QWidget *layoutWidget;
     QVBoxLayout *verticalLayout_4;
+    QTextBrowser *textBrowser;
     QGroupBox *groupBox;
-    QPushButton *pushButton_con_net;
-    QPushButton *pushButton_discon_net;
-    QRadioButton *radioButtonCamera;
-    QRadioButton *radioButtonCar;
-    QPushButton *pushButton_send;
     QGroupBox *groupBox_2;
     QVBoxLayout *verticalLayout_2;
     QPushButton *pushButtonStop;
@@ -56,6 +50,21 @@ public:
     QSpacerItem *horizontalSpacer;
     QPushButton *pushButton_up;
     QPushButton *pushButton_right;
+    QVBoxLayout *verticalLayout_3;
+    QLabel *label_3;
+    QLabel *label_4;
+    QComboBox *comboBox_start_node;
+    QComboBox *comboBox_stop_node;
+    QLabel *label_5;
+    QLineEdit *lineEdit_current_node;
+    QLabel *label;
+    QLabel *label_2;
+    QLabel *label_direction;
+    QPushButton *pushButton_discon_net;
+    QPushButton *pushButton_con_net;
+    QRadioButton *radioButtonCar;
+    QPushButton *pushButton_go;
+    QPushButton *pushButton_update;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -64,62 +73,30 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(726, 467);
+        MainWindow->resize(726, 486);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        horizontalLayout = new QHBoxLayout(centralWidget);
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        verticalLayout_3 = new QVBoxLayout();
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        label = new QLabel(centralWidget);
-        label->setObjectName(QStringLiteral("label"));
-
-        verticalLayout_3->addWidget(label);
-
-        textBrowser = new QTextBrowser(centralWidget);
+        layoutWidget = new QWidget(centralWidget);
+        layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
+        layoutWidget->setGeometry(QRect(290, 10, 422, 215));
+        verticalLayout_4 = new QVBoxLayout(layoutWidget);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        verticalLayout_4->setContentsMargins(0, 0, 0, 0);
+        textBrowser = new QTextBrowser(layoutWidget);
         textBrowser->setObjectName(QStringLiteral("textBrowser"));
         textBrowser->setMinimumSize(QSize(420, 0));
         textBrowser->setReadOnly(false);
 
-        verticalLayout_3->addWidget(textBrowser);
+        verticalLayout_4->addWidget(textBrowser);
 
-
-        horizontalLayout->addLayout(verticalLayout_3);
-
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
         groupBox = new QGroupBox(centralWidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
-        pushButton_con_net = new QPushButton(groupBox);
-        pushButton_con_net->setObjectName(QStringLiteral("pushButton_con_net"));
-        pushButton_con_net->setGeometry(QRect(12, 52, 96, 25));
-        pushButton_discon_net = new QPushButton(groupBox);
-        pushButton_discon_net->setObjectName(QStringLiteral("pushButton_discon_net"));
-        pushButton_discon_net->setGeometry(QRect(10, 80, 127, 25));
-        radioButtonCamera = new QRadioButton(groupBox);
-        radioButtonCamera->setObjectName(QStringLiteral("radioButtonCamera"));
-        radioButtonCamera->setGeometry(QRect(150, 40, 112, 23));
-        radioButtonCamera->setStyleSheet(QStringLiteral("background-color: rgb(204, 0, 0);"));
-        radioButtonCamera->setCheckable(false);
-        radioButtonCamera->setAutoExclusive(false);
-        radioButtonCar = new QRadioButton(groupBox);
-        radioButtonCar->setObjectName(QStringLiteral("radioButtonCar"));
-        radioButtonCar->setGeometry(QRect(150, 70, 112, 23));
-        radioButtonCar->setStyleSheet(QStringLiteral("background-color: rgb(138, 226, 52);"));
-        radioButtonCar->setCheckable(false);
-        radioButtonCar->setAutoExclusive(false);
-        pushButton_send = new QPushButton(groupBox);
-        pushButton_send->setObjectName(QStringLiteral("pushButton_send"));
-        pushButton_send->setGeometry(QRect(10, 110, 127, 25));
-
-        verticalLayout_4->addWidget(groupBox);
-
-        groupBox_2 = new QGroupBox(centralWidget);
+        groupBox->setGeometry(QRect(10, 10, 271, 381));
+        groupBox_2 = new QGroupBox(groupBox);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
+        groupBox_2->setGeometry(QRect(0, 140, 278, 243));
         verticalLayout_2 = new QVBoxLayout(groupBox_2);
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -167,15 +144,60 @@ public:
 
         gridLayout->addWidget(pushButton_right, 1, 2, 1, 1);
 
+        verticalLayout_3 = new QVBoxLayout();
+        verticalLayout_3->setSpacing(6);
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+
+        gridLayout->addLayout(verticalLayout_3, 0, 3, 1, 1);
+
 
         verticalLayout_2->addLayout(gridLayout);
 
-
-        verticalLayout_4->addWidget(groupBox_2);
-
-
-        horizontalLayout->addLayout(verticalLayout_4);
-
+        label_3 = new QLabel(groupBox);
+        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setGeometry(QRect(10, 30, 31, 17));
+        label_4 = new QLabel(groupBox);
+        label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setGeometry(QRect(10, 70, 31, 17));
+        comboBox_start_node = new QComboBox(groupBox);
+        comboBox_start_node->setObjectName(QStringLiteral("comboBox_start_node"));
+        comboBox_start_node->setGeometry(QRect(50, 30, 86, 25));
+        comboBox_stop_node = new QComboBox(groupBox);
+        comboBox_stop_node->setObjectName(QStringLiteral("comboBox_stop_node"));
+        comboBox_stop_node->setGeometry(QRect(50, 70, 86, 25));
+        label_5 = new QLabel(groupBox);
+        label_5->setObjectName(QStringLiteral("label_5"));
+        label_5->setGeometry(QRect(10, 110, 71, 17));
+        lineEdit_current_node = new QLineEdit(groupBox);
+        lineEdit_current_node->setObjectName(QStringLiteral("lineEdit_current_node"));
+        lineEdit_current_node->setGeometry(QRect(70, 110, 61, 25));
+        label = new QLabel(centralWidget);
+        label->setObjectName(QStringLiteral("label"));
+        label->setGeometry(QRect(70, 430, 67, 17));
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setGeometry(QRect(10, 400, 101, 21));
+        label_direction = new QLabel(centralWidget);
+        label_direction->setObjectName(QStringLiteral("label_direction"));
+        label_direction->setGeometry(QRect(110, 400, 67, 21));
+        pushButton_discon_net = new QPushButton(centralWidget);
+        pushButton_discon_net->setObjectName(QStringLiteral("pushButton_discon_net"));
+        pushButton_discon_net->setGeometry(QRect(550, 310, 127, 25));
+        pushButton_con_net = new QPushButton(centralWidget);
+        pushButton_con_net->setObjectName(QStringLiteral("pushButton_con_net"));
+        pushButton_con_net->setGeometry(QRect(570, 280, 96, 25));
+        radioButtonCar = new QRadioButton(centralWidget);
+        radioButtonCar->setObjectName(QStringLiteral("radioButtonCar"));
+        radioButtonCar->setGeometry(QRect(580, 250, 112, 23));
+        radioButtonCar->setStyleSheet(QStringLiteral("background-color: rgb(138, 226, 52);"));
+        radioButtonCar->setCheckable(false);
+        radioButtonCar->setAutoExclusive(false);
+        pushButton_go = new QPushButton(centralWidget);
+        pushButton_go->setObjectName(QStringLiteral("pushButton_go"));
+        pushButton_go->setGeometry(QRect(370, 290, 89, 25));
+        pushButton_update = new QPushButton(centralWidget);
+        pushButton_update->setObjectName(QStringLiteral("pushButton_update"));
+        pushButton_update->setGeometry(QRect(370, 330, 89, 25));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -196,13 +218,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
-        label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Infomation</span></p></body></html>", nullptr));
         groupBox->setTitle(QApplication::translate("MainWindow", "config", nullptr));
-        pushButton_con_net->setText(QApplication::translate("MainWindow", "ping network", nullptr));
-        pushButton_discon_net->setText(QApplication::translate("MainWindow", "exit network", nullptr));
-        radioButtonCamera->setText(QApplication::translate("MainWindow", "Camera", nullptr));
-        radioButtonCar->setText(QApplication::translate("MainWindow", "Car", nullptr));
-        pushButton_send->setText(QApplication::translate("MainWindow", "send UDP", nullptr));
         groupBox_2->setTitle(QApplication::translate("MainWindow", "ctrl", nullptr));
         pushButtonStop->setText(QApplication::translate("MainWindow", "Stop", nullptr));
 #ifndef QT_NO_SHORTCUT
@@ -224,6 +240,17 @@ public:
 #ifndef QT_NO_SHORTCUT
         pushButton_right->setShortcut(QApplication::translate("MainWindow", "Right", nullptr));
 #endif // QT_NO_SHORTCUT
+        label_3->setText(QApplication::translate("MainWindow", "\350\265\267\347\202\271", nullptr));
+        label_4->setText(QApplication::translate("MainWindow", "\347\273\210\347\202\271", nullptr));
+        label_5->setText(QApplication::translate("MainWindow", "\345\275\223\345\211\215\350\212\202\347\202\271", nullptr));
+        label->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
+        label_2->setText(QApplication::translate("MainWindow", "\345\260\217\350\275\246\345\275\223\345\211\215\346\234\235\345\220\221", nullptr));
+        label_direction->setText(QString());
+        pushButton_discon_net->setText(QApplication::translate("MainWindow", "exit network", nullptr));
+        pushButton_con_net->setText(QApplication::translate("MainWindow", "ping network", nullptr));
+        radioButtonCar->setText(QApplication::translate("MainWindow", "Car", nullptr));
+        pushButton_go->setText(QApplication::translate("MainWindow", "GO", nullptr));
+        pushButton_update->setText(QApplication::translate("MainWindow", "update", nullptr));
     } // retranslateUi
 
 };

@@ -40,8 +40,6 @@ FORMS += \
         mainwindow.ui
 
 
-UI_DIR=./UI
-
 ## Add LIBS rules:
 ## find the libs full name: e.g: libpython3.5.so
 ## The Qt LIBS on the linux platform need cut the character "lib" on the front of the full name and cut the last ".so"
@@ -51,7 +49,8 @@ UI_DIR=./UI
 DISTFILES += \
         path.py \
         route.py \
-        path_node.json
+        path_node.json \
+    path_plan_pre.py
 
 INCLUDEPATH += -I /usr/include/python3.5
 LIBS += -L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5
