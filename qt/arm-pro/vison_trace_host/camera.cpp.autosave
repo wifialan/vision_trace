@@ -1121,7 +1121,7 @@ void Camera::turltebot_direction_judgement(){
                 qDebug() << "当前QR坐标是第一行的第一个，上一次QR坐标为第一行的最后一个，判定小车一定是正向";
                 turltebot_direction = FORWARD;
                 return;
-            }
+            }   
             else if (path_node_distribute_info.split('\n').at(0).split(',').indexOf(QRData_current) == path_node_1st_line_max_index &&\
                      path_node_distribute_info.split('\n').at(0).split(',').indexOf(QRData_last) == 0) {
                 qDebug() << "当前QR坐标是第一行的最后一个，上一次QR坐标为第一行的第一个，那么，判定小车一定是反向";

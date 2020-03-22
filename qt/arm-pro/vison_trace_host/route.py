@@ -6,7 +6,7 @@ import simplejson as json
 
 class PathRoute:
     def __init__(self):
-        with open('path_node.json', 'r') as file:
+        with open('../vison_trace_host/path_node.json', 'r') as file:
             self.json_data = json.load(file)
         self.json_data_index = ['1st line', '2nd line', '3rd line', '4th line', '5th line', '6th line']
         print(self.json_data)
@@ -42,36 +42,36 @@ class PathRoute:
         for i in range(self.len_row):
             for j in range(self.len_col):
                 self.path_node_bak[i][j] = self.path_node[i][j]
-        for n in range(0, self.len_col - 1):
-            if self.path_node[1][n] == 0 and self.path_node[1][n + 1] != 0:
-                self.cross_entry_coord = n
-            if self.path_node[1][n] != 0 and self.path_node[1][n + 1] == 0:
-                self.cross_exit_coord = n + 1
+        if self.len_row > 1:
+            for n in range(0, self.len_col - 1):
+                if self.path_node[1][n] == 0 and self.path_node[1][n + 1] != 0:
+                    self.cross_entry_coord = n
+                if self.path_node[1][n] != 0 and self.path_node[1][n + 1] == 0:
+                    self.cross_exit_coord = n + 1
         print('岔道口入口坐标：', end='')
         print(self.cross_entry_coord)
         print('岔道口出口坐标：', end='')
         print(self.cross_exit_coord)
-        if 0:
-            # write path node distribute info to file
-            path_node_distribute_info = open("path_node_distribute_info.txt", 'w')
-            for i in range(self.len_row):
-                for j in range(self.len_col):
-                    if self.path_node[i][j] != 0 and self.path_node[i][j] != 99:
-                        path_node_distribute_info.write(str(self.path_node[i][j]) + ',')
-                path_node_distribute_info.write('\n')
-            path_node_distribute_info.close()
-            # write crossraod node to file
-            if self.len_row > 1:
-                crossraod_node = open("crossraod_node.txt", 'w')
-                crossraod_node.write(str(self.path_node[0][self.cross_entry_coord]) + ',')
-                crossraod_node.write(str(self.path_node[0][self.cross_exit_coord]))
-                for i in range(0, self.len_row):
-                    j = 1
-                    while self.path_node[i][self.cross_exit_coord - j] == 99:
-                        j = j + 1
-                    crossraod_node.write('\n' + str(self.path_node[i][self.cross_entry_coord + 1]) + ',')
-                    crossraod_node.write(str(self.path_node[i][self.cross_exit_coord - j]))
-                crossraod_node.close()
+        # write path node distribute info to file
+        path_node_distribute_info = open("path_node_distribute_info.txt", 'w')
+        for i in range(self.len_row):
+            for j in range(self.len_col):
+                if self.path_node[i][j] != 0 and self.path_node[i][j] != 99:
+                    path_node_distribute_info.write(str(self.path_node[i][j]) + ',')
+            path_node_distribute_info.write('\n')
+        path_node_distribute_info.close()
+        # write crossraod node to file
+        if self.len_row > 1:
+            crossraod_node = open("crossraod_node.txt", 'w')
+            crossraod_node.write(str(self.path_node[0][self.cross_entry_coord]) + ',')
+            crossraod_node.write(str(self.path_node[0][self.cross_exit_coord]))
+            for i in range(0, self.len_row):
+                j = 1
+                while self.path_node[i][self.cross_exit_coord - j] == 99:
+                    j = j + 1
+                crossraod_node.write('\n' + str(self.path_node[i][self.cross_entry_coord + 1]) + ',')
+                crossraod_node.write(str(self.path_node[i][self.cross_exit_coord - j]))
+            crossraod_node.close()
 
     def get_path_info(self, current_node, target_node):
         self.target_node_coord = [[0, 0], [0, 0]]
@@ -92,11 +92,11 @@ class PathRoute:
         print(path_node)
         if (self.target_node_coord[0][0] == self.target_node_coord[1][0] == 0) and \
                 min(self.target_node_coord[0][1], self.target_node_coord[1][1]) <= self.cross_entry_coord <= \
-                self.cross_exit_coord <= max(self.target_node_coord[0][1], self.target_node_coord[1][1]):
+                self.cross_exit_coord <= max(self.target_node_coord[0][1], self.target_node_coord[1][1]) and self.len_row > 1:
             if self.target_node_coord[0][1] < self.target_node_coord[1][1]:
                 print('前' + str(self.len_row) + '个节点为正向')
                 if path_node.index((min(min(path_node[0:self.len_row]), path_node[self.len_row]))) < self.len_row:
-                    print('选择正向')
+                    print('选择正向---')
                     self.forward = 1
                     self.backward = 0
                     self.select_path = path_node.index(min(path_node[0:self.len_row])) + 1
@@ -124,7 +124,7 @@ class PathRoute:
         else:
             # 剩下的这种情况只有两种路径：正向路径和反向路径
             if path_node.index(min(path_node)) == 0:
-                print('选择正向')
+                print('选择正向+++')
                 self.forward = 1
                 self.backward = 0
                 self.select_path = 0
@@ -164,8 +164,19 @@ class PathRoute:
         # 共有两种情况，1：路线只有一条 2：路线有多条，但A和B直接只有一条到达路线
         if self.len_row == 1:
             # 直接计算两点间节点个数
-            tmp = abs(self.target_node_coord[0][1] - self.target_node_coord[1][1])
-            self.number_of_route_node.append(tmp)
+            print('只有第一行数据')
+            if self.target_node_coord[0][1] < self.target_node_coord[1][1]:
+                print('A在B左边')
+                tmp = abs(self.target_node_coord[0][1] - self.target_node_coord[1][1])
+                self.number_of_route_node.append(tmp)
+                tmp = abs(self.len_col - self.target_node_coord[1][1] + self.target_node_coord[0][1])
+                self.number_of_route_node.append(tmp)
+            elif self.target_node_coord[0][1] > self.target_node_coord[1][1]:
+                print('A在B右边')
+                tmp = abs(self.len_col - self.target_node_coord[0][1] + self.target_node_coord[1][1])
+                self.number_of_route_node.append(tmp)
+                tmp = abs(self.target_node_coord[0][1] - self.target_node_coord[1][1])
+                self.number_of_route_node.append(tmp)
             return self.number_of_route_node
         else:
             # 验证A和B两点间没有岔道算法
@@ -680,11 +691,16 @@ class PathRoute:
         if coord_row_A == coord_row_B == 0:
             print('A和B都在第一行，规划路线')
             if self.select_path == 0:  # 默认正反两条路线
+                print('默认只有正反两条路线')
                 if self.forward == 1 and self.backward == 0:
                     print('正向规划')
                     if coord_col_A < coord_col_B:
                         print('A在B左边')
-                        if coord_col_A < self.cross_entry_coord:
+                        if self.len_row == 1:
+                            print('圆形轨道')
+                            for i in range(coord_col_A, coord_col_B):
+                                self.path_plan_indicate.append('UP')
+                        elif coord_col_A < self.cross_entry_coord and self.len_row > 1:
                             print('A在岔道口左边')
                             if coord_col_B <= self.cross_entry_coord:
                                 print('B也在岔道口左边')
@@ -763,7 +779,13 @@ class PathRoute:
                         print(self.path_plan_indicate)
                     else:
                         print('A在B右边')
-                        if coord_col_A <= self.cross_entry_coord:
+                        if self.len_row == 1:
+                            print('圆形轨道')
+                            for i in range(coord_col_A, self.len_col):
+                                self.path_plan_indicate.append('UP')
+                            for i in range(0, coord_col_B):
+                                self.path_plan_indicate.append('UP')
+                        elif coord_col_A <= self.cross_entry_coord:
                             print('A在岔道出口左边')
                             for i in range(coord_col_A, self.cross_entry_coord):
                                 self.path_plan_indicate.append('UP')
@@ -839,7 +861,13 @@ class PathRoute:
                     self.path_plan_indicate.append('TURN')
                     if coord_col_A < coord_col_B:
                         print('A在B左边')
-                        if coord_col_A <= self.cross_entry_coord:
+                        if self.len_row == 1:
+                            print('圆形轨道')
+                            for i in range(0, coord_col_A):
+                                self.path_plan_indicate.append('UP')
+                            for i in range(coord_col_B, self.len_col):
+                                self.path_plan_indicate.append('UP')
+                        elif coord_col_A <= self.cross_entry_coord and self.len_row > 1:
                             print('A在岔道口左边')
                             if coord_col_B <= self.cross_entry_coord:
                                 for i in range(0, self.len_col - self.cross_exit_coord + coord_col_A):
@@ -933,7 +961,11 @@ class PathRoute:
                         print(self.path_plan_indicate)
                     elif coord_col_A > coord_col_B:
                         print('A在B右边')
-                        if coord_col_A <= self.cross_entry_coord:
+                        if self.len_row == 1:
+                            print('圆形轨道')
+                            for i in range(coord_col_B, coord_col_A):
+                                self.path_plan_indicate.append('UP')
+                        elif coord_col_A <= self.cross_entry_coord and self.len_row > 1:
                             print('A在岔道口入口左边')
                             for i in range(coord_col_B, coord_col_A):
                                 self.path_plan_indicate.append('UP')
@@ -1140,7 +1172,7 @@ class PathRoute:
                         self.path_plan_indicate.append('UP')
                     print(self.path_plan_indicate)
                 elif self.forward == 0 and self.backward == 1:
-                    self.path_plan_indicate.append('TURN')
+                    self.path_plan_indicate.append('TRUN')
                     print('反向规划，这种情况A一定在B的右边')
                     blank = 0
                     for i in range(coord_col_B, coord_col_A):

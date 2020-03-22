@@ -19,14 +19,26 @@
 #include "ros.h"
 using namespace cv;
 
-#define FORWARD                 false
-#define BACKWARD                true
+#define FORWARD                 0
+#define BACKWARD                1
 
 #define START_PATH_PLAN         true
 #define STOP_PATH_PLAN          false
 
+#define PATH_STATUS_SLOW            0x00
+#define PATH_STATUS_RIGHT           0x0B
+#define PATH_STATUS_LEFT            0x0D //1101
+#define PATH_STATUS_UP              0x09
+#define PATH_STATUS_LED_LEFT        0x01
+#define PATH_STATUS_LED_RIGHT       0x08
+#define PATH_STATUS_BLANK           0x0F
+
+
+
 #define PATH_STRAIGHT_ROAD_LEN       30
 #define SPEED_LINE               0.05
+#define ROS_SPEED_HIGH              0.5
+#define ROS_SPEED_LOW               0.05
 
 typedef struct{
 
@@ -49,6 +61,7 @@ public:
     void path_plan(QByteArray);
     bool check_contains_cross( qint16);
     void crossroad_plan();
+    void straightroad_plan();
     bool check_qr_contains_cross_road_node();
     void check_qr_contains_cross_road_node_code();
     bool turn_tail(qint16);
@@ -56,6 +69,9 @@ public:
     bool crossroad_check_black_center();
     void leave_crossroad();
     void turltebot_direction_judgement();
+    bool first_detect_qr();
+    void path_status_slow();
+    void detect_qr();
 
     void send_path_node_to_pc();
     void send_status_to_pc();
@@ -67,7 +83,15 @@ public:
     QTimer *timer_turn;
     QTimer *timer_crossroad;
     QTimer *timer_crossroad_qr;
+    QTimer *timer_path_status_slow;
 
+    quint8 path_status;
+    quint8 last_path_status;
+    quint8 path_status_calc;
+    double ros_speed_line;
+    double ros_speed_angular;
+    double current_straight_path_ros_speed_line;
+    bool first_step;
     Mat frame;
     double rate; //FPS
     QImage image;
@@ -103,6 +127,16 @@ public:
     bool flag_turn_tail_start;
     bool flag_on_timer_turn_tail_over;
     bool flag_path_plan;
+    bool flag_capture_grap;
+    bool flag_arrived_crossroad;
+    bool flag_through_crossroad;
+    bool flag_qr_detect_crossroad;
+    bool flag_path_status_blank;
+    bool flag_truned_crossroad_then_up;
+    bool flag_no_detect_route_keep_up;
+    bool flag_first_step_detect_qr;
+    bool path_plan_pre_flag;
+//    bool flag_through_crossroad;
     bool turltebot_go;
 
     bool arrived_flag;
@@ -141,9 +175,9 @@ private:
     qint16 on_timer_through_crossroad_counter;
     bool   timer_crossroad_start_flag;
     qint16 on_timer_crossroad_qr_counter;
+    bool path_status_slow_flag;
 
-    bool path_plan_pre_flag;
-    bool flag_through_crossroad;
+
     void init_status();
     void lock_status(qint8);
 
@@ -154,6 +188,7 @@ private slots:
     void on_timer_turn_tail();
     void on_timer_through_crossroad();
     void on_timer_crossroad_qr();
+    void on_timer_path_status_slow();
     void on_send_path_info_to_camera(QByteArray);
 
 signals:
@@ -169,6 +204,7 @@ signals:
     void show_command(QByteArray);
     void send_info_to_pc(QByteArray);
     void update_path_node(QByteArray);
+    void update_path_start_node(QByteArray);
     //    void path_plan();
 
 

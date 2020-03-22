@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../vison_trace_host/ros.h"
+#include "../../../../vision_trace.bak.20200302/qt/arm-pro/vison_trace_host/ros.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)

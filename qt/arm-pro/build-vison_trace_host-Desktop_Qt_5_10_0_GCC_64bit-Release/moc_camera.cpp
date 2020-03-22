@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Camera_t {
-    QByteArrayData data[21];
-    char stringdata0[331];
+    QByteArrayData data[23];
+    char stringdata0[380];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -45,13 +45,15 @@ QT_MOC_LITERAL(10, 127, 14), // "turltebot_stop"
 QT_MOC_LITERAL(11, 142, 12), // "show_command"
 QT_MOC_LITERAL(12, 155, 15), // "send_info_to_pc"
 QT_MOC_LITERAL(13, 171, 16), // "update_path_node"
-QT_MOC_LITERAL(14, 188, 13), // "on_next_frame"
-QT_MOC_LITERAL(15, 202, 17), // "on_read_path_plan"
-QT_MOC_LITERAL(16, 220, 14), // "on_update_path"
-QT_MOC_LITERAL(17, 235, 18), // "on_timer_turn_tail"
-QT_MOC_LITERAL(18, 254, 26), // "on_timer_through_crossroad"
-QT_MOC_LITERAL(19, 281, 21), // "on_timer_crossroad_qr"
-QT_MOC_LITERAL(20, 303, 27) // "on_send_path_info_to_camera"
+QT_MOC_LITERAL(14, 188, 22), // "update_path_start_node"
+QT_MOC_LITERAL(15, 211, 13), // "on_next_frame"
+QT_MOC_LITERAL(16, 225, 17), // "on_read_path_plan"
+QT_MOC_LITERAL(17, 243, 14), // "on_update_path"
+QT_MOC_LITERAL(18, 258, 18), // "on_timer_turn_tail"
+QT_MOC_LITERAL(19, 277, 26), // "on_timer_through_crossroad"
+QT_MOC_LITERAL(20, 304, 21), // "on_timer_crossroad_qr"
+QT_MOC_LITERAL(21, 326, 25), // "on_timer_path_status_slow"
+QT_MOC_LITERAL(22, 352, 27) // "on_send_path_info_to_camera"
 
     },
     "Camera\0show_frame\0\0show_frame_2\0"
@@ -59,10 +61,12 @@ QT_MOC_LITERAL(20, 303, 27) // "on_send_path_info_to_camera"
     "turltebot_down\0turltebot_right\0"
     "turltebot_left\0turltebot_turn\0"
     "turltebot_stop\0show_command\0send_info_to_pc\0"
-    "update_path_node\0on_next_frame\0"
-    "on_read_path_plan\0on_update_path\0"
-    "on_timer_turn_tail\0on_timer_through_crossroad\0"
-    "on_timer_crossroad_qr\0on_send_path_info_to_camera"
+    "update_path_node\0update_path_start_node\0"
+    "on_next_frame\0on_read_path_plan\0"
+    "on_update_path\0on_timer_turn_tail\0"
+    "on_timer_through_crossroad\0"
+    "on_timer_crossroad_qr\0on_timer_path_status_slow\0"
+    "on_send_path_info_to_camera"
 };
 #undef QT_MOC_LITERAL
 
@@ -72,35 +76,37 @@ static const uint qt_meta_data_Camera[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      19,   14, // methods
+      21,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      12,       // signalCount
+      13,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  109,    2, 0x06 /* Public */,
-       3,    1,  112,    2, 0x06 /* Public */,
-       4,    1,  115,    2, 0x06 /* Public */,
-       5,    2,  118,    2, 0x06 /* Public */,
-       6,    2,  123,    2, 0x06 /* Public */,
-       7,    2,  128,    2, 0x06 /* Public */,
-       8,    2,  133,    2, 0x06 /* Public */,
-       9,    2,  138,    2, 0x06 /* Public */,
-      10,    0,  143,    2, 0x06 /* Public */,
-      11,    1,  144,    2, 0x06 /* Public */,
-      12,    1,  147,    2, 0x06 /* Public */,
-      13,    1,  150,    2, 0x06 /* Public */,
+       1,    1,  119,    2, 0x06 /* Public */,
+       3,    1,  122,    2, 0x06 /* Public */,
+       4,    1,  125,    2, 0x06 /* Public */,
+       5,    2,  128,    2, 0x06 /* Public */,
+       6,    2,  133,    2, 0x06 /* Public */,
+       7,    2,  138,    2, 0x06 /* Public */,
+       8,    2,  143,    2, 0x06 /* Public */,
+       9,    2,  148,    2, 0x06 /* Public */,
+      10,    0,  153,    2, 0x06 /* Public */,
+      11,    1,  154,    2, 0x06 /* Public */,
+      12,    1,  157,    2, 0x06 /* Public */,
+      13,    1,  160,    2, 0x06 /* Public */,
+      14,    1,  163,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      14,    0,  153,    2, 0x08 /* Private */,
-      15,    0,  154,    2, 0x08 /* Private */,
-      16,    0,  155,    2, 0x08 /* Private */,
-      17,    0,  156,    2, 0x08 /* Private */,
-      18,    0,  157,    2, 0x08 /* Private */,
-      19,    0,  158,    2, 0x08 /* Private */,
-      20,    1,  159,    2, 0x08 /* Private */,
+      15,    0,  166,    2, 0x08 /* Private */,
+      16,    0,  167,    2, 0x08 /* Private */,
+      17,    0,  168,    2, 0x08 /* Private */,
+      18,    0,  169,    2, 0x08 /* Private */,
+      19,    0,  170,    2, 0x08 /* Private */,
+      20,    0,  171,    2, 0x08 /* Private */,
+      21,    0,  172,    2, 0x08 /* Private */,
+      22,    1,  173,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QImage,    2,
@@ -115,8 +121,10 @@ static const uint qt_meta_data_Camera[] = {
     QMetaType::Void, QMetaType::QByteArray,    2,
     QMetaType::Void, QMetaType::QByteArray,    2,
     QMetaType::Void, QMetaType::QByteArray,    2,
+    QMetaType::Void, QMetaType::QByteArray,    2,
 
  // slots: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -146,13 +154,15 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 9: _t->show_command((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         case 10: _t->send_info_to_pc((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         case 11: _t->update_path_node((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
-        case 12: _t->on_next_frame(); break;
-        case 13: _t->on_read_path_plan(); break;
-        case 14: _t->on_update_path(); break;
-        case 15: _t->on_timer_turn_tail(); break;
-        case 16: _t->on_timer_through_crossroad(); break;
-        case 17: _t->on_timer_crossroad_qr(); break;
-        case 18: _t->on_send_path_info_to_camera((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 12: _t->update_path_start_node((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 13: _t->on_next_frame(); break;
+        case 14: _t->on_read_path_plan(); break;
+        case 15: _t->on_update_path(); break;
+        case 16: _t->on_timer_turn_tail(); break;
+        case 17: _t->on_timer_through_crossroad(); break;
+        case 18: _t->on_timer_crossroad_qr(); break;
+        case 19: _t->on_timer_path_status_slow(); break;
+        case 20: _t->on_send_path_info_to_camera((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -241,6 +251,13 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
                 return;
             }
         }
+        {
+            typedef void (Camera::*_t)(QByteArray );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Camera::update_path_start_node)) {
+                *result = 12;
+                return;
+            }
+        }
     }
 }
 
@@ -269,13 +286,13 @@ int Camera::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 19)
+        if (_id < 21)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 19;
+        _id -= 21;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 19)
+        if (_id < 21)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 19;
+        _id -= 21;
     }
     return _id;
 }
@@ -361,6 +378,13 @@ void Camera::update_path_node(QByteArray _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 11, _a);
+}
+
+// SIGNAL 12
+void Camera::update_path_start_node(QByteArray _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 12, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

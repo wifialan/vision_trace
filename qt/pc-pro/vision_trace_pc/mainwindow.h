@@ -9,7 +9,7 @@
 #include <QThread>
 #define             HOST_IP                 (tr("192.168.1.237"))
 #define             HOST_PORT               ((quint16)8799)
-#define             ARM_IP                  (tr("192.168.127.134"))
+#define             ARM_IP                  (tr("192.168.0.106"))
 #define             ARM_PORT                ((quint16)8399)
 #define             SEND_RETRY              10
 #define             ERROR_USER_INPUT            ((qint16)0x01)

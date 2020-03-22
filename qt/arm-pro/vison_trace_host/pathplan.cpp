@@ -17,7 +17,7 @@ Pathplan::Pathplan()
 
 void Pathplan::read_json_file(){
 
-    QFile file("path_node.json");
+    QFile file("../vison_trace_host/path_node.json");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "open json file error";
     } else {

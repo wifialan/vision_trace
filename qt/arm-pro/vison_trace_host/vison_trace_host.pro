@@ -49,8 +49,7 @@ FORMS += \
 DISTFILES += \
         path.py \
         route.py \
-        path_node.json \
-    path_plan_pre.py
+        path_node.json
 
 INCLUDEPATH += -I /usr/include/python3.5
 LIBS += -L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5

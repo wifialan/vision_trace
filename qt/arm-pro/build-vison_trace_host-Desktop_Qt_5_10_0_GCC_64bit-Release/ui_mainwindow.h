@@ -61,9 +61,12 @@ public:
     QGridLayout *gridLayout_3;
     QLabel *label;
     QTextBrowser *textBrowser;
-    QLabel *label_cam_2;
     QLineEdit *lineEdit_command;
     QLabel *label_4;
+    QComboBox *comboBox_serial;
+    QPushButton *pushButton_serial_connect;
+    QPushButton *pushButton_serial_disconnect;
+    QLineEdit *lineEdit_path_status;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -73,12 +76,12 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(1754, 531);
+        MainWindow->resize(1754, 528);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         label_cam = new QLabel(centralWidget);
         label_cam->setObjectName(QStringLiteral("label_cam"));
-        label_cam->setGeometry(QRect(620, 20, 550, 400));
+        label_cam->setGeometry(QRect(930, 20, 550, 400));
         label_cam->setMinimumSize(QSize(550, 400));
         label_cam->setMaximumSize(QSize(550, 400));
         layoutWidget = new QWidget(centralWidget);
@@ -205,17 +208,24 @@ public:
 
         gridLayout_3->addWidget(textBrowser, 1, 0, 1, 1);
 
-        label_cam_2 = new QLabel(centralWidget);
-        label_cam_2->setObjectName(QStringLiteral("label_cam_2"));
-        label_cam_2->setGeometry(QRect(1180, 20, 550, 400));
-        label_cam_2->setMinimumSize(QSize(550, 400));
-        label_cam_2->setMaximumSize(QSize(550, 400));
         lineEdit_command = new QLineEdit(centralWidget);
         lineEdit_command->setObjectName(QStringLiteral("lineEdit_command"));
         lineEdit_command->setGeometry(QRect(90, 430, 511, 25));
         label_4 = new QLabel(centralWidget);
         label_4->setObjectName(QStringLiteral("label_4"));
         label_4->setGeometry(QRect(10, 430, 71, 17));
+        comboBox_serial = new QComboBox(centralWidget);
+        comboBox_serial->setObjectName(QStringLiteral("comboBox_serial"));
+        comboBox_serial->setGeometry(QRect(630, 20, 261, 25));
+        pushButton_serial_connect = new QPushButton(centralWidget);
+        pushButton_serial_connect->setObjectName(QStringLiteral("pushButton_serial_connect"));
+        pushButton_serial_connect->setGeometry(QRect(630, 50, 89, 25));
+        pushButton_serial_disconnect = new QPushButton(centralWidget);
+        pushButton_serial_disconnect->setObjectName(QStringLiteral("pushButton_serial_disconnect"));
+        pushButton_serial_disconnect->setGeometry(QRect(730, 50, 89, 25));
+        lineEdit_path_status = new QLineEdit(centralWidget);
+        lineEdit_path_status->setObjectName(QStringLiteral("lineEdit_path_status"));
+        lineEdit_path_status->setGeometry(QRect(640, 100, 113, 25));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -246,10 +256,13 @@ public:
         label_3->setText(QApplication::translate("MainWindow", "STATR:", nullptr));
         label_2->setText(QApplication::translate("MainWindow", "STOP:", nullptr));
         pushButton_go->setText(QApplication::translate("MainWindow", "GO", nullptr));
+#ifndef QT_NO_SHORTCUT
+        pushButton_go->setShortcut(QApplication::translate("MainWindow", "Space", nullptr));
+#endif // QT_NO_SHORTCUT
         groupBox_2->setTitle(QApplication::translate("MainWindow", "ctrl", nullptr));
         pushButton_stop->setText(QApplication::translate("MainWindow", "STOP", nullptr));
 #ifndef QT_NO_SHORTCUT
-        pushButton_stop->setShortcut(QApplication::translate("MainWindow", "Space", nullptr));
+        pushButton_stop->setShortcut(QApplication::translate("MainWindow", "+", nullptr));
 #endif // QT_NO_SHORTCUT
         pushButton_down->setText(QApplication::translate("MainWindow", "DOWN", nullptr));
 #ifndef QT_NO_SHORTCUT
@@ -268,8 +281,12 @@ public:
         pushButton_right->setShortcut(QApplication::translate("MainWindow", "Right", nullptr));
 #endif // QT_NO_SHORTCUT
         label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Infomation</span></p></body></html>", nullptr));
-        label_cam_2->setText(QString());
         label_4->setText(QApplication::translate("MainWindow", "Command", nullptr));
+        pushButton_serial_connect->setText(QApplication::translate("MainWindow", "connect", nullptr));
+#ifndef QT_NO_SHORTCUT
+        pushButton_serial_connect->setShortcut(QApplication::translate("MainWindow", "Enter", nullptr));
+#endif // QT_NO_SHORTCUT
+        pushButton_serial_disconnect->setText(QApplication::translate("MainWindow", "disconnect", nullptr));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1754</width>
-    <height>531</height>
+    <height>528</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QLabel" name="label_cam">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>930</x>
       <y>20</y>
       <width>550</width>
       <height>400</height>
@@ -94,6 +94,9 @@
           <property name="text">
            <string>GO</string>
           </property>
+          <property name="shortcut">
+           <string>Space</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -111,7 +114,7 @@
            <string>STOP</string>
           </property>
           <property name="shortcut">
-           <string>Space</string>
+           <string>+</string>
           </property>
          </widget>
         </item>
@@ -248,31 +251,6 @@
      </item>
     </layout>
    </widget>
-   <widget class="QLabel" name="label_cam_2">
-    <property name="geometry">
-     <rect>
-      <x>1180</x>
-      <y>20</y>
-      <width>550</width>
-      <height>400</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>550</width>
-      <height>400</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>550</width>
-      <height>400</height>
-     </size>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="lineEdit_command">
     <property name="geometry">
      <rect>
@@ -294,6 +272,55 @@
     </property>
     <property name="text">
      <string>Command</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_serial">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>20</y>
+      <width>261</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_serial_connect">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>50</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>connect</string>
+    </property>
+    <property name="shortcut">
+     <string>Enter</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_serial_disconnect">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>50</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>disconnect</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_path_status">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>100</y>
+      <width>113</width>
+      <height>25</height>
+     </rect>
     </property>
    </widget>
   </widget>

@@ -36,7 +36,7 @@
 0xff
 */
 
-#define             PC_IP               (tr("192.168.127.134"))
+#define             PC_IP               (tr("192.168.0.104"))
 #define             PC_PORT             ((quint16)8799)
 
 #define             HOST_IP                 (tr("127.0.0.1"))
@@ -117,12 +117,14 @@ private:
     Ros         *ros;
     Pathplan    *path;
 //    Pathplan    *path;
+    QTimer      *timer_serial;
     QSerialPort *serial;
     QUdpSocket  *socket;
     QString     ip;
     quint16     port;
     bool        connect_state;
     QByteArray *socket_array;
+    QStringList oldPortStringList;
 
 public:
     void update_remote_turltebot_status(qint16);
@@ -151,6 +153,7 @@ private:
 public slots:
     void        on_read_network();
     void        on_read_serial();
+    void        on_timer_serial();
 
 private slots:
     void on_pushButton_clicked();
@@ -168,6 +171,7 @@ private slots:
    void on_show_command(QByteArray);
    void on_send_info_to_pc(QByteArray);
    void on_update_path_node(QByteArray);
+   void on_update_path_start_node(QByteArray);
 
 
     void on_pushButton_stop_clicked();
@@ -176,6 +180,10 @@ private slots:
     void on_pushButton_go_clicked();
 
 
+
+    void on_pushButton_serial_connect_clicked();
+
+    void on_pushButton_serial_disconnect_clicked();
 
 signals:
     void lanuch_turltebot_go();

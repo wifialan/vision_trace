@@ -9,12 +9,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->label_cam->setScaledContents(true);
-    ui->label_cam_2->setScaledContents(true);
+    ui->pushButton_serial_disconnect->setEnabled(false);
+    ui->pushButton_serial_connect->setEnabled(true);
+    //    ui->label_cam_2->setScaledContents(true);
     cam = new Camera();
     ros = new Ros();
     path = new Pathplan();
     serial = new QSerialPort();
     socket = new QUdpSocket();
+    timer_serial = new QTimer;
+    timer_serial->setInterval(500);
     connect_state  =  false;
     this->port = HOST_PORT;
     this->ip = get_localhost_ip();
@@ -39,15 +43,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( (QObject*)this->cam, SIGNAL(show_command(QByteArray)), this, SLOT(on_show_command(QByteArray)));
     connect( (QObject*)this->cam, SIGNAL(send_info_to_pc(QByteArray)), this, SLOT(on_send_info_to_pc(QByteArray)));
     connect( (QObject*)this->cam, SIGNAL(update_path_node(QByteArray)), this, SLOT(on_update_path_node(QByteArray)));
+    connect( (QObject*)this->cam, SIGNAL(update_path_start_node(QByteArray)), this, SLOT(on_update_path_start_node(QByteArray)));
     connect( this, SIGNAL(lanuch_turltebot_go()), this, SLOT(on_pushButton_go_clicked()));
-
+    connect( timer_serial, SIGNAL(timeout()),SLOT(on_timer_serial()));
     socket_connect();
     connect(socket,                 \
             SIGNAL( readyRead() ), \
             this,               \
             SLOT( on_read_network() )
             );
+    connect( serial,              \
+             SIGNAL( readyRead()),\
+             this,                 \
+             SLOT( on_read_serial()));
 
+    oldPortStringList.clear();
+    timer_serial->start();
     path->read_json_file();
     //    cam->open();
 }
@@ -56,6 +67,40 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_timer_serial()
+{
+    QStringList newPortStringList;
+    QSerialPortInfo info;
+    //搜索串口
+
+    foreach (info, QSerialPortInfo::availablePorts()){
+#if 0
+        qDebug() << "Name        : " << info.portName();
+        qDebug() << "Description : " << info.description();
+        qDebug() << "Manufacturer: " << info.manufacturer();
+#endif
+        newPortStringList += (info.description() + '(' + info.portName() + ")");
+    }
+
+    //更新旧的串口列表
+    if(newPortStringList != oldPortStringList)
+    {
+        ui->comboBox_serial->clear();
+        oldPortStringList = newPortStringList;
+        qDebug() << oldPortStringList;
+        for (int i = 0; i < oldPortStringList.length(); ++i) {
+            ui->comboBox_serial->addItem( oldPortStringList.at(i));
+        }
+        if (!serial->isBreakEnabled()) {//检测串口是否掉线
+            ui->pushButton_serial_disconnect->setEnabled(false);
+            ui->comboBox_serial->setEnabled(true);
+            ui->pushButton_serial_connect->setEnabled(true);
+        }
+        //            emit onNewSerialPort(oldPortStringList);
+    }
+}
+
 
 QString MainWindow::get_localhost_ip()
 {
@@ -90,8 +135,15 @@ void MainWindow::on_update_path_node(QByteArray info_4)
         ui->comboBox_stop_node->addItem(QString::number(quint8(info_4.at(header_index + i)),10));
     }
     ui->comboBox_start_node->setCurrentIndex(0);
-    ui->comboBox_stop_node->setCurrentIndex(1);
+    ui->comboBox_stop_node->setCurrentIndex(2);
     qDebug() << "Add success";
+}
+
+void MainWindow::on_update_path_start_node(QByteArray path_start_node)
+{
+    QString str = path_start_node.split('\n').at(0);
+    qint8 str_index = ui->comboBox_start_node->findText(str);
+    ui->comboBox_start_node->setCurrentIndex(str_index);
 }
 
 qint16 MainWindow::socket_connect()
@@ -251,8 +303,24 @@ void MainWindow::analyze_info_command(COM_PAC pac)
 void MainWindow::on_read_serial()
 {
     QByteArray array;
+    QByteArray header;
+    QByteArray tail;
 
     array = serial->readAll();
+//    qDebug() << array;
+
+    header.append(0xAA);
+    header.append(0xBB);
+    tail.append(0xEE);
+    tail.append(0xFF);
+
+    if (array.contains(header) && array.contains(tail) && (array.indexOf(header) < array.indexOf(tail))) {
+        cam->path_status = array.at(2);
+        QString str = QString::number(cam->path_status,10);
+        ui->lineEdit_path_status->setText(str);
+//        qDebug() << cam->path_status;
+    }
+//    qDebug() << "---------------------------";
 }
 void MainWindow::send_cmd_to_udp(quint8 cmd, QByteArray &value_array)
 {
@@ -417,7 +485,7 @@ void MainWindow::send_cmd_serial(quint8 cmd)
 
 void MainWindow::on_pushButton_stop_clicked()
 {
-
+    cam->turltebot_go = false;
     ui->textBrowser->append("SYSTEM: send cmd [STOP]");
     ros->speed.linear.x = 0; //
     ros->speed.angular.z = 0; //
@@ -428,14 +496,13 @@ void MainWindow::on_pushButton_stop_clicked()
 
 void MainWindow::on_show_frame(QImage image)
 {
-    //    qDebug() << "show image";
     ui->label_cam->setPixmap(QPixmap::fromImage(image));
 }
 
 void MainWindow::on_show_frame_2(QImage image)
 {
     //    qDebug() << "show image";
-    ui->label_cam_2->setPixmap(QPixmap::fromImage(image));
+    //    ui->label_cam_2->setPixmap(QPixmap::fromImage(image));
 }
 
 void MainWindow::on_show_tutlebot_status(qint8 status)
@@ -468,9 +535,15 @@ void MainWindow::on_show_command(QByteArray path_plan_array){
 
 void MainWindow::on_pushButton_go_clicked()
 {
+    cam->flag_qr_detect_crossroad = false;
+    cam->flag_capture_grap = true;
     cam->turltebot_go = true;
+    cam->first_step = true;
     QString start_point = ui->comboBox_start_node->currentText();
     QString stop_point = ui->comboBox_stop_node->currentText();
+    if (start_point == stop_point) {
+        return;
+    }
     cam->start_stop_node_array.clear();
     cam->start_stop_node_array.append(start_point);
     cam->start_stop_node_array.append('\n');
@@ -488,4 +561,52 @@ void MainWindow::on_pushButton_go_clicked()
     path->proc->execute("python3 ../vison_trace_host/path.py");
     emit path->read_path_plan();
 
+}
+
+void MainWindow::on_pushButton_serial_connect_clicked()
+{
+    serial->close();
+    serial->setBaudRate(QSerialPort::Baud115200);
+    serial->setStopBits(QSerialPort::OneStop);
+    serial->setParity(QSerialPort::NoParity);
+    serial->setDataBits(QSerialPort::Data8);
+    serial->setFlowControl(QSerialPort::NoFlowControl);
+    QString portInfo = ui->comboBox_serial->currentText();
+    QString portName = "/dev/";
+    quint8 start = portInfo.indexOf("(");
+    quint8 stop  = portInfo.indexOf(")");
+    for (int i = start + 1; i < stop; ++i) {
+        portName.append(portInfo.at(i));
+    }
+
+    qDebug() << portName;
+
+    serial->setPortName(portName);
+//    serial->setPort(*infoList);
+    if (!serial->open(QIODevice::ReadWrite)) {
+            QMessageBox::warning(this,"Warning","Open serial port fail!\n Please see the the information window to solve problem.");
+            qDebug() << tr("SYSTEM: The serial port failed to open,Please check as follows: ");
+            qDebug() << tr("        1> if the serial port is occupied by other software? ");
+            qDebug() << tr("        2> if the serial port connection is normal?");
+            qDebug() << tr("        3> if the program is run at root user? You can use the cmd sudo ./(programname) and type your password to be done.");
+
+            ui->pushButton_serial_disconnect->setEnabled(false);
+            ui->comboBox_serial->setEnabled(true);
+            ui->pushButton_serial_connect->setEnabled(true);
+            ui->statusBar->showMessage("Open:" + portInfo + "failed!" );
+        } else {
+            ui->pushButton_serial_disconnect->setEnabled(true);
+            ui->comboBox_serial->setEnabled(false);
+            ui->pushButton_serial_connect->setEnabled(false);
+            qDebug() << tr("SYSTEM: The system has been connected with ")+portInfo+" " ;
+    }
+}
+
+void MainWindow::on_pushButton_serial_disconnect_clicked()
+{
+    serial->clear();
+    serial->close();
+    ui->pushButton_serial_disconnect->setEnabled(false);
+    ui->comboBox_serial->setEnabled(true);
+    ui->pushButton_serial_connect->setEnabled(true);
 }
