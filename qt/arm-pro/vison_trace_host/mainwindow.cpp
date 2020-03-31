@@ -558,6 +558,12 @@ void MainWindow::on_pushButton_go_clicked()
     stream << stop_point;
     file.flush();
     file.close();
+    qDebug() << "start cap";
+    if (cam->capture.isOpened()){
+        cam->capture.release();     //decide if capture is already opened; if so,close it
+    }
+    cam->capture.open(0);           //open the default camera
+    qDebug() << "open cap";
     path->proc->execute("python3 ../vison_trace_host/path.py");
     emit path->read_path_plan();
 

@@ -471,13 +471,15 @@ void Camera::path_plan()
                 ros_speed_line -= 0.005;
             }
             if (ros_speed_line < 0.1)
-                ros_speed_angular = 8 * ros_speed_line;
+                ros_speed_angular = 6 * ros_speed_line;
             else if(ros_speed_line < 0.2)
                 ros_speed_angular = 4 * ros_speed_line;
             else
                 ros_speed_angular = 2 * ros_speed_line;
         }
-
+        QDateTime current_date_time2 = QDateTime::currentDateTime();
+        QString current_date2 = current_date_time2.toString("yyyy-MM-dd hh:mm:ss.zzz");
+        qDebug() << current_date2;
         straightroad_plan();
     } else {
         current_straight_path_ros_speed_line = ROS_SPEED_LOW;
@@ -1121,7 +1123,7 @@ void Camera::turltebot_direction_judgement(){
                 qDebug() << "当前QR坐标是第一行的第一个，上一次QR坐标为第一行的最后一个，判定小车一定是正向";
                 turltebot_direction = FORWARD;
                 return;
-            }
+            }   
             else if (path_node_distribute_info.split('\n').at(0).split(',').indexOf(QRData_current) == path_node_1st_line_max_index &&\
                      path_node_distribute_info.split('\n').at(0).split(',').indexOf(QRData_last) == 0) {
                 qDebug() << "当前QR坐标是第一行的最后一个，上一次QR坐标为第一行的第一个，那么，判定小车一定是反向";
