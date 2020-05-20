@@ -37,8 +37,8 @@ using namespace cv;
 
 #define PATH_STRAIGHT_ROAD_LEN       30
 #define SPEED_LINE               0.05
-#define ROS_SPEED_HIGH              0.5
-#define ROS_SPEED_LOW               0.05
+#define ROS_SPEED_HIGH              0.4
+#define ROS_SPEED_LOW               0.03
 
 typedef struct{
 

@@ -3,6 +3,7 @@
 Camera::Camera()
 {
 
+    last_path_status = 0xFF;
     flag_qr_detect_crossroad = false;
     flag_through_crossroad = true;
     flag_arrived_crossroad = false;
@@ -45,7 +46,6 @@ void Camera::show()
         imshow("openCV_image",frame);//在窗口中显示对象
         waitKey(30); //等待30ms
     }
-
 }
 
 void Camera::open()
@@ -468,10 +468,10 @@ void Camera::path_plan()
         } else {
             qDebug() << "低速";
             if (ros_speed_line > ROS_SPEED_LOW) {
-                ros_speed_line -= 0.005;
+                ros_speed_line -= 0.01;
             }
             if (ros_speed_line < 0.1)
-                ros_speed_angular = 6 * ros_speed_line;
+                ros_speed_angular = 5 * ros_speed_line;
             else if(ros_speed_line < 0.2)
                 ros_speed_angular = 4 * ros_speed_line;
             else
@@ -1467,7 +1467,7 @@ void Camera::on_read_path_plan()
 {
     current_straight_path_ros_speed_line = ROS_SPEED_LOW;
     flag_first_step_detect_qr = true;
-    last_path_status = 0xFF;
+    //last_path_status = 0xFF;
     path_status_calc = 0;
     flag_path_status_blank = false;
     QRData_store_index = -1;
