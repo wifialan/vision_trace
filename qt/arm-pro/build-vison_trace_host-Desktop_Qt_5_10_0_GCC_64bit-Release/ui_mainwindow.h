@@ -59,8 +59,9 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QWidget *layoutWidget1;
     QGridLayout *gridLayout_3;
-    QLabel *label;
     QTextBrowser *textBrowser;
+    QLabel *label;
+    QPushButton *pushButton;
     QLineEdit *lineEdit_command;
     QLabel *label_4;
     QComboBox *comboBox_serial;
@@ -198,15 +199,20 @@ public:
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
         gridLayout_3->setContentsMargins(0, 0, 0, 0);
+        textBrowser = new QTextBrowser(layoutWidget1);
+        textBrowser->setObjectName(QStringLiteral("textBrowser"));
+
+        gridLayout_3->addWidget(textBrowser, 1, 0, 1, 1);
+
         label = new QLabel(layoutWidget1);
         label->setObjectName(QStringLiteral("label"));
 
         gridLayout_3->addWidget(label, 0, 0, 1, 1);
 
-        textBrowser = new QTextBrowser(layoutWidget1);
-        textBrowser->setObjectName(QStringLiteral("textBrowser"));
+        pushButton = new QPushButton(layoutWidget1);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
 
-        gridLayout_3->addWidget(textBrowser, 1, 0, 1, 1);
+        gridLayout_3->addWidget(pushButton, 2, 0, 1, 1);
 
         lineEdit_command = new QLineEdit(centralWidget);
         lineEdit_command->setObjectName(QStringLiteral("lineEdit_command"));
@@ -281,6 +287,7 @@ public:
         pushButton_right->setShortcut(QApplication::translate("MainWindow", "Right", nullptr));
 #endif // QT_NO_SHORTCUT
         label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Infomation</span></p></body></html>", nullptr));
+        pushButton->setText(QApplication::translate("MainWindow", "EXIT", nullptr));
         label_4->setText(QApplication::translate("MainWindow", "Command", nullptr));
         pushButton_serial_connect->setText(QApplication::translate("MainWindow", "connect", nullptr));
 #ifndef QT_NO_SHORTCUT

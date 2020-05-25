@@ -419,7 +419,8 @@ COM_PAC MainWindow::decode_protocal(QByteArray array)
 
 void MainWindow::on_pushButton_clicked()
 {
-
+    QApplication::quit();
+    //delete ui;
 }
 
 void MainWindow::on_pushButton_con_net_clicked()

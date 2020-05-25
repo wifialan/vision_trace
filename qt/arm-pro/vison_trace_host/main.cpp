@@ -7,9 +7,9 @@ int main(int argc, char *argv[])
     ros::init(argc,argv,"talker");
     QApplication a(argc, argv);
     MainWindow w;
-//    w.show();
-    w.showMaximized();
-    w.showFullScreen();
+    w.show();
+//    w.showMaximized();
+//    w.showFullScreen();
 
     return a.exec();
 }
