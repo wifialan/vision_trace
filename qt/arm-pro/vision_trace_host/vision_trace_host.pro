@@ -8,7 +8,7 @@ QT       += core gui serialport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = vison_trace_host
+TARGET = vision_trace_host
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
