@@ -548,7 +548,7 @@ void MainWindow::on_pushButton_go_clicked()
     cam->start_stop_node_array.append(start_point);
     cam->start_stop_node_array.append('\n');
     cam->start_stop_node_array.append(stop_point);
-    qDebug() << "start_stop_node_array" << cam->start_stop_node_array;
+    qDebug() << "start_stop_node_array **" << cam->start_stop_node_array;
 
     QFile file("node.txt");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -564,7 +564,7 @@ void MainWindow::on_pushButton_go_clicked()
     }
     cam->capture.open(0);           //open the default camera
     qDebug() << "open cap";
-    path->proc->execute("python3 ../vison_trace_host/path.py");
+    path->proc->execute("python3 ../vision_trace_host/path.py");
     emit path->read_path_plan();
 
 }
