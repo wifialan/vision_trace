@@ -422,16 +422,6 @@ void MainWindow::on_pushButton_clicked()
     QApplication::quit();
 }
 
-void MainWindow::on_pushButton_con_net_clicked()
-{
-    this->socket_connect();
-}
-
-void MainWindow::on_pushButton_discon_net_clicked()
-{
-    this->socket_disconnect();
-}
-
 void MainWindow::on_pushButton_up_clicked()
 {
     ros->speed.linear.x = 0.06;

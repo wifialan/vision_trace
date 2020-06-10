@@ -217,6 +217,7 @@ DIST          = ../vision_trace_host/path.py \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_post.prf \
+		../vision_trace_host/.qmake.stash \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/default_pre.prf \
@@ -401,6 +402,7 @@ Makefile: ../vision_trace_host/vision_trace_host.pro /opt/Qt5.10.0/5.10.0/gcc_64
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/default_pre.prf \
@@ -573,6 +575,7 @@ Makefile: ../vision_trace_host/vision_trace_host.pro /opt/Qt5.10.0/5.10.0/gcc_64
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/qt_config.prf:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/linux-g++/qmake.conf:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/exclusive_builds.prf:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/toolchain.prf:
 /opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/default_pre.prf:
@@ -1833,7 +1836,69 @@ mainwindow.o: ../vision_trace_host/mainwindow.cpp ../vision_trace_host/mainwindo
 		../vision_trace_host/pathplan.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QProcess \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qprocess.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/QVariant \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QAction \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qaction.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qactiongroup.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QButtonGroup \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qbuttongroup.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QComboBox \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qcombobox.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstyleoption.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qregularexpression.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qslider.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractslider.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstyle.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtabbar.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qframe.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QGridLayout \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QGroupBox \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qgroupbox.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QHeaderView \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qheaderview.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qitemselectionmodel.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlabel.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QLineEdit \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlineedit.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextcursor.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextformat.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QMenuBar \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qmenubar.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qmenu.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QPushButton \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qpushbutton.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QSpacerItem \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QStatusBar \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qstatusbar.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QTextBrowser \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtextbrowser.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtextedit.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtGui/qtextdocument.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QToolBar \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qtoolbar.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QVBoxLayout \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../vision_trace_host/mainwindow.cpp
 
 ros.o: ../vision_trace_host/ros.cpp ../vision_trace_host/ros.h \

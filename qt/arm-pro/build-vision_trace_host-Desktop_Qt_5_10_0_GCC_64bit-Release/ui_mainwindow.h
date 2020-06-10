@@ -40,8 +40,6 @@ public:
     QVBoxLayout *verticalLayout_4;
     QGroupBox *groupBox;
     QGridLayout *gridLayout_2;
-    QPushButton *pushButton_con_net;
-    QPushButton *pushButton_discon_net;
     QLabel *label_3;
     QLabel *label_2;
     QComboBox *comboBox_start_node;
@@ -49,7 +47,6 @@ public:
     QPushButton *pushButton_go;
     QGroupBox *groupBox_2;
     QVBoxLayout *verticalLayout_2;
-    QPushButton *pushButton_stop;
     QGridLayout *gridLayout;
     QPushButton *pushButton_down;
     QPushButton *pushButton_left;
@@ -57,6 +54,7 @@ public:
     QPushButton *pushButton_up;
     QPushButton *pushButton_right;
     QSpacerItem *horizontalSpacer_2;
+    QPushButton *pushButton_stop;
     QWidget *layoutWidget1;
     QGridLayout *gridLayout_3;
     QTextBrowser *textBrowser;
@@ -99,40 +97,30 @@ public:
         gridLayout_2->setSpacing(6);
         gridLayout_2->setContentsMargins(11, 11, 11, 11);
         gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
-        pushButton_con_net = new QPushButton(groupBox);
-        pushButton_con_net->setObjectName(QStringLiteral("pushButton_con_net"));
-
-        gridLayout_2->addWidget(pushButton_con_net, 0, 1, 1, 3);
-
-        pushButton_discon_net = new QPushButton(groupBox);
-        pushButton_discon_net->setObjectName(QStringLiteral("pushButton_discon_net"));
-
-        gridLayout_2->addWidget(pushButton_discon_net, 1, 1, 1, 3);
-
         label_3 = new QLabel(groupBox);
         label_3->setObjectName(QStringLiteral("label_3"));
 
-        gridLayout_2->addWidget(label_3, 2, 1, 1, 1);
+        gridLayout_2->addWidget(label_3, 0, 1, 1, 1);
 
         label_2 = new QLabel(groupBox);
         label_2->setObjectName(QStringLiteral("label_2"));
 
-        gridLayout_2->addWidget(label_2, 3, 1, 1, 1);
+        gridLayout_2->addWidget(label_2, 1, 1, 1, 1);
 
         comboBox_start_node = new QComboBox(groupBox);
         comboBox_start_node->setObjectName(QStringLiteral("comboBox_start_node"));
 
-        gridLayout_2->addWidget(comboBox_start_node, 2, 2, 1, 1);
+        gridLayout_2->addWidget(comboBox_start_node, 0, 2, 1, 1);
 
         comboBox_stop_node = new QComboBox(groupBox);
         comboBox_stop_node->setObjectName(QStringLiteral("comboBox_stop_node"));
 
-        gridLayout_2->addWidget(comboBox_stop_node, 3, 2, 1, 1);
+        gridLayout_2->addWidget(comboBox_stop_node, 1, 2, 1, 1);
 
         pushButton_go = new QPushButton(groupBox);
         pushButton_go->setObjectName(QStringLiteral("pushButton_go"));
 
-        gridLayout_2->addWidget(pushButton_go, 2, 3, 1, 1);
+        gridLayout_2->addWidget(pushButton_go, 0, 3, 1, 1);
 
 
         verticalLayout_4->addWidget(groupBox);
@@ -143,11 +131,6 @@ public:
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        pushButton_stop = new QPushButton(groupBox_2);
-        pushButton_stop->setObjectName(QStringLiteral("pushButton_stop"));
-
-        verticalLayout_2->addWidget(pushButton_stop);
-
         gridLayout = new QGridLayout();
         gridLayout->setSpacing(6);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
@@ -187,6 +170,11 @@ public:
 
 
         verticalLayout_2->addLayout(gridLayout);
+
+        pushButton_stop = new QPushButton(groupBox_2);
+        pushButton_stop->setObjectName(QStringLiteral("pushButton_stop"));
+
+        verticalLayout_2->addWidget(pushButton_stop);
 
 
         verticalLayout_4->addWidget(groupBox_2);
@@ -257,8 +245,6 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         label_cam->setText(QString());
         groupBox->setTitle(QApplication::translate("MainWindow", "config", nullptr));
-        pushButton_con_net->setText(QApplication::translate("MainWindow", "connect to net", nullptr));
-        pushButton_discon_net->setText(QApplication::translate("MainWindow", "disconnect to net", nullptr));
         label_3->setText(QApplication::translate("MainWindow", "STATR:", nullptr));
         label_2->setText(QApplication::translate("MainWindow", "STOP:", nullptr));
         pushButton_go->setText(QApplication::translate("MainWindow", "GO", nullptr));
@@ -266,10 +252,6 @@ public:
         pushButton_go->setShortcut(QApplication::translate("MainWindow", "Space", nullptr));
 #endif // QT_NO_SHORTCUT
         groupBox_2->setTitle(QApplication::translate("MainWindow", "ctrl", nullptr));
-        pushButton_stop->setText(QApplication::translate("MainWindow", "STOP", nullptr));
-#ifndef QT_NO_SHORTCUT
-        pushButton_stop->setShortcut(QApplication::translate("MainWindow", "+", nullptr));
-#endif // QT_NO_SHORTCUT
         pushButton_down->setText(QApplication::translate("MainWindow", "DOWN", nullptr));
 #ifndef QT_NO_SHORTCUT
         pushButton_down->setShortcut(QApplication::translate("MainWindow", "Down", nullptr));
@@ -285,6 +267,10 @@ public:
         pushButton_right->setText(QApplication::translate("MainWindow", "RIGHT", nullptr));
 #ifndef QT_NO_SHORTCUT
         pushButton_right->setShortcut(QApplication::translate("MainWindow", "Right", nullptr));
+#endif // QT_NO_SHORTCUT
+        pushButton_stop->setText(QApplication::translate("MainWindow", "STOP", nullptr));
+#ifndef QT_NO_SHORTCUT
+        pushButton_stop->setShortcut(QApplication::translate("MainWindow", "+", nullptr));
 #endif // QT_NO_SHORTCUT
         label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Infomation</span></p></body></html>", nullptr));
         pushButton->setText(QApplication::translate("MainWindow", "EXIT", nullptr));

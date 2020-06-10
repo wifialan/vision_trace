@@ -158,8 +158,6 @@ public slots:
 private slots:
     void on_pushButton_clicked();
 
-    void on_pushButton_con_net_clicked();
-    void on_pushButton_discon_net_clicked();
     void on_pushButton_up_clicked();
     void on_pushButton_down_clicked();
     void on_pushButton_left_clicked();
