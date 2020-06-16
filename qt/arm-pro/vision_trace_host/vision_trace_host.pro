@@ -49,7 +49,8 @@ FORMS += \
 DISTFILES += \
         path.py \
         route.py \
-        path_node.json
+        path_node.json \
+    ../build-vision_trace_host-Desktop_Qt_5_10_0_GCC_64bit-Release/direction.txt
 
 INCLUDEPATH += -I /usr/include/python3.5
 
