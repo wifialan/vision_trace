@@ -1068,7 +1068,7 @@ bool Camera::turn_tail(qint16 index)
         }
         // 掉头第二阶段，小车红外探头移出轨道后，若小车 path_status & 0x09 不等于 0x09, 那么让小车保持掉头命令
         else if(path_status != PATH_STATUS_UP){
-            emit turltebot_turn(0.0, 3.14159 / 3.0);
+            emit turltebot_turn(0.0, 3.14159 / 10.0);
             flag_path_status_blank = true;
             return false;
         }
