@@ -552,7 +552,7 @@ void MainWindow::on_pushButton_go_clicked()
     if (cam->capture.isOpened()){
         cam->capture.release();     //decide if capture is already opened; if so,close it
     }
-    cam->capture.open(0);           //open the default camera
+    cam->capture.open(cam->camera_number);           //open the default camera
     qDebug() << "open cap";
     path->proc->execute("python3 ../vision_trace_host/path.py");
     emit path->read_path_plan();

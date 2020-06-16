@@ -37,7 +37,7 @@ using namespace cv;
 
 #define PATH_STRAIGHT_ROAD_LEN       30
 #define SPEED_LINE               0.05
-#define ROS_SPEED_HIGH              0.4
+#define ROS_SPEED_HIGH              0.3
 #define ROS_SPEED_LOW               0.03
 
 typedef struct{
@@ -79,6 +79,7 @@ public:
     void send_ctrl_to_pc(quint8);
 
     VideoCapture capture;
+    qint8  camera_number;
     QTimer *timer;
     QTimer *timer_turn;
     QTimer *timer_crossroad;

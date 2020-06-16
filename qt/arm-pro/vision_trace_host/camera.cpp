@@ -24,6 +24,7 @@ Camera::Camera()
     QRData_old = "FFFF";
     init_status();
     this->counter = 0;
+    camera_number=0;
     this->open();
 }
 
@@ -35,7 +36,7 @@ void Camera::run()
 void Camera::show()
 {
     qDebug() << "show cap";
-    VideoCapture cap(0);
+    VideoCapture cap(camera_number);
     while(1){
         cap >> frame;
         if(!frame.data) //如果数据不为空
@@ -54,7 +55,7 @@ void Camera::open()
     if (capture.isOpened()){
         capture.release();     //decide if capture is already opened; if so,close it
     }
-    capture.open(0);           //open the default camera
+    capture.open(camera_number);           //open the default camera
     qDebug() << "open cap";
     if (capture.isOpened())
     {
