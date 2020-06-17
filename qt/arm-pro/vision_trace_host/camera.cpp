@@ -497,11 +497,11 @@ void Camera::straightroad_plan()
         //上一次状态为左转，并且当前状态不为直行，那么继续左转，直到当前状态为直行为止
         if(path_status == 0x0E){
             //            ros_speed_line = ROS_SPEED_HIGH / 2;
-            ros_speed_angular = 1.8 * ros_speed_angular;
+            ros_speed_angular = 3 * ros_speed_line;
             qDebug() << "加速转弯";
         } else if (path_status == 0x0F) {
             qDebug() << "超级加速转弯";
-            ros_speed_angular = 2.2 * ros_speed_angular;
+            ros_speed_angular = 6 * ros_speed_line;
         }
         if (path_status == 0x07) {
             if (right == 1) {
@@ -527,11 +527,11 @@ void Camera::straightroad_plan()
         //        ros_speed_angular = 1.5 * ros_speed_angular;
         if(path_status == 0x07){
             //            ros_speed_line = ROS_SPEED_HIGH / 2;
-            ros_speed_angular = 1.8 * ros_speed_angular;
+            ros_speed_angular = 3 * ros_speed_line;
             qDebug() << "加速转弯";
         } else if (path_status == 0x0F) {
             qDebug() << "超级加速转弯";
-            ros_speed_angular = 2.2 * ros_speed_angular;
+            ros_speed_angular = 6 * ros_speed_line;
         }
         if (path_status == 0x0E) {
             //左转
