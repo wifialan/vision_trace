@@ -80,7 +80,7 @@ void Camera::open()
             timer_crossroad->setInterval(200);// set timer: 200ms
             timer_turn->setInterval(200);    // set timer: 200ms
 
-            timer->setInterval(1000/rate);   //set timer match with FPS
+            timer->setInterval(1000/30);   //set timer match with FPS
             connect(timer, SIGNAL(timeout()), this, SLOT(on_next_frame()));
             connect(timer_turn, SIGNAL(timeout()), this, SLOT(on_timer_turn_tail()));
             connect(timer_crossroad, SIGNAL(timeout()), this, SLOT(on_timer_through_crossroad()));
@@ -98,6 +98,10 @@ void Camera::on_update_path()
 bool Camera::first_detect_qr()
 {
     if (first_step == true) {
+
+        if(!capture.isOpened()){
+            capture.open(camera_number);
+        }
 
         QRData_current_update.clear();
 
@@ -158,6 +162,7 @@ bool Camera::first_detect_qr()
             }
         }
     }
+
     if((QRData_current_update.isEmpty() == false) && (first_step == true))
     {
         //检测到QR
