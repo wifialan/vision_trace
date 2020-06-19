@@ -1,1 +1,1 @@
-TURN,UP
+UP,UP

@@ -70,6 +70,7 @@ OBJECTS       = main.o \
 DIST          = ../vision_trace_host/path.py \
 		../vision_trace_host/route.py \
 		../vision_trace_host/path_node.json \
+		direction.txt \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/common/linux.conf \

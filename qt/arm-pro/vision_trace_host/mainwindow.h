@@ -174,14 +174,15 @@ private slots:
 
     void on_pushButton_stop_clicked();
 
-
     void on_pushButton_go_clicked();
-
-
 
     void on_pushButton_serial_connect_clicked();
 
     void on_pushButton_serial_disconnect_clicked();
+
+    void on_comboBox_direction_currentIndexChanged(int index);
+
+    void on_doubleSpinBox_line_speed_valueChanged(double arg1);
 
 signals:
     void lanuch_turltebot_go();

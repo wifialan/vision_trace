@@ -60,6 +60,32 @@ MainWindow::MainWindow(QWidget *parent) :
     oldPortStringList.clear();
     timer_serial->start();
     path->read_json_file();
+
+    ui->doubleSpinBox_line_speed->setRange(0.01,0.5);
+    ui->doubleSpinBox_line_speed->setSingleStep(0.01);
+    ui->doubleSpinBox_line_speed->setDecimals(2);
+    ui->doubleSpinBox_line_speed->setValue(0.20);
+
+    // 从文件记录中获取小车朝向
+    ui->comboBox_direction->addItem("正向");
+    ui->comboBox_direction->addItem("反向");
+
+    QFile file("direction.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (file.isOpen()) {
+        qDebug() << "open direction.txt file";
+        QByteArray dir = file.readLine();
+        qDebug() << dir;
+        //        QString str = file.readLine();
+        if (dir.contains("0")) {
+            ui->comboBox_direction->setCurrentText("正向");
+            qDebug() << "小车朝向为正向";
+        } else {
+            ui->comboBox_direction->setCurrentText("反向");
+            qDebug() << "小车朝向为反向";
+        }
+        file.close();
+    }
     //    cam->open();
 }
 
@@ -307,7 +333,7 @@ void MainWindow::on_read_serial()
     QByteArray tail;
 
     array = serial->readAll();
-//    qDebug() << array;
+    //    qDebug() << array;
 
     header.append(0xAA);
     header.append(0xBB);
@@ -318,9 +344,9 @@ void MainWindow::on_read_serial()
         cam->path_status = array.at(2);
         QString str = QString::number(cam->path_status,10);
         ui->lineEdit_path_status->setText(str);
-//        qDebug() << cam->path_status;
+        //        qDebug() << cam->path_status;
     }
-//    qDebug() << "---------------------------";
+    //    qDebug() << "---------------------------";
 }
 void MainWindow::send_cmd_to_udp(quint8 cmd, QByteArray &value_array)
 {
@@ -578,23 +604,23 @@ void MainWindow::on_pushButton_serial_connect_clicked()
     qDebug() << portName;
 
     serial->setPortName(portName);
-//    serial->setPort(*infoList);
+    //    serial->setPort(*infoList);
     if (!serial->open(QIODevice::ReadWrite)) {
-            QMessageBox::warning(this,"Warning","Open serial port fail!\n Please see the the information window to solve problem.");
-            qDebug() << tr("SYSTEM: The serial port failed to open,Please check as follows: ");
-            qDebug() << tr("        1> if the serial port is occupied by other software? ");
-            qDebug() << tr("        2> if the serial port connection is normal?");
-            qDebug() << tr("        3> if the program is run at root user? You can use the cmd sudo ./(programname) and type your password to be done.");
+        QMessageBox::warning(this,"Warning","Open serial port fail!\n Please see the the information window to solve problem.");
+        qDebug() << tr("SYSTEM: The serial port failed to open,Please check as follows: ");
+        qDebug() << tr("        1> if the serial port is occupied by other software? ");
+        qDebug() << tr("        2> if the serial port connection is normal?");
+        qDebug() << tr("        3> if the program is run at root user? You can use the cmd sudo ./(programname) and type your password to be done.");
 
-            ui->pushButton_serial_disconnect->setEnabled(false);
-            ui->comboBox_serial->setEnabled(true);
-            ui->pushButton_serial_connect->setEnabled(true);
-            ui->statusBar->showMessage("Open:" + portInfo + "failed!" );
-        } else {
-            ui->pushButton_serial_disconnect->setEnabled(true);
-            ui->comboBox_serial->setEnabled(false);
-            ui->pushButton_serial_connect->setEnabled(false);
-            qDebug() << tr("SYSTEM: The system has been connected with ")+portInfo+" " ;
+        ui->pushButton_serial_disconnect->setEnabled(false);
+        ui->comboBox_serial->setEnabled(true);
+        ui->pushButton_serial_connect->setEnabled(true);
+        ui->statusBar->showMessage("Open:" + portInfo + "failed!" );
+    } else {
+        ui->pushButton_serial_disconnect->setEnabled(true);
+        ui->comboBox_serial->setEnabled(false);
+        ui->pushButton_serial_connect->setEnabled(false);
+        qDebug() << tr("SYSTEM: The system has been connected with ")+portInfo+" " ;
     }
 }
 
@@ -605,4 +631,30 @@ void MainWindow::on_pushButton_serial_disconnect_clicked()
     ui->pushButton_serial_disconnect->setEnabled(false);
     ui->comboBox_serial->setEnabled(true);
     ui->pushButton_serial_connect->setEnabled(true);
+}
+
+
+void MainWindow::on_comboBox_direction_currentIndexChanged(int index)
+{
+    QFile file("direction.txt");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream stream(&file);
+    stream.seek(file.size());
+    if (index == 0) {
+        // forward
+        stream << "0";
+        this->cam->turltebot_direction = FORWARD;
+    } else {
+        this->cam->turltebot_direction = BACKWARD;
+        stream << "1";
+    }
+    file.flush();
+    file.close();
+
+}
+
+void MainWindow::on_doubleSpinBox_line_speed_valueChanged(double arg1)
+{
+    this->cam->doubleSpinBox_line_speed = arg1;
+    qDebug() << "speed: " << arg1;
 }

@@ -146,6 +146,9 @@ public:
     bool update_path_node_flag;
 //    qint16 check_qr_contains_cross_road_node_counter;
     qint16 check_qr_contains_cross_road_node_number;
+    double doubleSpinBox_line_speed;
+    double doubleSpinBox_angular_speed;
+
 
 
 

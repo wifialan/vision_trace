@@ -132,7 +132,7 @@ bool Camera::first_detect_qr()
             int n = scanner.scan(imageZbar);
 
             if (n > 0){
-                ros_speed_line = ROS_SPEED_HIGH;
+                ros_speed_line = doubleSpinBox_line_speed;
                 path_status_calc = 0;
                 // extract results
                 for (zbar::Image::SymbolIterator symbol = imageZbar.symbol_begin();
@@ -195,7 +195,7 @@ void Camera::path_status_slow()
     qDebug() << "path_status_calc: " << path_status_calc;
     if (path_status_calc < 2) {
         qDebug() << "高速+++++++++++++++++++++++++++++++++++++++++++++++++";
-        ros_speed_line = ROS_SPEED_HIGH;
+        ros_speed_line = doubleSpinBox_line_speed;
         return;
     } else {
         // 减速
@@ -247,7 +247,7 @@ void Camera::detect_qr(){
             if (n > 0){
                 flag_capture_grap = true;
                 path_status_calc = 0;
-                ros_speed_line = ROS_SPEED_HIGH;
+                ros_speed_line = doubleSpinBox_line_speed;
                 // extract results
                 for (zbar::Image::SymbolIterator symbol = imageZbar.symbol_begin();
                      symbol != imageZbar.symbol_end();
@@ -427,7 +427,7 @@ void Camera::on_next_frame()
     } else {
         qDebug() << "小车朝向为反向";
     }
-    if (ros_speed_line == ROS_SPEED_HIGH) {
+    if (ros_speed_line == doubleSpinBox_line_speed) {
         qDebug() << "[高速]";
     } else {
         qDebug() << "[低速]";
@@ -454,7 +454,7 @@ void Camera::path_plan()
         qDebug() << "[直线]";
         if (path_status_calc != 2) {
             qDebug() << "高速";
-            if (current_straight_path_ros_speed_line < ROS_SPEED_HIGH) {
+            if (current_straight_path_ros_speed_line < doubleSpinBox_line_speed) {
                 current_straight_path_ros_speed_line += 0.002;
             }
             ros_speed_line = current_straight_path_ros_speed_line;
@@ -496,7 +496,7 @@ void Camera::straightroad_plan()
     if (last_path_status == PATH_STATUS_LEFT && (path_status != PATH_STATUS_UP)) {
         //上一次状态为左转，并且当前状态不为直行，那么继续左转，直到当前状态为直行为止
         if(path_status == 0x0E){
-            //            ros_speed_line = ROS_SPEED_HIGH / 2;
+            //            ros_speed_line = doubleSpinBox_line_speed / 2;
             ros_speed_angular = 3 * ros_speed_line;
             qDebug() << "加速转弯";
         } else if (path_status == 0x0F) {
@@ -526,7 +526,7 @@ void Camera::straightroad_plan()
     } else if (last_path_status == PATH_STATUS_RIGHT && (path_status != PATH_STATUS_UP)) {
         //        ros_speed_angular = 1.5 * ros_speed_angular;
         if(path_status == 0x07){
-            //            ros_speed_line = ROS_SPEED_HIGH / 2;
+            //            ros_speed_line = doubleSpinBox_line_speed / 2;
             ros_speed_angular = 3 * ros_speed_line;
             qDebug() << "加速转弯";
         } else if (path_status == 0x0F) {
@@ -678,7 +678,7 @@ void Camera::crossroad_plan()
                 qDebug() << "转弯完成，开始高速行驶";
                 last_path_status = 0xFF;
                 this->index ++;//执行下一个命令
-                ros_speed_line = ROS_SPEED_HIGH;
+                ros_speed_line = doubleSpinBox_line_speed;
                 flag_truned_crossroad_then_up = false;
                 flag_arrived_crossroad = false; //检测红外探头是否抵达岔道口
                 flag_through_crossroad = true; //检测红外探头是否转弯成功
