@@ -3,6 +3,7 @@
 Camera::Camera()
 {
 
+    start_correct_straight_road = false;
     last_path_status = 0xFF;
     flag_qr_detect_crossroad = false;
     flag_through_crossroad = true;
@@ -75,6 +76,8 @@ void Camera::open()
             timer_crossroad = new QTimer(this);
             timer_crossroad_qr = new QTimer(this);
             timer_path_status_slow = new QTimer(this);
+            timer_is_straight_road =new QTimer(this);
+            timer_is_straight_road->setInterval(3000);//修正时间用3s
             timer_path_status_slow->setInterval(500);
             timer_crossroad_qr->setInterval(200);
             timer_crossroad->setInterval(200);// set timer: 200ms
@@ -86,6 +89,8 @@ void Camera::open()
             connect(timer_crossroad, SIGNAL(timeout()), this, SLOT(on_timer_through_crossroad()));
             connect(timer_crossroad_qr, SIGNAL(timeout()), this, SLOT(on_timer_crossroad_qr()));
             connect(timer_path_status_slow, SIGNAL(timeout()), this, SLOT(on_timer_path_status_slow()));
+            connect(timer_is_straight_road, SIGNAL(timeout()), this, SLOT(on_timer_is_straight_road()));
+
             //            timer->start();
         }
     }
@@ -93,6 +98,11 @@ void Camera::open()
 
 void Camera::on_update_path()
 {
+}
+
+void Camera::on_timer_is_straight_road()
+{
+
 }
 
 bool Camera::first_detect_qr()
@@ -497,10 +507,39 @@ void Camera::path_plan()
 void Camera::straightroad_plan()
 {
     //    ros_speed_angular = ros_speed_line * 2;
+    // 如果小车在起步时出现超左偏和超右偏，那么保持低速修正状态
+    if(start_correct_straight_road == true)
+    {
+        //0x7超右偏 0xE超左偏
+        if(path_status == 0x7 || path_status == 0xE)
+        {
+            current_straight_path_ros_speed_line = ROS_SPEED_LOW;
+            ros_speed_line = current_straight_path_ros_speed_line;
+        } else {
+            if (current_straight_path_ros_speed_line < doubleSpinBox_line_speed) {
+                current_straight_path_ros_speed_line += 0.0005;
+            }
+            ros_speed_line = current_straight_path_ros_speed_line;
+            if (ros_speed_line < 0.1)
+                ros_speed_angular = 8 * ros_speed_line;
+            else if(ros_speed_line < 0.2)
+                ros_speed_angular = 4 * ros_speed_line;
+            else if(ros_speed_line < 0.35)
+                ros_speed_angular = 2 * ros_speed_line;
+            else
+                ros_speed_angular = 1.5 * ros_speed_line;
+        }
+        //若速度达到高速状态，那么判定修正成功
+        if(ros_speed_line > (doubleSpinBox_line_speed - 0.02))
+        {
+            start_correct_straight_road = false;
+        }
+    }
 
     if (last_path_status == PATH_STATUS_LEFT && (path_status != PATH_STATUS_UP)) {
         //上一次状态为左转，并且当前状态不为直行，那么继续左转，直到当前状态为直行为止
         if(path_status == 0x0E){
+            start_correct_straight_road = true;
             //            ros_speed_line = doubleSpinBox_line_speed / 2;
             ros_speed_angular = 3 * ros_speed_line;
             qDebug() << "加速转弯";
@@ -513,6 +552,7 @@ void Camera::straightroad_plan()
                 emit show_tutlebot_status(TURLTEBOT_RIGHT);
                 lock_status(TURLTEBOT_RIGHT);
             }
+            start_correct_straight_road = true;
             last_path_status = PATH_STATUS_RIGHT;
             qDebug() << "小车左转过头了，开始右转";
             qDebug() << "[右转] 线速度为：" << ros_speed_line << "m/s " << "角速度为：" << ros_speed_angular << "rad/s";
@@ -531,6 +571,7 @@ void Camera::straightroad_plan()
     } else if (last_path_status == PATH_STATUS_RIGHT && (path_status != PATH_STATUS_UP)) {
         //        ros_speed_angular = 1.5 * ros_speed_angular;
         if(path_status == 0x07){
+            start_correct_straight_road = true;
             //            ros_speed_line = doubleSpinBox_line_speed / 2;
             ros_speed_angular = 3 * ros_speed_line;
             qDebug() << "加速转弯";
@@ -545,6 +586,7 @@ void Camera::straightroad_plan()
                 lock_status(TURLTEBOT_LEFT);
             }
             last_path_status = PATH_STATUS_LEFT;
+            start_correct_straight_road = true;
             qDebug() << "小车右转过头了，开始左转";
             qDebug() << "[左转] 线速度为：" << ros_speed_line << "m/s " << "角速度为：" << ros_speed_angular << "rad/s";
             emit turltebot_left(ros_speed_line, ros_speed_angular);

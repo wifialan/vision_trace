@@ -70,7 +70,6 @@ OBJECTS       = main.o \
 DIST          = ../vision_trace_host/path.py \
 		../vision_trace_host/route.py \
 		../vision_trace_host/path_node.json \
-		direction.txt \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt5.10.0/5.10.0/gcc_64/mkspecs/common/linux.conf \
@@ -1865,6 +1864,8 @@ mainwindow.o: ../vision_trace_host/mainwindow.cpp ../vision_trace_host/mainwindo
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qrubberband.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qframe.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QDoubleSpinBox \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qspinbox.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QGridLayout \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qgridlayout.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qlayout.h \
@@ -1872,6 +1873,7 @@ mainwindow.o: ../vision_trace_host/mainwindow.cpp ../vision_trace_host/mainwindo
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qboxlayout.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QGroupBox \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qgroupbox.h \
+		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QHBoxLayout \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/QHeaderView \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qheaderview.h \
 		/opt/Qt5.10.0/5.10.0/gcc_64/include/QtWidgets/qabstractitemview.h \

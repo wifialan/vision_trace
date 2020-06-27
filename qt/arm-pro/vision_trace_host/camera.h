@@ -85,6 +85,7 @@ public:
     QTimer *timer_crossroad;
     QTimer *timer_crossroad_qr;
     QTimer *timer_path_status_slow;
+    QTimer *timer_is_straight_road;
 
     quint8 path_status;
     quint8 last_path_status;
@@ -148,6 +149,7 @@ public:
     qint16 check_qr_contains_cross_road_node_number;
     double doubleSpinBox_line_speed;
     double doubleSpinBox_angular_speed;
+    bool start_correct_straight_road;
 
 
 
@@ -182,6 +184,7 @@ private:
     bool path_status_slow_flag;
 
 
+
     void init_status();
     void lock_status(qint8);
 
@@ -193,6 +196,7 @@ private slots:
     void on_timer_through_crossroad();
     void on_timer_crossroad_qr();
     void on_timer_path_status_slow();
+    void on_timer_is_straight_road();
     void on_send_path_info_to_camera(QByteArray);
 
 signals:

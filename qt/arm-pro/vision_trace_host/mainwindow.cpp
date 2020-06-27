@@ -560,6 +560,7 @@ void MainWindow::on_pushButton_go_clicked()
     if (start_point == stop_point) {
         return;
     }
+
     cam->start_stop_node_array.clear();
     cam->start_stop_node_array.append(start_point);
     cam->start_stop_node_array.append('\n');

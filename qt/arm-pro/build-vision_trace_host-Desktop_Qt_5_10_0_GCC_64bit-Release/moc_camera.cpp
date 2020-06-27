@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Camera_t {
-    QByteArrayData data[23];
-    char stringdata0[380];
+    QByteArrayData data[24];
+    char stringdata0[406];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -53,7 +53,8 @@ QT_MOC_LITERAL(18, 258, 18), // "on_timer_turn_tail"
 QT_MOC_LITERAL(19, 277, 26), // "on_timer_through_crossroad"
 QT_MOC_LITERAL(20, 304, 21), // "on_timer_crossroad_qr"
 QT_MOC_LITERAL(21, 326, 25), // "on_timer_path_status_slow"
-QT_MOC_LITERAL(22, 352, 27) // "on_send_path_info_to_camera"
+QT_MOC_LITERAL(22, 352, 25), // "on_timer_is_straight_road"
+QT_MOC_LITERAL(23, 378, 27) // "on_send_path_info_to_camera"
 
     },
     "Camera\0show_frame\0\0show_frame_2\0"
@@ -66,6 +67,7 @@ QT_MOC_LITERAL(22, 352, 27) // "on_send_path_info_to_camera"
     "on_update_path\0on_timer_turn_tail\0"
     "on_timer_through_crossroad\0"
     "on_timer_crossroad_qr\0on_timer_path_status_slow\0"
+    "on_timer_is_straight_road\0"
     "on_send_path_info_to_camera"
 };
 #undef QT_MOC_LITERAL
@@ -76,7 +78,7 @@ static const uint qt_meta_data_Camera[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      21,   14, // methods
+      22,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -84,29 +86,30 @@ static const uint qt_meta_data_Camera[] = {
       13,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  119,    2, 0x06 /* Public */,
-       3,    1,  122,    2, 0x06 /* Public */,
-       4,    1,  125,    2, 0x06 /* Public */,
-       5,    2,  128,    2, 0x06 /* Public */,
-       6,    2,  133,    2, 0x06 /* Public */,
-       7,    2,  138,    2, 0x06 /* Public */,
-       8,    2,  143,    2, 0x06 /* Public */,
-       9,    2,  148,    2, 0x06 /* Public */,
-      10,    0,  153,    2, 0x06 /* Public */,
-      11,    1,  154,    2, 0x06 /* Public */,
-      12,    1,  157,    2, 0x06 /* Public */,
-      13,    1,  160,    2, 0x06 /* Public */,
-      14,    1,  163,    2, 0x06 /* Public */,
+       1,    1,  124,    2, 0x06 /* Public */,
+       3,    1,  127,    2, 0x06 /* Public */,
+       4,    1,  130,    2, 0x06 /* Public */,
+       5,    2,  133,    2, 0x06 /* Public */,
+       6,    2,  138,    2, 0x06 /* Public */,
+       7,    2,  143,    2, 0x06 /* Public */,
+       8,    2,  148,    2, 0x06 /* Public */,
+       9,    2,  153,    2, 0x06 /* Public */,
+      10,    0,  158,    2, 0x06 /* Public */,
+      11,    1,  159,    2, 0x06 /* Public */,
+      12,    1,  162,    2, 0x06 /* Public */,
+      13,    1,  165,    2, 0x06 /* Public */,
+      14,    1,  168,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      15,    0,  166,    2, 0x08 /* Private */,
-      16,    0,  167,    2, 0x08 /* Private */,
-      17,    0,  168,    2, 0x08 /* Private */,
-      18,    0,  169,    2, 0x08 /* Private */,
-      19,    0,  170,    2, 0x08 /* Private */,
-      20,    0,  171,    2, 0x08 /* Private */,
-      21,    0,  172,    2, 0x08 /* Private */,
-      22,    1,  173,    2, 0x08 /* Private */,
+      15,    0,  171,    2, 0x08 /* Private */,
+      16,    0,  172,    2, 0x08 /* Private */,
+      17,    0,  173,    2, 0x08 /* Private */,
+      18,    0,  174,    2, 0x08 /* Private */,
+      19,    0,  175,    2, 0x08 /* Private */,
+      20,    0,  176,    2, 0x08 /* Private */,
+      21,    0,  177,    2, 0x08 /* Private */,
+      22,    0,  178,    2, 0x08 /* Private */,
+      23,    1,  179,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QImage,    2,
@@ -124,6 +127,7 @@ static const uint qt_meta_data_Camera[] = {
     QMetaType::Void, QMetaType::QByteArray,    2,
 
  // slots: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -162,7 +166,8 @@ void Camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 17: _t->on_timer_through_crossroad(); break;
         case 18: _t->on_timer_crossroad_qr(); break;
         case 19: _t->on_timer_path_status_slow(); break;
-        case 20: _t->on_send_path_info_to_camera((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 20: _t->on_timer_is_straight_road(); break;
+        case 21: _t->on_send_path_info_to_camera((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -286,13 +291,13 @@ int Camera::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 21)
+        if (_id < 22)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 21;
+        _id -= 22;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 21)
+        if (_id < 22)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 21;
+        _id -= 22;
     }
     return _id;
 }
