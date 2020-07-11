@@ -6,79 +6,282 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>726</width>
-    <height>486</height>
+    <width>636</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QPushButton" name="pushButton_con_net">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>10</y>
-      <width>422</width>
-      <height>215</height>
+      <x>380</x>
+      <y>280</y>
+      <width>96</width>
+      <height>25</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
-      <widget class="QTextBrowser" name="textBrowser">
-       <property name="minimumSize">
-        <size>
-         <width>420</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="readOnly">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="text">
+     <string>ping network</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButtonCar">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>320</y>
+      <width>112</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(138, 226, 52);</string>
+    </property>
+    <property name="text">
+     <string>Car</string>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_update">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>240</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>update</string>
+    </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>271</width>
-      <height>381</height>
+      <x>360</x>
+      <y>30</y>
+      <width>211</width>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
-     <string>config</string>
+     <string>升降台</string>
     </property>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QWidget" name="gridLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>140</y>
-       <width>278</width>
-       <height>243</height>
+       <x>10</x>
+       <y>30</y>
+       <width>188</width>
+       <height>146</height>
       </rect>
      </property>
-     <property name="title">
-      <string>ctrl</string>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="spinBox_lifter_speed"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_lifter_height"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton_lifter_set_speed">
+          <property name="text">
+           <string>设定速度(%)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pushButton_lifter_zero">
+          <property name="text">
+           <string>归零</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="pushButton_lifter_stop">
+          <property name="text">
+           <string>停止</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_lifter_set_height">
+          <property name="text">
+           <string>设置高度(cm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_lifter_excute">
+          <property name="text">
+           <string>执行</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>331</width>
+      <height>481</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>机器人</string>
+    </property>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>290</width>
+       <height>153</height>
+      </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QPushButton" name="pushButtonStop">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(164, 0, 0);</string>
-        </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>Stop</string>
-        </property>
-        <property name="shortcut">
-         <string>Space</string>
+         <string>        起点</string>
         </property>
        </widget>
       </item>
-      <item>
-       <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBox_start_node"/>
+      </item>
+      <item row="0" column="2" rowspan="2">
+       <widget class="QPushButton" name="pushButton_go">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>GO</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>        终点</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBox_stop_node"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>        朝向</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboBox_direction"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>线速度(m/s)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_line_speed">
+        <property name="decimals">
+         <number>2</number>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>0.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>角速度(rad/s)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_angular_speed"/>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="gridLayoutWidget_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>200</y>
+       <width>256</width>
+       <height>256</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="pushButton_up">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>UP</string>
+          </property>
+          <property name="shortcut">
+           <string>Up</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="2">
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
@@ -86,27 +289,11 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="pushButton_down">
-          <property name="minimumSize">
-           <size>
             <width>80</width>
             <height>80</height>
            </size>
           </property>
-          <property name="text">
-           <string>DOWN</string>
-          </property>
-          <property name="shortcut">
-           <string>Down</string>
-          </property>
-         </widget>
+         </spacer>
         </item>
         <item row="1" column="0">
          <widget class="QPushButton" name="pushButton_left">
@@ -130,32 +317,25 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton_up">
+        <item row="1" column="1">
+         <widget class="QPushButton" name="pushButton_down">
           <property name="minimumSize">
            <size>
             <width>80</width>
             <height>80</height>
            </size>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
           <property name="text">
-           <string>UP</string>
+           <string>DOWN</string>
           </property>
           <property name="shortcut">
-           <string>Up</string>
+           <string>Down</string>
           </property>
          </widget>
         </item>
@@ -181,195 +361,35 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <layout class="QVBoxLayout" name="verticalLayout_3"/>
+        <item row="2" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButtonStop">
+          <property name="minimumSize">
+           <size>
+            <width>252</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>184</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(164, 0, 0);</string>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+          <property name="shortcut">
+           <string>Space</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>31</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>起点</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_4">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>70</y>
-       <width>31</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>终点</string>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="comboBox_start_node">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>30</y>
-       <width>86</width>
-       <height>25</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="comboBox_stop_node">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>70</y>
-       <width>86</width>
-       <height>25</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_5">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>110</y>
-       <width>71</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>当前节点</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit_current_node">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>110</y>
-       <width>61</width>
-       <height>25</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>430</y>
-      <width>67</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>400</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>小车当前朝向</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_direction">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>400</y>
-      <width>67</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_discon_net">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>310</y>
-      <width>127</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>exit network</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_con_net">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>280</y>
-      <width>96</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>ping network</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="radioButtonCar">
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>250</y>
-      <width>112</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(138, 226, 52);</string>
-    </property>
-    <property name="text">
-     <string>Car</string>
-    </property>
-    <property name="checkable">
-     <bool>false</bool>
-    </property>
-    <property name="autoExclusive">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_go">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>290</y>
-      <width>89</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>GO</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_update">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>330</y>
-      <width>89</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>update</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -377,7 +397,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>726</width>
+     <width>636</width>
      <height>22</height>
     </rect>
    </property>

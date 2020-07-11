@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QtNetwork/QUdpSocket>
+#include <QtNetwork/QTcpServer>
+#include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostAddress>
 #include <QtSerialPort/QSerialPort>
 #include <QMessageBox>
@@ -13,6 +15,7 @@
 #include "ros.h"
 #include "camera.h"
 #include "pathplan.h"
+#include "protocol.h"
 
 /*
 // cmd
@@ -36,11 +39,11 @@
 0xff
 */
 
-#define             PC_IP               (tr("192.168.0.104"))
+#define             PC_IP               (tr("192.168.1.237"))
 #define             PC_PORT             ((quint16)8799)
 
-#define             HOST_IP                 (tr("127.0.0.1"))
-#define             HOST_PORT               ((quint16)8399)
+#define             ARM_IP                 (tr("192.168.1.237"))
+#define             ARM_PORT               ((quint16)8399)
 #define             SEND_RETRY              10
 #define             ERROR_USER_INPUT            ((qint16)0x01)
 #define             ERROR_NO_ERROR              ((qint16)0x00)
@@ -68,8 +71,8 @@ typedef struct {
     bool   flag;
     quint8 info_type;
 #define             INFO_STATUS             0x01
-#define             TURLTEBOT_FORWARD                 0x00
-#define             TURLTEBOT_BACKWARD                0x01
+#define             TURLTEBOT_FORWARD                 0x01
+#define             TURLTEBOT_BACKWARD                0x02
     quint8 direction;
     quint8 start_node;
     quint8 stop_node;
@@ -91,6 +94,28 @@ typedef struct {
 
 #define             INFO_UPDATE             0x05
 
+#define             INFO_SPEED_VALUE        0x06
+#define             LINE_SPEED              0x01
+#define             ANGULAR_SPEED           0x02
+
+    double line_speed;
+    double angular_speed;
+
+#define             INFO_LIFTER             0x07
+#define             LIFTER_SET_HEIGHT       0x01
+#define             LIFTER_SET_SPEED        0x02
+#define             LIFTER_SET_ZERO         0x03
+#define             LIFTER_STOP             0x04
+#define             LIFTER_EXCUTE           0x05
+
+    int     lifter_data_type;
+    int lifter_height_hight;
+    int lifter_height_low;
+
+    double lifter_height;
+    int    lifter_speed;
+
+
 
     quint8 cmd;
     quint8 len;
@@ -104,27 +129,31 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public:
+    QTcpServer  *tcp_server;
+    QTcpSocket  *tcp_client;
+    bool        flag_is_connect_to_tcp;
+
 private:
     Ui::MainWindow *ui;
 
-//    VideoCapture capture;
-//    QImage image;
-//    QTimer *timer;
-//    Mat frame;
-//    double rate; //FPS
+    QUdpSocket  *socket;
 
     Camera      *cam;
     Ros         *ros;
     Pathplan    *path;
-//    Pathplan    *path;
+    Protocol    *protocol;
+    //    Pathplan    *path;
     QTimer      *timer_serial;
     QSerialPort *serial;
-    QUdpSocket  *socket;
+
     QString     ip;
     quint16     port;
     bool        connect_state;
     QByteArray *socket_array;
     QStringList oldPortStringList;
+    QByteArray read_serial;
+
 
 public:
     void update_remote_turltebot_status(qint16);
@@ -132,6 +161,9 @@ public:
 private:
 
     qint16      socket_connect();
+    void        socket_listen();
+
+
     void        socket_disconnect();
     void        write_socket (quint8 byte);
     void        write_socket (QByteArray array);
@@ -139,9 +171,9 @@ private:
     void        write_socket (quint8 *buffer, quint32 len);
     bool        is_connect();
     void        send_cmd_serial  (quint8 cmd);
-    void        send_cmd_to_udp( quint8 cmd, QByteArray &value );
-    void        send_cmd_to_udp( quint8 cmd );
-    void        send_cmd_to_udp(QByteArray);
+    void        send_cmd_to_tcp( quint8 cmd, QByteArray &value );
+    void        send_cmd_to_tcp( quint8 cmd );
+    void        send_cmd_to_tcp(QByteArray);
     COM_PAC     decode_protocal( QByteArray array );
     QString     get_localhost_ip();
 
@@ -149,11 +181,17 @@ private:
     void        analyze_info_ping(COM_PAC);
     void        analyze_info_command(COM_PAC);
     void        analyze_info_update();
+    void        analyze_info_speed(COM_PAC);
+    void        analyze_info_lifter(COM_PAC);
+    void        send_start_stop_node_to_pc();
+
 
 public slots:
     void        on_read_network();
     void        on_read_serial();
     void        on_timer_serial();
+    void        on_disconnected();
+    void        on_new_connect_tcp();
 
 private slots:
     void on_pushButton_clicked();
@@ -163,13 +201,14 @@ private slots:
     void on_pushButton_left_clicked();
     void on_pushButton_right_clicked();
 private slots:
-   void on_show_frame(QImage);
-   void on_show_frame_2(QImage);
-   void on_show_tutlebot_status(qint8);
-   void on_show_command(QByteArray);
-   void on_send_info_to_pc(QByteArray);
-   void on_update_path_node(QByteArray);
-   void on_update_path_start_node(QByteArray);
+    void on_show_frame(QImage);
+    void on_show_frame_2(QImage);
+    void on_show_tutlebot_status(qint16);
+    void on_show_command(QByteArray);
+    void on_send_info_to_pc(QByteArray);
+    void on_update_path_node(QByteArray);
+    void on_update_path_start_node(QByteArray);
+    void on_update_trultebot_direction(bool);
 
 
     void on_pushButton_stop_clicked();
@@ -184,8 +223,27 @@ private slots:
 
     void on_doubleSpinBox_line_speed_valueChanged(double arg1);
 
+    void on_doubleSpinBox_angular_speed_valueChanged(double arg1);
+
+
+
+    void on_horizontalSlider_valueChanged(int value);
+
+    void on_pushButton_lifter_zero_clicked();
+
+
+    void on_pushButton_lifter_set_height_clicked();
+
+    void on_pushButton_lifter_stop_clicked();
+
+    void on_pushButton_lifter_set_speed_clicked();
+
+    void on_pushButton_lifter_excute_clicked();
+
 signals:
     void lanuch_turltebot_go();
+
+
 };
 
 #endif // MAINWINDOW_H

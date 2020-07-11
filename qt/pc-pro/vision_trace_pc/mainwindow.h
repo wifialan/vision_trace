@@ -7,9 +7,9 @@
 #include <QTimer>
 #include <QNetworkInterface>
 #include <QThread>
-#define             HOST_IP                 (tr("192.168.1.237"))
-#define             HOST_PORT               ((quint16)8799)
-#define             ARM_IP                  (tr("192.168.0.106"))
+#define             PC_IP                 (tr("192.168.1.237"))
+#define             PC_PORT               ((quint16)8799)
+#define             ARM_IP                  (tr("192.168.1.237"))
 #define             ARM_PORT                ((quint16)8399)
 #define             SEND_RETRY              10
 #define             ERROR_USER_INPUT            ((qint16)0x01)
@@ -66,6 +66,28 @@ typedef struct {
 #define             INFO_PATH_NODE          0x04
     QByteArray path_node;
 
+#define             INFO_SPEED_VALUE        0x06
+#define             LINE_SPEED              0x01
+#define             ANGULAR_SPEED           0x02
+
+
+    double line_speed;
+    double angular_speed;
+
+
+#define             INFO_LIFTER             0x07
+#define             LIFTER_SET_HEIGHT       0x01
+#define             LIFTER_SET_SPEED        0x02
+#define             LIFTER_SET_ZERO         0x03
+#define             LIFTER_STOP             0x04
+#define             LIFTER_EXCUTE           0x05
+
+    int     lifter_data_type;
+    int lifter_height_hight;
+    int lifter_height_low;
+
+    double lifter_height;
+    int    lifter_speed;
 
     quint8 cmd;
     quint8 len;
@@ -100,6 +122,20 @@ private slots:
 
     void on_pushButton_update_clicked();
 
+    void on_doubleSpinBox_line_speed_valueChanged(double arg1);
+
+    void on_doubleSpinBox_angular_speed_valueChanged(double arg1);
+
+    void on_pushButton_lifter_set_height_clicked();
+
+    void on_pushButton_lifter_set_speed_clicked();
+
+    void on_pushButton_lifter_zero_clicked();
+
+    void on_pushButton_lifter_stop_clicked();
+
+    void on_pushButton_lifter_excute_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -112,6 +148,8 @@ private:
     quint16     car_state;
     quint16     camera_state;
     QTimer      *timer;
+    bool        info_6_receive_from_remote;
+    bool        info_7_receive_from_remote;
 private:
 
     qint16      socket_connect();

@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->port = HOST_PORT;
+    this->port = PC_PORT;
     this->ip = get_localhost_ip();
     emit change_indicator_state(true);
     count = 0;
@@ -25,6 +25,38 @@ MainWindow::MainWindow(QWidget *parent) :
             this,               \
             SLOT( on_read_network() )
             );
+
+    ui->comboBox_direction->addItem("正向");
+    ui->comboBox_direction->addItem("反向");
+
+    ui->doubleSpinBox_line_speed->setRange(0.01,0.5);
+    ui->doubleSpinBox_line_speed->setSingleStep(0.01);
+    ui->doubleSpinBox_line_speed->setDecimals(2);
+    ui->doubleSpinBox_line_speed->setValue(0.15);
+    ui->doubleSpinBox_angular_speed->setRange(0.01,0.5);
+    ui->doubleSpinBox_angular_speed->setSingleStep(0.05);
+    ui->doubleSpinBox_angular_speed->setDecimals(2);
+    ui->doubleSpinBox_angular_speed->setValue(0.02);
+
+    ui->doubleSpinBox_lifter_height->setDecimals(2);
+    ui->doubleSpinBox_lifter_height->setRange(2,200);
+    ui->doubleSpinBox_lifter_height->setValue(10);
+    ui->doubleSpinBox_lifter_height->setSingleStep(0.01);
+
+    ui->spinBox_lifter_speed->setRange(2,200);
+    ui->spinBox_lifter_speed->setValue(100);
+    ui->spinBox_lifter_speed->setSingleStep(1);
+
+    //    ui->pushButton_lifter_excute->setEnabled(false);
+    //    ui->pushButton_lifter_set_height->setEnabled(false);
+    //    ui->pushButton_lifter_set_speed->setEnabled(false);
+    //    ui->pushButton_lifter_stop->setEnabled(false);
+    //    ui->pushButton_lifter_zero->setEnabled(false);
+    //    ui->doubleSpinBox_lifter_height->setEnabled(false);
+    //    ui->spinBox_lifter_speed->setEnabled(false);
+
+    info_6_receive_from_remote = false;
+
 }
 
 MainWindow::~MainWindow()
@@ -57,7 +89,7 @@ void MainWindow::on_time_over()
 
 qint16 MainWindow::socket_connect()
 {
-    if ( ip.isEmpty() | port > 9999 )
+    if ( ip.isEmpty() || port > 9999 )
         return ERROR_USER_INPUT;
     if ( socket->bind(QHostAddress(ip), this->port) ){
         qDebug() << "成功绑定端口:" << this->port;
@@ -92,7 +124,7 @@ void MainWindow::write_socket(QString str)
     quint64 len;
     QByteArray array;
     array.append(str);
-    len = socket->writeDatagram( array, QHostAddress(ip), this->port );
+    len = socket->writeDatagram( array, QHostAddress(ARM_IP), ARM_PORT );
     if (len != array.length() ) {
         qDebug() << "udp retransmit!";
     }
@@ -103,7 +135,7 @@ void MainWindow::write_socket(quint8 *buffer, quint32 len)
     quint64 sendLen;
     QByteArray array;
     array.append((char*)buffer , len );
-    sendLen = socket->writeDatagram((char*)buffer, len, QHostAddress(HOST_IP), HOST_PORT);
+    sendLen = socket->writeDatagram((char*)buffer, len, QHostAddress(ARM_IP), ARM_PORT);
 }
 
 void MainWindow::on_read_network()
@@ -111,7 +143,7 @@ void MainWindow::on_read_network()
     QByteArray array;
     QHostAddress address;
     quint16 xport;
-    xport = HOST_PORT;
+    xport = PC_PORT;
     address.setAddress(ip);
     array.resize( socket->bytesAvailable() );
     socket->readDatagram( array.data(),array.size() );
@@ -145,19 +177,19 @@ void MainWindow::analyze_info_command(COM_PAC pac) {
 
     switch (pac.ctrl_command) {
     case TURLTEBOT_UP:
-        ui->textBrowser->append("SYSTEM: send cmd [UP]");
+        //ui->textBrowser->append("SYSTEM: send cmd [UP]");
         break;
     case TURLTEBOT_LEFT:
-        ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
+        //ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
         break;
     case TURLTEBOT_RIGHT:
-        ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
+        //ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
         break;
     case TURLTEBOT_STOP:
-        ui->textBrowser->append("SYSTEM: send cmd [STOP]");
+        //ui->textBrowser->append("SYSTEM: send cmd [STOP]");
         break;
     case TURLTEBOT_DOWN:
-        ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
+        //ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
         break;
     default:
         break;
@@ -188,7 +220,7 @@ void MainWindow::analyze_info_ping(COM_PAC pac)
 void MainWindow::analyze_info_status(COM_PAC pac)
 {
     // direction
-    ui->label_direction->setText( (pac.direction == FORWARD ? "正向" : "反向") );
+    ui->comboBox_direction->setCurrentText( (pac.direction == FORWARD ? "正向" : "反向") );
     // start node
     if (pac.start_node != 0xFF) {
         ui->comboBox_start_node->setCurrentText(QString::number(pac.start_node,10));
@@ -199,9 +231,9 @@ void MainWindow::analyze_info_status(COM_PAC pac)
     }
     // current node
     if (pac.current_node == 0xFF) {
-//        ui->lineEdit_current_node->setText("");
+        //        //ui->lineEdit_current_node->setText("");
     } else {
-        ui->lineEdit_current_node->setText(QString::number(pac.current_node,10));
+        //ui->lineEdit_current_node->setText(QString::number(pac.current_node,10));
     }
 }
 
@@ -332,6 +364,58 @@ COM_PAC MainWindow::decode_protocal(QByteArray array)
         pac.ctrl_command = array.at( header_index + 2 );
         pac.flag = true;
         break;
+    case INFO_SPEED_VALUE:
+
+        pac.line_speed = array.at(header_index + 2) & 0xFF;
+        pac.angular_speed = array.at(header_index + 3)& 0xFF;
+        pac.line_speed /= 100.0;
+        pac.angular_speed /= 100.0;
+        //        value = array.split(',').at(1).toHex();
+        //        str = array.split(',').at(1);
+        qDebug("line speed: %.2f\r\n",pac.line_speed);
+        qDebug("angular speed: %.2f\r\n",pac.angular_speed);
+
+        info_6_receive_from_remote = true;
+        ui->doubleSpinBox_line_speed->setValue(pac.line_speed);
+        ui->doubleSpinBox_angular_speed->setValue(pac.angular_speed);
+
+        break;
+    case INFO_LIFTER:
+
+        pac.lifter_data_type = array.at(header_index + 2);
+
+        if(pac.lifter_data_type == LIFTER_SET_HEIGHT){
+            info_7_receive_from_remote = true;
+            pac.lifter_height_hight = array.at(header_index + 3);
+            pac.lifter_height_low = (array.at(header_index + 4)&0xFF);
+            //            qDebug() << "pac.lifter_height_hight" << pac.lifter_height_hight;
+            //            qDebug() << "pac.lifter_height_low" << pac.lifter_height_low;
+
+            pac.lifter_height = ((pac.lifter_height_hight << 8) & 0xFF00) | pac.lifter_height_low;
+            pac.lifter_height = pac.lifter_height / 100.0;
+            ui->doubleSpinBox_lifter_height->setValue(pac.lifter_height);
+
+            qDebug("pac.lifter_heiht %.2f",pac.lifter_height);
+        } else if(pac.lifter_data_type == LIFTER_SET_SPEED){
+            info_7_receive_from_remote = true;
+            pac.lifter_speed = array.at(header_index + 3)&0xFF;
+            ui->spinBox_lifter_speed->setValue(pac.lifter_speed);
+
+            qDebug() << "pac.lifter_speed" << pac.lifter_speed;
+        } else if(pac.lifter_data_type == LIFTER_SET_ZERO){
+            // zero
+
+        }else if(pac.lifter_data_type == LIFTER_STOP){
+
+            // stop
+        }else if(pac.lifter_data_type == LIFTER_EXCUTE){
+
+            // LIFTER_EXCUTE
+        }
+
+        qDebug() << "INFO_LIFTER";
+
+        break;
     default:
         break;
     }
@@ -356,7 +440,7 @@ void MainWindow::on_pushButton_up_clicked()
     info_3.append(0x03);
     info_3.append(CMD_UP);
     send_cmd_to_udp(info_3);
-    ui->textBrowser->append("SYSTEM: send cmd [UP]");
+    //ui->textBrowser->append("SYSTEM: send cmd [UP]");
 }
 
 void MainWindow::on_pushButton_left_clicked()
@@ -365,7 +449,7 @@ void MainWindow::on_pushButton_left_clicked()
     info_3.append(0x03);
     info_3.append(CMD_LEFT);
     send_cmd_to_udp(info_3);
-    ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
+    //ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
 }
 
 void MainWindow::on_pushButton_down_clicked()
@@ -374,7 +458,7 @@ void MainWindow::on_pushButton_down_clicked()
     info_3.append(0x03);
     info_3.append(CMD_DOWN);
     send_cmd_to_udp(info_3);
-    ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
+    //ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
 }
 
 void MainWindow::on_pushButton_right_clicked()
@@ -383,7 +467,7 @@ void MainWindow::on_pushButton_right_clicked()
     info_3.append(0x03);
     info_3.append(CMD_RIGHT);
     send_cmd_to_udp(info_3);
-    ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
+    //ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
 }
 
 void MainWindow::on_pushButtonStop_clicked()
@@ -392,7 +476,7 @@ void MainWindow::on_pushButtonStop_clicked()
     info_3.append(0x03);
     info_3.append(CMD_STOP);
     send_cmd_to_udp(info_3);
-    ui->textBrowser->append("SYSTEM: send cmd [STOP]");
+    //ui->textBrowser->append("SYSTEM: send cmd [STOP]");
 }
 
 void MainWindow::on_pushButton_discon_net_clicked()
@@ -406,7 +490,11 @@ void MainWindow::on_pushButton_go_clicked()
     // 信息类型
     info_1.append(0x01);
     // 小车朝向(ARM端会忽略)
-    info_1.append(0x01);
+    if(ui->comboBox_direction->currentText() == "正向"){
+        info_1.append(FORWARD);
+    }else {
+        info_1.append(BACKWARD);
+    }
     // 起始节点
     if (ui->comboBox_start_node->currentText().isEmpty()) {
         on_pushButton_update_clicked();
@@ -430,4 +518,89 @@ void MainWindow::on_pushButton_update_clicked()
     QByteArray info_5;
     info_5.append(0x05);
     send_cmd_to_udp(info_5);
+}
+
+void MainWindow::on_doubleSpinBox_line_speed_valueChanged(double arg1)
+{
+    if(info_6_receive_from_remote == true)
+    {
+        info_6_receive_from_remote = false;
+        return;
+    }
+
+    QByteArray info_6;
+    info_6.append(0x06);
+    //info_6.append(LINE_SPEED);
+    info_6.append((arg1*100));
+    info_6.append(ui->doubleSpinBox_angular_speed->value()*100);
+    send_cmd_to_udp(info_6);
+}
+
+void MainWindow::on_doubleSpinBox_angular_speed_valueChanged(double arg1)
+{
+    if(info_6_receive_from_remote == true)
+    {
+        info_6_receive_from_remote = false;
+        return;
+    }
+    QByteArray info_6;
+    info_6.append(0x06);
+    info_6.append(ui->doubleSpinBox_line_speed->value()*100);
+    info_6.append((arg1*100));
+    send_cmd_to_udp(info_6);
+}
+
+void MainWindow::on_pushButton_lifter_set_height_clicked()
+{
+    if(info_7_receive_from_remote == true)
+    {
+        info_7_receive_from_remote = false;
+        return;
+    }
+    quint16 height = ui->doubleSpinBox_lifter_height->value()*100;
+    quint8  height_high = (height >> 8) & 0x00FF;
+    quint8  height_low =   height & 0x00FF;
+    qDebug() << height;
+    QByteArray info_7;
+    info_7.append(0x07);
+    info_7.append(LIFTER_SET_HEIGHT);
+    info_7.append(height_high);
+    info_7.append(height_low);
+
+    send_cmd_to_udp(info_7);
+}
+
+void MainWindow::on_pushButton_lifter_set_speed_clicked()
+{
+    int speed = ui->spinBox_lifter_speed->value();
+    qDebug() << speed;
+    QByteArray info_7;
+    info_7.append(0x07);
+    info_7.append(LIFTER_SET_SPEED);
+    info_7.append(speed);
+    send_cmd_to_udp(info_7);
+}
+
+void MainWindow::on_pushButton_lifter_zero_clicked()
+{
+    QByteArray info_7;
+    info_7.append(0x07);
+    info_7.append(LIFTER_SET_ZERO);
+    send_cmd_to_udp(info_7);
+}
+
+void MainWindow::on_pushButton_lifter_stop_clicked()
+{
+    QByteArray info_7;
+    info_7.append(0x07);
+    info_7.append(LIFTER_STOP);
+    send_cmd_to_udp(info_7);
+}
+
+void MainWindow::on_pushButton_lifter_excute_clicked()
+{
+    QByteArray info_7;
+    info_7.append(0x07);
+    info_7.append(LIFTER_EXCUTE);
+    send_cmd_to_udp(info_7);
 }

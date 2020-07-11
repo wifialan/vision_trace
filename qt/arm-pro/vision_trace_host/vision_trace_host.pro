@@ -28,17 +28,21 @@ SOURCES += \
         mainwindow.cpp \
     ros.cpp \
     camera.cpp \
-    pathplan.cpp
+    pathplan.cpp \
+    protocol.cpp
 
 HEADERS += \
         mainwindow.h \
     ros.h \
     camera.h \
-    pathplan.h
+    pathplan.h \
+    protocol.h
 
 FORMS += \
         mainwindow.ui
 
+
+UI_DIR=./UI
 
 ## Add LIBS rules:
 ## find the libs full name: e.g: libpython3.5.so
@@ -52,8 +56,7 @@ DISTFILES += \
         path_node.json
 
 INCLUDEPATH += -I /usr/include/python3.5
-
-LIBS += -L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5 #PC
+LIBS += -L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5
 #LIBS += -L/usr/lib/python3.5/config-3.5m-aarch64-linux-gnu/ -lpython3.5 #ARM64
 
 ## OpenCv

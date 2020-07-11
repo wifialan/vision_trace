@@ -42,12 +42,11 @@ class PathRoute:
         for i in range(self.len_row):
             for j in range(self.len_col):
                 self.path_node_bak[i][j] = self.path_node[i][j]
-        if self.len_row > 1:
-            for n in range(0, self.len_col - 1):
-                if self.path_node[1][n] == 0 and self.path_node[1][n + 1] != 0:
-                    self.cross_entry_coord = n
-                if self.path_node[1][n] != 0 and self.path_node[1][n + 1] == 0:
-                    self.cross_exit_coord = n + 1
+#        for n in range(0, self.len_col - 1):
+#            if self.path_node[1][n] == 0 and self.path_node[1][n + 1] != 0:
+#                self.cross_entry_coord = n
+#            if self.path_node[1][n] != 0 and self.path_node[1][n + 1] == 0:
+#                self.cross_exit_coord = n + 1
         print('岔道口入口坐标：', end='')
         print(self.cross_entry_coord)
         print('岔道口出口坐标：', end='')
@@ -72,6 +71,7 @@ class PathRoute:
                 crossraod_node.write('\n' + str(self.path_node[i][self.cross_entry_coord + 1]) + ',')
                 crossraod_node.write(str(self.path_node[i][self.cross_exit_coord - j]))
             crossraod_node.close()
+
 
     def get_path_info(self, current_node, target_node):
         self.target_node_coord = [[0, 0], [0, 0]]

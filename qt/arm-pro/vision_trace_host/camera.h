@@ -19,30 +19,14 @@
 #include "ros.h"
 using namespace cv;
 
-#define FORWARD                 0
-#define BACKWARD                1
+#define FORWARD                 false
+#define BACKWARD                true
 
 #define START_PATH_PLAN         true
 #define STOP_PATH_PLAN          false
 
-#define PATH_STATUS_SLOW            0x00
-#define PATH_STATUS_RIGHT           0x0B
-#define PATH_STATUS_LEFT            0x0D //1101
-#define PATH_STATUS_UP              0x09
-#define PATH_STATUS_LED_LEFT        0x01
-#define PATH_STATUS_LED_RIGHT       0x08
-#define PATH_STATUS_BLANK           0x0F
-
-
-
 #define PATH_STRAIGHT_ROAD_LEN       30
 #define SPEED_LINE               0.05
-#define ROS_SPEED_HIGH              0.3
-#define ROS_SPEED_LOW               0.03
-
-typedef struct{
-
-} status;
 
 class Camera : public QThread
 {
@@ -61,7 +45,6 @@ public:
     void path_plan(QByteArray);
     bool check_contains_cross( qint16);
     void crossroad_plan();
-    void straightroad_plan();
     bool check_qr_contains_cross_road_node();
     void check_qr_contains_cross_road_node_code();
     bool turn_tail(qint16);
@@ -69,31 +52,21 @@ public:
     bool crossroad_check_black_center();
     void leave_crossroad();
     void turltebot_direction_judgement();
-    bool first_detect_qr();
-    void path_status_slow();
-    void detect_qr();
 
     void send_path_node_to_pc();
     void send_status_to_pc();
     void send_ping_to_pc();
     void send_ctrl_to_pc(quint8);
 
+
     VideoCapture capture;
-    qint8  camera_number;
+    VideoWriter vw;
+    int threshold_img;
     QTimer *timer;
     QTimer *timer_turn;
     QTimer *timer_crossroad;
     QTimer *timer_crossroad_qr;
-    QTimer *timer_path_status_slow;
-    QTimer *timer_is_straight_road;
 
-    quint8 path_status;
-    quint8 last_path_status;
-    quint8 path_status_calc;
-    double ros_speed_line;
-    double ros_speed_angular;
-    double current_straight_path_ros_speed_line;
-    bool first_step;
     Mat frame;
     double rate; //FPS
     QImage image;
@@ -102,6 +75,7 @@ public:
     Mat binaryImage;
     Mat erodeImage;
     Mat dilateImage;
+    Mat template_img;
     QString QRData_stable;
     QString QRData_old;
     QString QRData_store;
@@ -129,31 +103,20 @@ public:
     bool flag_turn_tail_start;
     bool flag_on_timer_turn_tail_over;
     bool flag_path_plan;
-    bool flag_capture_grap;
-    bool flag_arrived_crossroad;
-    bool flag_through_crossroad;
-    bool flag_qr_detect_crossroad;
-    bool flag_path_status_blank;
-    bool flag_truned_crossroad_then_up;
-    bool flag_no_detect_route_keep_up;
-    bool flag_first_step_detect_qr;
-    bool path_plan_pre_flag;
-//    bool flag_through_crossroad;
-    bool turltebot_go;
+    bool flag_update_path_node;
 
     bool arrived_flag;
     qint16 pix_offset_qr;
     bool turltebot_direction;
-    bool update_path_node_flag;
 //    qint16 check_qr_contains_cross_road_node_counter;
     qint16 check_qr_contains_cross_road_node_number;
+    qint8 camera_number;
     double doubleSpinBox_line_speed;
     double doubleSpinBox_angular_speed;
     bool start_correct_straight_road;
 
-
-
-
+    bool turltebot_go;
+    bool update_path_node_flag;
 
 private:
     double speed_line;
@@ -181,10 +144,9 @@ private:
     qint16 on_timer_through_crossroad_counter;
     bool   timer_crossroad_start_flag;
     qint16 on_timer_crossroad_qr_counter;
-    bool path_status_slow_flag;
 
-
-
+    bool path_plan_pre_flag;
+    bool flag_through_crossroad;
     void init_status();
     void lock_status(qint8);
 
@@ -195,26 +157,26 @@ private slots:
     void on_timer_turn_tail();
     void on_timer_through_crossroad();
     void on_timer_crossroad_qr();
-    void on_timer_path_status_slow();
-    void on_timer_is_straight_road();
-    void on_send_path_info_to_camera(QByteArray);
+    void on_send_path_info_to_camera(QByteArray path_info);
 
 signals:
     void show_frame(QImage);
     void show_frame_2(QImage);
-    void show_tutlebot_status(qint8);
+    void show_tutlebot_status(qint16);
     void turltebot_up(double, double);
     void turltebot_down(double, double);
     void turltebot_right(double, double);
     void turltebot_left(double, double);
     void turltebot_turn(double, double);
     void turltebot_stop();
+    void lanuch_turltebot_go();
     void show_command(QByteArray);
+    //    void path_plan();
+
     void send_info_to_pc(QByteArray);
     void update_path_node(QByteArray);
     void update_path_start_node(QByteArray);
-    //    void path_plan();
-
+    void update_trultebot_direction(bool);
 
 protected:
     void run();
