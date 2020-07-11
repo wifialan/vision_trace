@@ -32,7 +32,7 @@ HEADERS += \
         mainwindow.h
 
 FORMS += \
-        mainwindow.ui
+    mainwindow.ui
 
 RESOURCES += \
     resouce.qrc

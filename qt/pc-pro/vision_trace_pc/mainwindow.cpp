@@ -3,28 +3,34 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    socket(new QUdpSocket),
-    timer(new QTimer),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    tcp_client(new QTcpSocket)
 {
     ui->setupUi(this);
     this->port = PC_PORT;
     this->ip = get_localhost_ip();
     emit change_indicator_state(true);
     count = 0;
-    car_state = LED_STATE_DEFAULT;
-    camera_state = LED_STATE_DEFAULT;
-    set_car_state(car_state);
-    socket_connect();
-    connect( this->timer,
-             SIGNAL(timeout()),
-             this,
-             SLOT(on_time_over()));
-    connect(socket,                 \
+
+    timer_check_tcp_online = new QTimer();
+    timer_check_tcp_online->setInterval(500);
+
+    connect(timer_check_tcp_online, SIGNAL(timeout()), this, SLOT(on_timer_check_tcp_online()));
+
+    tcp_client->abort();//取消原有连接
+    tcp_socket_bind();
+
+    connect(tcp_client,                 \
             SIGNAL( readyRead() ), \
             this,               \
             SLOT( on_read_network() )
             );
+
+    ui->lineEdit_server_ip->setText("192.168.1.119");
+    ui->lineEdit_server_port->setText("8989");
+
+    ui->pushButton_connect_server_ip->setEnabled(true);
+    ui->pushButton_disconnect_server_ip->setEnabled(false);
 
     ui->comboBox_direction->addItem("正向");
     ui->comboBox_direction->addItem("反向");
@@ -43,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->doubleSpinBox_lifter_height->setValue(10);
     ui->doubleSpinBox_lifter_height->setSingleStep(0.01);
 
-    ui->spinBox_lifter_speed->setRange(2,200);
+    ui->spinBox_lifter_speed->setRange(1,100);
     ui->spinBox_lifter_speed->setValue(100);
     ui->spinBox_lifter_speed->setSingleStep(1);
 
@@ -66,87 +72,159 @@ MainWindow::~MainWindow()
 
 QString MainWindow::get_localhost_ip()
 {
-    QList<QHostAddress> list = QNetworkInterface::allAddresses();
-    foreach (QHostAddress address, list)
-    {
-        if(address.protocol() == QAbstractSocket::IPv4Protocol){
-            //我们使用IPv4地址
-            for (int i = 0; i < address.toString().split('\n').length(); ++i) {
-                if (address.toString().split('\n').at(i) != "127.0.0.1") {
-                    qDebug() <<"本机ip地址:" << address.toString().split('\n').at(i);
-                    return address.toString().split('\n').at(i);
-                }
+    QString ip = "";
+    QProcess cmd_pro ;
+    QString cmd_str = QString("ipconfig");
+    cmd_pro.start("cmd.exe", QStringList() << "/c" << cmd_str);
+    cmd_pro.waitForStarted();
+    cmd_pro.waitForFinished();
+    QString result = cmd_pro.readAll();
+    QString pattern("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    QRegExp rx(pattern);
+
+    int pos = 0;
+    bool found = false;
+    while((pos = rx.indexIn(result, pos)) != -1){
+        QString tmp = rx.cap(0);
+        //qDebug() << tmp << "-*-*" << ip;
+        //跳过子网掩码 eg:255.255.255.0
+        if(-1 == tmp.indexOf("255")){
+            //qDebug() << ip.lastIndexOf(".") << "--" << ip.mid(0,ip.lastIndexOf(".")) << "**" << tmp.indexOf(ip.mid(0,ip.lastIndexOf(".")));
+            if(ip != "" && -1 != tmp.indexOf(ip.mid(0,ip.lastIndexOf(".")))){
+                found = true;
+                break;
             }
+            ip = tmp;
         }
+        pos += rx.matchedLength();
+    }
+    qDebug()<<"local ip: " << ip;
+
+    return ip;
+}
+
+void MainWindow::get_lan_ip()
+{
+    QString ip = "";
+    QProcess cmd_pro ;
+    QString cmd_str = QString("ipconfig");
+    cmd_pro.start("cmd.exe", QStringList() << "/c" << cmd_str);
+    cmd_pro.waitForStarted();
+    cmd_pro.waitForFinished();
+    QString result = cmd_pro.readAll();
+    QString pattern("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    QRegExp rx(pattern);
+
+    int pos = 0;
+    bool found = false;
+    while((pos = rx.indexIn(result, pos)) != -1){
+        QString tmp = rx.cap(0);
+        //qDebug() << tmp << "-*-*" << ip;
+        //跳过子网掩码 eg:255.255.255.0
+        if(-1 == tmp.indexOf("255")){
+            //qDebug() << ip.lastIndexOf(".") << "--" << ip.mid(0,ip.lastIndexOf(".")) << "**" << tmp.indexOf(ip.mid(0,ip.lastIndexOf(".")));
+            if(ip != "" && -1 != tmp.indexOf(ip.mid(0,ip.lastIndexOf(".")))){
+                found = true;
+                break;
+            }
+            ip = tmp;
+        }
+        pos += rx.matchedLength();
+    }
+
+    qDebug()<<"local ip: " << ip;
+
+    QString gateway;
+    QString fixed_ip1;
+    QString fixed_ip255;
+
+    for (int i = 0;i<ip.lastIndexOf(".");i++) {
+        gateway.append(ip[i]);
+    }
+    qDebug() << gateway;
+    fixed_ip1.append(gateway);
+    fixed_ip1.append(".1");
+    fixed_ip255.append(gateway);
+    fixed_ip255.append(".255");
+
+
+    cmd_pro.start("cmd.exe", QStringList() << "/c" << "arp -a");
+    cmd_pro.waitForStarted();
+    cmd_pro.waitForFinished();
+    QString result_arp = cmd_pro.readAll();
+    pos = 0;
+    qDebug() << "---------";
+    while((pos = rx.indexIn(result_arp, pos)) != -1){
+        QString tmp = rx.cap(0);
+        qDebug() << tmp;
+        //跳过子网掩码 eg:255.255.255.0
+        if( tmp != ip && tmp.contains(gateway) && tmp != fixed_ip1 && tmp != fixed_ip255)
+        {
+            ui->lineEdit_server_ip->setText(tmp);
+            qDebug() << tmp;
+        }
+        pos += rx.matchedLength();
     }
 }
 
-void MainWindow::on_time_over()
+void MainWindow::on_timer_check_tcp_online()
 {
-    set_car_state( car_state );
-    timer->stop();
+    if (tcp_client->write("detect tcp state") == -1)
+    {
+        // 返回-1说明连接失败
+        ui->lineEdit_server_ip->setEnabled(true);
+        ui->lineEdit_server_port->setEnabled(true);
+        ui->pushButton_connect_server_ip->setEnabled(true);
+        ui->pushButton_disconnect_server_ip->setEnabled(false);
+    }
 }
 
-qint16 MainWindow::socket_connect()
+qint16 MainWindow::tcp_socket_bind()
 {
-    if ( ip.isEmpty() || port > 9999 )
+    qDebug() << "tcp_socket_bind";
+    if ( this->ip.isEmpty() || this->port > 9999 ){
+        qDebug() << "IP 和 PORT 有误";
         return ERROR_USER_INPUT;
-    if ( socket->bind(QHostAddress(ip), this->port) ){
+    }
+    //防止PC端有代理影响连接
+    QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
+    if ( tcp_client->bind(QHostAddress(this->ip), this->port) ){
         qDebug() << "成功绑定端口:" << this->port;
+        connect_state = true;
         return ERROR_NO_ERROR;
     }
     else {
-        connect_state = true;
+        qDebug() << "绑定端口失败";
+        qDebug() << "IP: " << this->ip << " PORT: " << this->port;
+        connect_state = false;
         return ERROR_SYSTEM_NETWORK;
     }
     return 0;
 }
 
-void MainWindow::socket_disconnect()
+void MainWindow::tcp_socket_disconnect()
 {
     connect_state = false;
-    socket->close();
+    tcp_client->close();
+    tcp_client->abort();
+
 }
 
 void MainWindow::write_socket(QByteArray array)
 {
-    quint64 len;
     qDebug() << array;
-    len = socket->writeDatagram( array, QHostAddress(ARM_IP), ARM_PORT );
-    if (len != array.length() ) {
-        qDebug() << "udp retransmit!";
-    }
-
-}
-
-void MainWindow::write_socket(QString str)
-{
-    quint64 len;
-    QByteArray array;
-    array.append(str);
-    len = socket->writeDatagram( array, QHostAddress(ARM_IP), ARM_PORT );
-    if (len != array.length() ) {
-        qDebug() << "udp retransmit!";
+    if(tcp_client->isOpen())
+    {
+        tcp_client->write(array);
     }
 }
 
-void MainWindow::write_socket(quint8 *buffer, quint32 len)
-{
-    quint64 sendLen;
-    QByteArray array;
-    array.append((char*)buffer , len );
-    sendLen = socket->writeDatagram((char*)buffer, len, QHostAddress(ARM_IP), ARM_PORT);
-}
 
 void MainWindow::on_read_network()
 {
     QByteArray array;
-    QHostAddress address;
-    quint16 xport;
-    xport = PC_PORT;
-    address.setAddress(ip);
-    array.resize( socket->bytesAvailable() );
-    socket->readDatagram( array.data(),array.size() );
+
+    array.append( tcp_client->readAll() );
     qDebug() << "read: " << array;
     COM_PAC pac = decode_protocal( array );
     if ( pac.flag != true )
@@ -159,9 +237,6 @@ void MainWindow::on_read_network()
         analyze_info_status(pac);
         break;
 
-    case INFO_PING:
-        analyze_info_ping(pac);
-        break;
     case INFO_PATH_NODE:
         analyze_info_path_node(pac.path_node);
         break;
@@ -196,26 +271,6 @@ void MainWindow::analyze_info_command(COM_PAC pac) {
     }
 }
 
-void MainWindow::analyze_info_ping(COM_PAC pac)
-{
-    if (pac.ping_flag == ARM_QT_FLAG) {
-        car_state = LED_STATE_ONLINE;
-        ui->radioButtonCar->setStyleSheet("background-color: rgb(138, 226, 52);");
-        qDebug() << "Get ping info from arm qt";
-        if (pac.ping_back == PING_BACK_TRUE) {
-            // need ping back
-            qDebug() << "Ping back";
-            QByteArray info_2;
-            info_2.append(0x02);
-            info_2.append(PC_QT_FLAG);
-            info_2.append(PING_BAC_FALSE);
-            send_cmd_to_udp(info_2);
-        }
-    } else {
-        car_state = LED_STATE_OFFLINE;
-        ui->radioButtonCar->setStyleSheet("background-color: rgb(138, 226, 52);");
-    }
-}
 
 void MainWindow::analyze_info_status(COM_PAC pac)
 {
@@ -257,21 +312,8 @@ void MainWindow::analyze_info_path_node(QByteArray info_4)
     qDebug() << "Add success";
 }
 
-void MainWindow::on_pushButton_con_net_clicked()
-{
-    QByteArray array;
-    ui->statusBar->showMessage("Get devices status from network...wait...", 3000);
-    car_state = LED_STATE_OFFLINE;
-    QByteArray request_array_to_arm;
-    request_array_to_arm.append(INFO_PING);
-    request_array_to_arm.append(PC_QT_FLAG);
-    request_array_to_arm.append(PING_BACK_TRUE);
-    send_cmd_to_udp(request_array_to_arm);
-    qDebug() << "send data to arm qt";
-    timer->start(2000);
-}
 
-void MainWindow::send_cmd_to_udp(quint8 cmd, QByteArray &value_array)
+void MainWindow::send_cmd_to_tcp(quint8 cmd, QByteArray &value_array)
 {
     QByteArray request_array;
     request_array.append(0xAA);
@@ -287,7 +329,7 @@ void MainWindow::send_cmd_to_udp(quint8 cmd, QByteArray &value_array)
     write_socket(request_array);
 }
 
-void MainWindow::send_cmd_to_udp(quint8 cmd)
+void MainWindow::send_cmd_to_tcp(quint8 cmd)
 {
     QByteArray request_array_to_arm;
     QByteArray request_array;
@@ -304,7 +346,7 @@ void MainWindow::send_cmd_to_udp(quint8 cmd)
     write_socket(request_array);
 }
 
-void MainWindow::send_cmd_to_udp(QByteArray info)
+void MainWindow::send_cmd_to_tcp(QByteArray info)
 {
     QByteArray request_array;
     request_array.append(0xAA);
@@ -423,23 +465,13 @@ COM_PAC MainWindow::decode_protocal(QByteArray array)
     return pac;
 }
 
-void MainWindow::set_car_state(quint8 state)
-{
-    if (state == LED_STATE_DEFAULT) {
-        ui->radioButtonCar->setStyleSheet("background-color: rgb(85, 87, 83);");
-    }else if ( state == LED_STATE_ONLINE ) {
-        ui->radioButtonCar->setStyleSheet("background-color: rgb(138, 226, 52);");
-    }else {
-        ui->radioButtonCar->setStyleSheet("background-color: rgb(204, 0, 0);");
-    }
-}
 
 void MainWindow::on_pushButton_up_clicked()
 {
     QByteArray info_3;
     info_3.append(0x03);
     info_3.append(CMD_UP);
-    send_cmd_to_udp(info_3);
+    send_cmd_to_tcp(info_3);
     //ui->textBrowser->append("SYSTEM: send cmd [UP]");
 }
 
@@ -448,7 +480,7 @@ void MainWindow::on_pushButton_left_clicked()
     QByteArray info_3;
     info_3.append(0x03);
     info_3.append(CMD_LEFT);
-    send_cmd_to_udp(info_3);
+    send_cmd_to_tcp(info_3);
     //ui->textBrowser->append("SYSTEM: send cmd [LEFT]");
 }
 
@@ -457,7 +489,7 @@ void MainWindow::on_pushButton_down_clicked()
     QByteArray info_3;
     info_3.append(0x03);
     info_3.append(CMD_DOWN);
-    send_cmd_to_udp(info_3);
+    send_cmd_to_tcp(info_3);
     //ui->textBrowser->append("SYSTEM: send cmd [DOWN]");
 }
 
@@ -466,7 +498,7 @@ void MainWindow::on_pushButton_right_clicked()
     QByteArray info_3;
     info_3.append(0x03);
     info_3.append(CMD_RIGHT);
-    send_cmd_to_udp(info_3);
+    send_cmd_to_tcp(info_3);
     //ui->textBrowser->append("SYSTEM: send cmd [RIGHT]");
 }
 
@@ -475,7 +507,7 @@ void MainWindow::on_pushButtonStop_clicked()
     QByteArray info_3;
     info_3.append(0x03);
     info_3.append(CMD_STOP);
-    send_cmd_to_udp(info_3);
+    send_cmd_to_tcp(info_3);
     //ui->textBrowser->append("SYSTEM: send cmd [STOP]");
 }
 
@@ -489,7 +521,7 @@ void MainWindow::on_pushButton_go_clicked()
     QByteArray info_1;
     // 信息类型
     info_1.append(0x01);
-    // 小车朝向(ARM端会忽略)
+    // 小车朝向
     if(ui->comboBox_direction->currentText() == "正向"){
         info_1.append(FORWARD);
     }else {
@@ -497,7 +529,7 @@ void MainWindow::on_pushButton_go_clicked()
     }
     // 起始节点
     if (ui->comboBox_start_node->currentText().isEmpty()) {
-        on_pushButton_update_clicked();
+        update_info();
         QThread::msleep(200);
     }
     QString start_node = ui->comboBox_start_node->currentText();
@@ -510,14 +542,14 @@ void MainWindow::on_pushButton_go_clicked()
     // 移动信息(ARM端会忽略)
     info_1.append(0x01);
 
-    send_cmd_to_udp(info_1);
+    send_cmd_to_tcp(info_1);
 }
 
-void MainWindow::on_pushButton_update_clicked()
+void MainWindow::update_info()
 {
     QByteArray info_5;
     info_5.append(0x05);
-    send_cmd_to_udp(info_5);
+    send_cmd_to_tcp(info_5);
 }
 
 void MainWindow::on_doubleSpinBox_line_speed_valueChanged(double arg1)
@@ -533,7 +565,7 @@ void MainWindow::on_doubleSpinBox_line_speed_valueChanged(double arg1)
     //info_6.append(LINE_SPEED);
     info_6.append((arg1*100));
     info_6.append(ui->doubleSpinBox_angular_speed->value()*100);
-    send_cmd_to_udp(info_6);
+    send_cmd_to_tcp(info_6);
 }
 
 void MainWindow::on_doubleSpinBox_angular_speed_valueChanged(double arg1)
@@ -547,7 +579,7 @@ void MainWindow::on_doubleSpinBox_angular_speed_valueChanged(double arg1)
     info_6.append(0x06);
     info_6.append(ui->doubleSpinBox_line_speed->value()*100);
     info_6.append((arg1*100));
-    send_cmd_to_udp(info_6);
+    send_cmd_to_tcp(info_6);
 }
 
 void MainWindow::on_pushButton_lifter_set_height_clicked()
@@ -557,6 +589,7 @@ void MainWindow::on_pushButton_lifter_set_height_clicked()
         info_7_receive_from_remote = false;
         return;
     }
+    qDebug() << "ui->doubleSpinBox_lifter_height->value()" << ui->doubleSpinBox_lifter_height->value();
     quint16 height = ui->doubleSpinBox_lifter_height->value()*100;
     quint8  height_high = (height >> 8) & 0x00FF;
     quint8  height_low =   height & 0x00FF;
@@ -567,7 +600,7 @@ void MainWindow::on_pushButton_lifter_set_height_clicked()
     info_7.append(height_high);
     info_7.append(height_low);
 
-    send_cmd_to_udp(info_7);
+    send_cmd_to_tcp(info_7);
 }
 
 void MainWindow::on_pushButton_lifter_set_speed_clicked()
@@ -578,7 +611,7 @@ void MainWindow::on_pushButton_lifter_set_speed_clicked()
     info_7.append(0x07);
     info_7.append(LIFTER_SET_SPEED);
     info_7.append(speed);
-    send_cmd_to_udp(info_7);
+    send_cmd_to_tcp(info_7);
 }
 
 void MainWindow::on_pushButton_lifter_zero_clicked()
@@ -586,7 +619,7 @@ void MainWindow::on_pushButton_lifter_zero_clicked()
     QByteArray info_7;
     info_7.append(0x07);
     info_7.append(LIFTER_SET_ZERO);
-    send_cmd_to_udp(info_7);
+    send_cmd_to_tcp(info_7);
 }
 
 void MainWindow::on_pushButton_lifter_stop_clicked()
@@ -594,7 +627,7 @@ void MainWindow::on_pushButton_lifter_stop_clicked()
     QByteArray info_7;
     info_7.append(0x07);
     info_7.append(LIFTER_STOP);
-    send_cmd_to_udp(info_7);
+    send_cmd_to_tcp(info_7);
 }
 
 void MainWindow::on_pushButton_lifter_excute_clicked()
@@ -602,5 +635,48 @@ void MainWindow::on_pushButton_lifter_excute_clicked()
     QByteArray info_7;
     info_7.append(0x07);
     info_7.append(LIFTER_EXCUTE);
-    send_cmd_to_udp(info_7);
+    send_cmd_to_tcp(info_7);
 }
+
+void MainWindow::on_pushButton_connect_server_ip_clicked()
+{
+    quint16 remote_port;
+    QString remote_ip;
+    remote_ip = ui->lineEdit_server_ip->text();
+    remote_port = quint16(ui->lineEdit_server_port->text().toUInt());
+    tcp_client->abort();
+    tcp_client->connectToHost(remote_ip,remote_port, QIODevice::ReadWrite);
+
+    qDebug() << "远程IP:" << remote_ip;
+    qDebug() << "远程端口:" << remote_port;
+
+    //QObject::connect((QObject*) socket,SIGNAL(readyRead()),(QObject*)this,SLOT(on_read_network()));
+    if( !tcp_client->waitForConnected(500) ) {
+        //1//xqDebug("netclientread@set_connect() >: socket Connection failed!!");
+        qDebug() << "connect failed!";
+        ui->pushButton_connect_server_ip->setEnabled(true);
+        ui->pushButton_disconnect_server_ip->setEnabled(false);
+        ui->lineEdit_server_ip->setEnabled(true);
+        ui->lineEdit_server_port->setEnabled(true);
+        timer_check_tcp_online->stop();
+    }else {
+        //1//xqDebug("netclientread@set_connect() >: socket conncetion succussful.");
+        qDebug() << "connect success!";
+        ui->pushButton_connect_server_ip->setEnabled(false);
+        ui->pushButton_disconnect_server_ip->setEnabled(true);
+        ui->lineEdit_server_ip->setEnabled(false);
+        ui->lineEdit_server_port->setEnabled(false);
+        timer_check_tcp_online->start();
+    }
+}
+
+void MainWindow::on_pushButton_disconnect_server_ip_clicked()
+{
+    tcp_client->disconnectFromHost();
+    ui->pushButton_connect_server_ip->setEnabled(true);
+    ui->pushButton_disconnect_server_ip->setEnabled(false);
+    ui->lineEdit_server_ip->setEnabled(true);
+    ui->lineEdit_server_port->setEnabled(true);
+    timer_check_tcp_online->stop();
+}
+

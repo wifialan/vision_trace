@@ -3,12 +3,17 @@
 
 #include <QMainWindow>
 #include <QQuickItem>
-#include <QtNetwork/QUdpSocket>
+#include <QTcpSocket>
+#include <QHostAddress>
+#include <QNetworkProxy>
+
 #include <QTimer>
 #include <QNetworkInterface>
 #include <QThread>
+#include <QProcess>
+
 #define             PC_IP                 (tr("192.168.1.237"))
-#define             PC_PORT               ((quint16)8799)
+#define             PC_PORT               8788
 #define             ARM_IP                  (tr("192.168.1.237"))
 #define             ARM_PORT                ((quint16)8399)
 #define             SEND_RETRY              10
@@ -104,7 +109,6 @@ public:
 signals:
     void change_indicator_state(bool);
 private slots:
-    void on_pushButton_con_net_clicked();
 
     void on_pushButton_up_clicked();
 
@@ -120,8 +124,6 @@ private slots:
 
     void on_pushButton_go_clicked();
 
-    void on_pushButton_update_clicked();
-
     void on_doubleSpinBox_line_speed_valueChanged(double arg1);
 
     void on_doubleSpinBox_angular_speed_valueChanged(double arg1);
@@ -136,45 +138,51 @@ private slots:
 
     void on_pushButton_lifter_excute_clicked();
 
+    void on_pushButton_connect_server_ip_clicked();
+
+    void on_pushButton_disconnect_server_ip_clicked();
+
+
 private:
     Ui::MainWindow *ui;
 
-    QUdpSocket  *socket;
+    QTimer      *timer_check_tcp_online;
+    QTcpSocket  *tcp_client;
     QString     ip;
     quint16     port;
     bool        connect_state;
     QByteArray *socket_array;
     quint64     count;
-    quint16     car_state;
-    quint16     camera_state;
     QTimer      *timer;
     bool        info_6_receive_from_remote;
     bool        info_7_receive_from_remote;
 private:
 
-    qint16      socket_connect();
-    void        socket_disconnect();
+    qint16      tcp_socket_bind();
+    void        tcp_socket_disconnect();
     void        write_socket (quint8 byte);
     void        write_socket (QByteArray array);
     void        write_socket (QString str);
     void        write_socket (quint8 *buffer, quint32 len);
     bool        is_connect();
-    void        set_car_state(quint8);
-    void        send_cmd_to_udp( quint8 cmd, QByteArray &value );
-    void        send_cmd_to_udp( quint8 cmd );
-    void        send_cmd_to_udp( QByteArray );
+    void        send_cmd_to_tcp( quint8 cmd, QByteArray &value );
+    void        send_cmd_to_tcp( quint8 cmd );
+    void        send_cmd_to_tcp( QByteArray );
     QString     get_localhost_ip();
+    void        get_lan_ip();
+
+    void        update_info();
 
     COM_PAC     decode_protocal( QByteArray array );
 
     void        analyze_info_path_node(QByteArray);
     void        analyze_info_status(COM_PAC);
-    void        analyze_info_ping(COM_PAC);
+//    void        analyze_info_ping(COM_PAC);
     void        analyze_info_command(COM_PAC);
 
 public slots:
     void        on_read_network();
-    void        on_time_over();
+    void        on_timer_check_tcp_online();
 
 
 };
