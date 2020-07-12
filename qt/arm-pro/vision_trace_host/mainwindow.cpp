@@ -925,6 +925,7 @@ void MainWindow::on_show_tutlebot_status(qint16 status)
 }
 
 void MainWindow::on_show_command(QByteArray path_plan_array){
+    qDebug() << "on_show_command";
     ui->lineEdit_command->setText(QString(path_plan_array));
 }
 
@@ -996,7 +997,7 @@ void MainWindow::on_pushButton_go_clicked()
     }
     cam->capture.open(cam->camera_number);           //open the default camera
     qDebug() << "open cap";
-    path->proc->execute("python3 ../vision_trace_host/path.py");
+    path->proc->execute("python3 /home/igosens/huawei/softeware/path.py");
     emit path->read_path_plan();
     cam->timer->start();
 
