@@ -58,6 +58,7 @@ public:
     void send_ping_to_pc();
     void send_ctrl_to_pc(quint8);
 
+    void lock_status(qint8);
 
     VideoCapture capture;
     VideoWriter vw;
@@ -148,7 +149,6 @@ private:
     bool path_plan_pre_flag;
     bool flag_through_crossroad;
     void init_status();
-    void lock_status(qint8);
 
 private slots:
     void on_next_frame();

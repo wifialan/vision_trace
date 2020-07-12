@@ -29,24 +29,18 @@ SOURCES += \
     ros.cpp \
     camera.cpp \
     pathplan.cpp \
-    protocol.cpp \
-    rs232.cpp \
-    stm32range.cpp
+    protocol.cpp
 
 HEADERS += \
         mainwindow.h \
     ros.h \
     camera.h \
     pathplan.h \
-    protocol.h \
-    RangeData.h \
-    rs232.h \
-    stm32range.h
+    protocol.h
 
 FORMS += \
         mainwindow.ui
 
-CONFIG += serialport
 
 UI_DIR=./UI
 
@@ -66,23 +60,22 @@ LIBS += -L/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/ -lpython3.5
 #LIBS += -L/usr/lib/python3.5/config-3.5m-aarch64-linux-gnu/ -lpython3.5 #ARM64
 
 ## OpenCv
-INCLUDEPATH += /opt/ros/kinetic/include/opencv-3.3.1-dev \
-               /opt/ros/kinetic/include/opencv-3.3.1-dev/opencv \
-               /opt/ros/kinetic/include/opencv-3.3.1-dev/opencv2
+INCLUDEPATH += /usr/local/include \
+               /usr/local/include/opencv \
+               /usr/local/include/opencv2
 
-LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_highgui3
-LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_core3
-LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_imgproc3
-LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_imgcodecs3
-LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_ml3
-LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_videoio3
+LIBS += -L/usr/local/lib/ -lopencv_highgui
+LIBS += -L/usr/local/lib/ -lopencv_core
+LIBS += -L/usr/local/lib/ -lopencv_imgproc
+LIBS += -L/usr/local/lib/ -lopencv_imgcodecs
+LIBS += -L/usr/local/lib/ -lopencv_ml
+LIBS += -L/usr/local/lib/ -lopencv_videoio
 
 ## QR
 #include(/home/alan/work/vision_trace/qt/QZXing/source/QZXing.pri)
 #include(../qzxing-master/src/QZXing.pri)
 INCLUDEPATH += -I /usr/local/zbar/include
 LIBS += -L/usr/local/zbar/lib/ -lzbar
-#LIBS += -L/home/igosens/huawei/zbar-0.10/output/lib/ -lzbar
 
 ## ROS
 
@@ -100,4 +93,5 @@ LIBS += -L /opt/ros/kinetic/lib/ -lrosconsole
 LIBS += -L /opt/ros/kinetic/lib/ -lrosconsole_log4cxx
 LIBS += -L /opt/ros/kinetic/lib/ -lrosconsole_backend_interface
 LIBS += -L /opt/ros/kinetic/lib/ -lxmlrpcpp
+
 

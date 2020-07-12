@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "pathplan.h"
 #include "protocol.h"
+#include "stm32range.h"
 
 /*
 // cmd
@@ -143,8 +144,10 @@ private:
     Ros         *ros;
     Pathplan    *path;
     Protocol    *protocol;
+    STM32Range  *stm32Range;
     //    Pathplan    *path;
     QTimer      *timer_serial;
+    QTimer      *timer_range;
     QSerialPort *serial;
 
     QString     ip;
@@ -154,7 +157,7 @@ private:
     QStringList oldPortStringList;
     QByteArray read_serial;
 
-
+    bool OpenSuccess;
 public:
     void update_remote_turltebot_status(qint16);
 
@@ -190,6 +193,7 @@ public slots:
     void        on_read_network();
     void        on_read_serial();
     void        on_timer_serial();
+    void        on_timer_range();
     void        on_disconnected();
     void        on_new_connect_tcp();
 

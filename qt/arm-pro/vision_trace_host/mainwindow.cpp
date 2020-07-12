@@ -24,6 +24,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     timer_serial->setInterval(500);
 
+    timer_range = new QTimer;
+    timer_range->setInterval(50);
+
+    stm32Range = new STM32Range();
+    if(stm32Range->OpenRs232()){
+        OpenSuccess = true;
+        qDebug() << "打开红外传感器成功";
+    }else{
+        OpenSuccess = false;
+        qDebug() << "打开红外传感器失败";
+    }
+
     ros->pub_cmd_vel_topic =  "/cmd_vel_mux/input/navi";
     ros->pub_cmd_vel = ros->n.advertise<geometry_msgs::Twist>(ros->pub_cmd_vel_topic, 1);
     //    ros->loopRate(5);
@@ -49,13 +61,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( this, SIGNAL(lanuch_turltebot_go()), this, SLOT(on_pushButton_go_clicked()));
     connect( timer_serial, SIGNAL(timeout()),SLOT(on_timer_serial()));
+    connect( timer_range, SIGNAL(timeout()),SLOT(on_timer_range()));
 
     socket_listen();
     connect(socket, SIGNAL( readyRead() ), this, SLOT( on_read_network() ));
     connect(serial, SIGNAL( readyRead() ), this, SLOT( on_read_serial()  ));
 
     path->read_json_file();
-    timer_serial->start();
+//    timer_serial->start();
+    timer_range->start();
 
     ui->doubleSpinBox_line_speed->setRange(0.01,0.5);
     ui->doubleSpinBox_line_speed->setSingleStep(0.01);
@@ -112,10 +126,9 @@ MainWindow::MainWindow(QWidget *parent) :
         file.close();
     }
 
-    //protocol->GetSRCmd(0x00,1);
+    on_timer_serial();
 
-    //    cam->open();
-
+    on_pushButton_serial_connect_clicked();
 
 }
 
@@ -134,8 +147,14 @@ void MainWindow::on_pushButton_serial_connect_clicked()
     serial->setFlowControl(QSerialPort::NoFlowControl);
 
     QString portInfo = ui->comboBox_serial->currentText();
+//    int number = ui->comboBox_serial->findText("USB-Serial Controller D",Qt::MatchContains);
+//    qDebug() << "number" << number;
+//    ui->comboBox_serial->setCurrentIndex(number);
+//    portInfo = ui->comboBox_serial->currentText();
+
 
     QString portName = "/dev/";
+    qDebug() << "portInfo" << portInfo;
     quint8 start = portInfo.indexOf("(");
     quint8 stop  = portInfo.indexOf(")");
     for (int i = start + 1; i < stop; ++i) {
@@ -143,7 +162,7 @@ void MainWindow::on_pushButton_serial_connect_clicked()
     }
 
     //QString portName = "lifter";
-    qDebug() << portName;
+    qDebug() << "portName" << portName;
 
     serial->setPortName(portName);
     //    serial->setPort(*infoList);
@@ -232,6 +251,27 @@ void MainWindow::on_timer_serial()
             ui->pushButton_serial_connect->setEnabled(true);
         }
         //            emit onNewSerialPort(oldPortStringList);
+    }
+    int number = ui->comboBox_serial->findText("USB-Serial Controller D",Qt::MatchContains);
+    qDebug() << "number" << number;
+    ui->comboBox_serial->setCurrentIndex(number);
+
+}
+
+void MainWindow::on_timer_range(){
+    if(OpenSuccess){
+        stm32Range->rangeData_vec_.clear();
+        stm32Range->RecvRangeData();
+        for(int i = 0;i<stm32Range->rangeData_vec_.size();i++){
+            if(stm32Range->rangeData_vec_[i].range < 0.3){
+                    emit cam->show_tutlebot_status(TURLTEBOT_STOP);
+                    cam->lock_status(TURLTEBOT_STOP);
+                    emit cam->turltebot_stop();
+            }
+            else{
+                //go
+            }
+        }
     }
 }
 
