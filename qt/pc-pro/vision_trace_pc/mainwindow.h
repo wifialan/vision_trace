@@ -180,6 +180,10 @@ private:
 //    void        analyze_info_ping(COM_PAC);
     void        analyze_info_command(COM_PAC);
 
+    void        connect_status();
+    void        disconnect_status();
+
+
 public slots:
     void        on_read_network();
     void        on_timer_check_tcp_online();

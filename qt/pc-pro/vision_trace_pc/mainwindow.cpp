@@ -53,15 +53,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->spinBox_lifter_speed->setValue(100);
     ui->spinBox_lifter_speed->setSingleStep(1);
 
-    //    ui->pushButton_lifter_excute->setEnabled(false);
-    //    ui->pushButton_lifter_set_height->setEnabled(false);
-    //    ui->pushButton_lifter_set_speed->setEnabled(false);
-    //    ui->pushButton_lifter_stop->setEnabled(false);
-    //    ui->pushButton_lifter_zero->setEnabled(false);
-    //    ui->doubleSpinBox_lifter_height->setEnabled(false);
-    //    ui->spinBox_lifter_speed->setEnabled(false);
-
     info_6_receive_from_remote = false;
+
+    this->disconnect_status();
+
 
 }
 
@@ -172,10 +167,7 @@ void MainWindow::on_timer_check_tcp_online()
     if (tcp_client->write("detect tcp state") == -1)
     {
         // 返回-1说明连接失败
-        ui->lineEdit_server_ip->setEnabled(true);
-        ui->lineEdit_server_port->setEnabled(true);
-        ui->pushButton_connect_server_ip->setEnabled(true);
-        ui->pushButton_disconnect_server_ip->setEnabled(false);
+        this->disconnect_status();
     }
 }
 
@@ -651,21 +643,15 @@ void MainWindow::on_pushButton_connect_server_ip_clicked()
     qDebug() << "远程端口:" << remote_port;
 
     //QObject::connect((QObject*) socket,SIGNAL(readyRead()),(QObject*)this,SLOT(on_read_network()));
-    if( !tcp_client->waitForConnected(500) ) {
+    if( !tcp_client->waitForConnected(100) ) {
         //1//xqDebug("netclientread@set_connect() >: socket Connection failed!!");
         qDebug() << "connect failed!";
-        ui->pushButton_connect_server_ip->setEnabled(true);
-        ui->pushButton_disconnect_server_ip->setEnabled(false);
-        ui->lineEdit_server_ip->setEnabled(true);
-        ui->lineEdit_server_port->setEnabled(true);
+        this->disconnect_status();
         timer_check_tcp_online->stop();
     }else {
         //1//xqDebug("netclientread@set_connect() >: socket conncetion succussful.");
         qDebug() << "connect success!";
-        ui->pushButton_connect_server_ip->setEnabled(false);
-        ui->pushButton_disconnect_server_ip->setEnabled(true);
-        ui->lineEdit_server_ip->setEnabled(false);
-        ui->lineEdit_server_port->setEnabled(false);
+        this->connect_status();
         timer_check_tcp_online->start();
     }
 }
@@ -673,10 +659,62 @@ void MainWindow::on_pushButton_connect_server_ip_clicked()
 void MainWindow::on_pushButton_disconnect_server_ip_clicked()
 {
     tcp_client->disconnectFromHost();
+    timer_check_tcp_online->stop();
+    this->disconnect_status();
+}
+
+void MainWindow::disconnect_status()
+{
+    ui->pushButton_lifter_excute->setEnabled(false);
+    ui->pushButton_lifter_set_height->setEnabled(false);
+    ui->pushButton_lifter_set_speed->setEnabled(false);
+    ui->pushButton_lifter_stop->setEnabled(false);
+    ui->pushButton_lifter_zero->setEnabled(false);
+    ui->doubleSpinBox_lifter_height->setEnabled(false);
+    ui->spinBox_lifter_speed->setEnabled(false);
+
     ui->pushButton_connect_server_ip->setEnabled(true);
     ui->pushButton_disconnect_server_ip->setEnabled(false);
     ui->lineEdit_server_ip->setEnabled(true);
     ui->lineEdit_server_port->setEnabled(true);
-    timer_check_tcp_online->stop();
+
+    ui->comboBox_start_node->setEnabled(false);
+    ui->comboBox_stop_node->setEnabled(false);
+    ui->comboBox_direction->setEnabled(false);
+    ui->doubleSpinBox_line_speed->setEnabled(false);
+    ui->doubleSpinBox_angular_speed->setEnabled(false);
+    ui->pushButton_go->setEnabled(false);
+    ui->pushButton_up->setEnabled(false);
+    ui->pushButton_down->setEnabled(false);
+    ui->pushButton_left->setEnabled(false);
+    ui->pushButton_right->setEnabled(false);
+    ui->pushButtonStop->setEnabled(false);
 }
 
+void MainWindow::connect_status()
+{
+    ui->pushButton_lifter_excute->setEnabled(true);
+    ui->pushButton_lifter_set_height->setEnabled(true);
+    ui->pushButton_lifter_set_speed->setEnabled(true);
+    ui->pushButton_lifter_stop->setEnabled(true);
+    ui->pushButton_lifter_zero->setEnabled(true);
+    ui->doubleSpinBox_lifter_height->setEnabled(true);
+    ui->spinBox_lifter_speed->setEnabled(true);
+
+    ui->pushButton_connect_server_ip->setEnabled(false);
+    ui->pushButton_disconnect_server_ip->setEnabled(true);
+    ui->lineEdit_server_ip->setEnabled(false);
+    ui->lineEdit_server_port->setEnabled(false);
+
+    ui->comboBox_start_node->setEnabled(true);
+    ui->comboBox_stop_node->setEnabled(true);
+    ui->comboBox_direction->setEnabled(true);
+    ui->doubleSpinBox_line_speed->setEnabled(true);
+    ui->doubleSpinBox_angular_speed->setEnabled(true);
+    ui->pushButton_go->setEnabled(true);
+    ui->pushButton_up->setEnabled(true);
+    ui->pushButton_down->setEnabled(true);
+    ui->pushButton_left->setEnabled(true);
+    ui->pushButton_right->setEnabled(true);
+    ui->pushButtonStop->setEnabled(true);
+}
