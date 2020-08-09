@@ -53,6 +53,8 @@ private slots:
     void on_turltebot_right(double, double);
     void on_turltebot_left(double, double);
     void on_turltebot_turn(double, double);
+    void on_turltebot_turn_clockwise(double, double);
+    void on_turltebot_turn_counterclockwise(double, double);
     void on_turltebot_stop();
 
 

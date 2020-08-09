@@ -52,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( (QObject*)this->cam, SIGNAL(turltebot_right(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_right(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_left(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_left(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_turn(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_turn(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_turn_clockwise(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_turn_clockwise(double, double)));
+    connect( (QObject*)this->cam, SIGNAL(turltebot_turn_counterclockwise(double, double) ), (QObject*)this->ros, SLOT(on_turltebot_turn_counterclockwise(double, double)));
     connect( (QObject*)this->cam, SIGNAL(turltebot_stop() ), (QObject*)this->ros, SLOT(on_turltebot_stop()));
     connect( (QObject*)this->cam, SIGNAL(show_command(QByteArray)), this, SLOT(on_show_command(QByteArray)));
     connect( (QObject*)this->cam, SIGNAL(send_info_to_pc(QByteArray)), this, SLOT(on_send_info_to_pc(QByteArray)));

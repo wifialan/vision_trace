@@ -163,7 +163,7 @@ void Camera::on_next_frame()
                 QRData_store_index ++;
                 qDebug() << "新扫描的QR内容为：" << QRData_current_update;
                 //turltebot_direction_judgement();
-
+                counter_check_next_stop_node = 0;
                 // update path command
                 if(QRData_current_update != start_stop_node_array.split('\n').at(0) && \
                         flag_path_plan == true){
@@ -180,57 +180,62 @@ void Camera::on_next_frame()
         }
 
         if(QRData_current_update == (start_stop_node_array.split('\n').at(1)) && arrived_flag == false){
+            counter_check_next_stop_node ++;
+            if(counter_check_next_stop_node >= 10) //在这里实现下车到第二个stop节点停下
+            {
+                counter_check_next_stop_node = 0;
+                // 此处代码在重新检测二维码目的在于，让小车更加靠近二维码而停下来
+                //Rect(x,y,w,h)
+                // x,y is coordinate, w,h calc banse x and y, final pic is (x,x+w),(y,y+h)
+                Mat roi(grayImage, Rect(0,height,width,height));
+                unsigned char *pdata2 = (unsigned char *)roi.data;
+                zbar::Image imageZbar2(width, height, "Y800", pdata2, width * (height));
+                int qr_data = scanner.scan(imageZbar2);
+                if (qr_data > 0) {
+                    arrived_flag = true;
+                    flag_path_plan = false;
+                    qDebug() << "\nQRData_current_update  :" << QRData_current_update;
+                    qDebug() << "经过的QR点为：" << QRData_store;
+                    if (turltebot_direction == FORWARD) {
+                        qDebug() << "小车朝向为正向";
+                    } else {
+                        qDebug() << "小车朝向为反向";
+                    }
+                    qDebug() << "*****************************************";
+                    qDebug() << "  Arrived terminate, stop the turltebot";
+                    qDebug() << "*****************************************";
+                    start_stop_node_array.clear();
+                    start_stop_node_array.append(QRData_stable);
+                    start_stop_node_array.append('\n');
+                    start_stop_node_array.append(QRData_stable);
+                    send_status_to_pc();
+                    emit update_path_start_node(start_stop_node_array);
+                    //timer_crossroad->stop();
+                    timer_crossroad_start_flag = true;
+                    //qDebug() << "on_timer_through_crossroad_counter is over:" << on_timer_through_crossroad_counter*200 << "ms" ;
+                    on_timer_through_crossroad_counter = 0;
+                    check_qr_contains_cross_road_node_counter = 0;
+                    check_qr_contains_cross_road_node_number = 0;
 
-            // 此处代码在重新检测二维码目的在于，让小车更加靠近二维码而停下来
-            //Rect(x,y,w,h)
-            // x,y is coordinate, w,h calc banse x and y, final pic is (x,x+w),(y,y+h)
-            Mat roi(grayImage, Rect(0,height,width,height));
-            unsigned char *pdata2 = (unsigned char *)roi.data;
-            zbar::Image imageZbar2(width, height, "Y800", pdata2, width * (height));
-            int qr_data = scanner.scan(imageZbar2);
-            if (qr_data > 0) {
-                arrived_flag = true;
-                flag_path_plan = false;
-                qDebug() << "\nQRData_current_update  :" << QRData_current_update;
-                qDebug() << "经过的QR点为：" << QRData_store;
-                if (turltebot_direction == FORWARD) {
-                    qDebug() << "小车朝向为正向";
-                } else {
-                    qDebug() << "小车朝向为反向";
+
+                    if (stop == 1) {
+                        emit show_tutlebot_status(TURLTEBOT_STOP);
+                        lock_status(TURLTEBOT_STOP);
+                        emit turltebot_stop();
+                        //如果小车终点的QR值为岔道口节点，那么记录下来小车经过的上一个节点
+                        //                    if (QRData_stable == crossraod_node_array.split(',').at(0) || \
+                        //                            QRData_stable == crossraod_node_array.split(',').at(1) ) {
+                        //                        QRData_near_cross = QRData_store.split(',').at(index - 1);
+                        //                        qDebug() << "小乌龟停到了岔道口处，上一个节点为：" << QRData_near_cross;
+                        //                    }
+                    }
+                    return;
                 }
-                qDebug() << "*****************************************";
-                qDebug() << "  Arrived terminate, stop the turltebot";
-                qDebug() << "*****************************************";
-                start_stop_node_array.clear();
-                start_stop_node_array.append(QRData_stable);
-                start_stop_node_array.append('\n');
-                start_stop_node_array.append(QRData_stable);
-                send_status_to_pc();
-                emit update_path_start_node(start_stop_node_array);
-                //timer_crossroad->stop();
-                timer_crossroad_start_flag = true;
-                //qDebug() << "on_timer_through_crossroad_counter is over:" << on_timer_through_crossroad_counter*200 << "ms" ;
-                on_timer_through_crossroad_counter = 0;
-                check_qr_contains_cross_road_node_counter = 0;
-                check_qr_contains_cross_road_node_number = 0;
-
-
-                if (stop == 1) {
-                    emit show_tutlebot_status(TURLTEBOT_STOP);
-                    lock_status(TURLTEBOT_STOP);
-                    emit turltebot_stop();
-                    //如果小车终点的QR值为岔道口节点，那么记录下来小车经过的上一个节点
-                    //                    if (QRData_stable == crossraod_node_array.split(',').at(0) || \
-                    //                            QRData_stable == crossraod_node_array.split(',').at(1) ) {
-                    //                        QRData_near_cross = QRData_store.split(',').at(index - 1);
-                    //                        qDebug() << "小乌龟停到了岔道口处，上一个节点为：" << QRData_near_cross;
-                    //                    }
-                }
-                return;
             }
         }
 
         if(arrived_flag == true){
+            adjust_orentation();
             return;
         }
 
@@ -265,6 +270,80 @@ void Camera::on_next_frame()
         }
         path_plan();
     }
+}
+
+void Camera::adjust_orentation()
+{
+    qint16 x1=0,x2=0,y1=0,y2=0;
+    qint16 x_offset=0,y_offset=0;
+    qint16 cols = dilateImage.cols;
+    // get 150th line pix data
+    char *data_1 = dilateImage.ptr<char>(100);
+    QByteArray color_line_100 = QByteArray(data_1,cols);
+    // get 500th line pix data
+    char *data_2 = dilateImage.ptr<char>(400);
+    QByteArray color_line_500 = QByteArray(data_2,cols);
+
+    len_frame = cols;
+    black_count_100 = 0;
+    memset(black_index_100,0,len_frame);
+    count_100 = 0;
+    black_count_500 = 0;
+    memset(black_index_500,0,len_frame);
+    count_500 = 0;
+
+    for (int i = 1; i < len_frame - 1; ++i) {
+        if (color_line_100[i] == 0) {
+            black_count_100 ++;
+            black_index_100[count_100 ++] = i;
+        }
+        if (color_line_500[i] == 0) {
+            black_count_500 ++;
+            black_index_500[count_500 ++] = i;
+        }
+    }
+
+    //获取线速度和角速度
+    this->speed_line = this->doubleSpinBox_line_speed;
+    this->speed_angular = this->doubleSpinBox_angular_speed;
+
+    /**
+     * 修正方向共有两种情况：
+     *
+     * 1. 顺时针旋转机器人，使其姿态与轨道平行
+     *
+     * 2. 逆时针旋转机器人，使其姿态与轨道平行
+     *
+     */
+
+    x1 = black_index_100[0];
+    y1 = black_index_100[black_count_100 - 1];
+    x2 = black_index_500[0];
+    y2 = black_index_500[black_count_500 - 1];
+    x_offset = x1 - x2;
+    y_offset = y1 - y2;
+
+    //如果机器人姿态已经和轨道在误差允许范围内视为平行，那么修正姿态完成
+    if(qAbs(x_offset) < 10 || qAbs(y_offset) < 10)
+    {
+        qDebug() << "机器人姿态调整完成";
+        return;
+    }
+
+    qDebug() << "第100行黑色像素共有:" << black_count_100;
+    qDebug() << "x1 - y1 : " << x1 << " " << y1;
+    qDebug() << "x2 - y2 : " << x2 << " " << y2;
+
+
+    if(x_offset > 0)
+    {
+        qDebug() << "逆时针调整机器人姿态";
+        emit turltebot_turn_counterclockwise(0.0, 3.14159 / 180.0);
+    } else {
+        qDebug() << "顺时针调整机器人姿态";
+        emit turltebot_turn_clockwise(0.0, 3.14159 / 180.0);
+    }
+
 }
 
 void Camera::path_plan()

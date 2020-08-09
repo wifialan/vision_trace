@@ -66,6 +66,22 @@ void Ros::on_turltebot_turn(double linear, double angular){
     this->pub_cmd_vel.publish(this->speed);
 }
 
+void Ros::on_turltebot_turn_clockwise(double linear, double angular){
+
+    this->speed.linear.x = 0;
+    this->speed.angular.z = -angular;
+    this->move_mode = TURLTEBOT_TURN;
+    this->pub_cmd_vel.publish(this->speed);
+}
+
+void Ros::on_turltebot_turn_counterclockwise(double linear, double angular){
+
+    this->speed.linear.x = 0;
+    this->speed.angular.z = angular;
+    this->move_mode = TURLTEBOT_TURN;
+    this->pub_cmd_vel.publish(this->speed);
+}
+
 void Ros::on_turltebot_stop(){
 
     this->speed.linear.x = 0; //

@@ -59,6 +59,7 @@ public:
     void send_ctrl_to_pc(quint8);
 
     void lock_status(qint8);
+    void adjust_orentation();
 
     VideoCapture capture;
     VideoWriter vw;
@@ -118,6 +119,7 @@ public:
 
     bool turltebot_go;
     bool update_path_node_flag;
+    quint16 counter_check_next_stop_node;
 
 private:
     double speed_line;
@@ -168,6 +170,8 @@ signals:
     void turltebot_right(double, double);
     void turltebot_left(double, double);
     void turltebot_turn(double, double);
+    void turltebot_turn_clockwise(double, double);
+    void turltebot_turn_counterclockwise(double, double);
     void turltebot_stop();
     void lanuch_turltebot_go();
     void show_command(QByteArray);
