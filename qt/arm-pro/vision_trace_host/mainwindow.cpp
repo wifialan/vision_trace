@@ -331,6 +331,7 @@ void MainWindow::socket_listen()
         close();
         return;
     }
+    qDebug() << "本机IP: " << this->ip << "监听端口： " << this->port;
     connect(tcp_server,SIGNAL(newConnection()),this,SLOT(on_new_connect_tcp()));
 
     flag_is_connect_to_tcp = false;

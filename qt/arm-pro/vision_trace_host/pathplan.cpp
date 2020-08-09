@@ -17,7 +17,7 @@ Pathplan::Pathplan()
 
 void Pathplan::read_json_file(){
 
-    QFile file("/home/igosens/huawei/softeware/path_node.json");
+    QFile file("../vision_trace_host/path_node.json");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "open json file error";
     } else {
