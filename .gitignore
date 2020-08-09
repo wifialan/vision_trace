@@ -1,3 +1,4 @@
-qt/arm-pro/build-vision_trace_host-Desktop*
+qt/arm-pro/build-*
+qt/pc-pro/build-*
 qt/pc-pro/vision_trace_pc/*.pro.user*
 qt/arm-pro/vision_trace_host/*.pro.user*

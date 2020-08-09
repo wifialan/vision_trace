@@ -6,7 +6,7 @@ import simplejson as json
 
 class PathRoute:
     def __init__(self):
-        with open('../vision_trace_host/path_node.json', 'r') as file:
+        with open('path_node.json', 'r') as file:
             self.json_data = json.load(file)
         self.json_data_index = ['1st line', '2nd line', '3rd line', '4th line', '5th line', '6th line']
         print(self.json_data)

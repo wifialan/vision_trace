@@ -1572,7 +1572,7 @@ void Camera::on_read_path_plan()
 
     path_node_distribute_info.clear();
     crossroad_number = 1;//只有一条线路
-    QFile file_path_node_distribute_info("path_node_distribute_info.txt");
+    QFile file_path_node_distribute_info("/home/igosens/huawei/softeware/path_node_distribute_info.txt");
     if (file_path_node_distribute_info.open(QIODevice::ReadOnly | QIODevice::Text) == true)
     {
         qDebug() << "打开" << "path_node_distribute_info.txt" << "成功";
