@@ -117,7 +117,6 @@ typedef struct {
     int    lifter_speed;
 
 
-
     quint8 cmd;
     quint8 len;
     QByteArray payload;

@@ -487,20 +487,21 @@ void MainWindow::analyze_info_update()
 void MainWindow::analyze_info_status(COM_PAC pac)
 {
     // 从文件记录中获取小车朝向
-    QFile file("direction.txt");
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    QTextStream stream(&file);
-    stream.seek(file.size());
-    if (pac.direction == TURLTEBOT_FORWARD) {
-        // forward
-        stream << "0";
-    } else {
-        stream << "1";
-    }
-    file.flush();
-    file.close();
+//    QFile file("direction.txt");
+//    file.open(QIODevice::WriteOnly | QIODevice::Text);
+//    QTextStream stream(&file);
+//    stream.seek(file.size());
+//    if (pac.direction == TURLTEBOT_FORWARD) {
+//        // forward
+//        stream << "0";
+//    } else {
+//        stream << "1";
+//    }
+//    file.flush();
+//    file.close();
 
-    ui->comboBox_start_node->setCurrentText(QString::number(pac.start_node,10));
+    //ui->comboBox_start_node->setCurrentText(QString::number(pac.start_node,10));
+    // 只更新终点信息
     ui->comboBox_stop_node->setCurrentText(QString::number(pac.stop_node,10));
     emit lanuch_turltebot_go();
 }
