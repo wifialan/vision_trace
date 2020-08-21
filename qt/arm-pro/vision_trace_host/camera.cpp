@@ -181,7 +181,7 @@ void Camera::on_next_frame()
 
         if(QRData_current_update == (start_stop_node_array.split('\n').at(1)) && arrived_flag == false){
             counter_check_next_stop_node ++;
-            if(counter_check_next_stop_node >= 10) //在这里实现下车到第二个stop节点停下
+            if(counter_check_next_stop_node >= 10) //设置大于等于10的目的在于，越过第一个目标节点，在这里实现下车到第二个stop节点停下
             {
                 counter_check_next_stop_node = 0;
                 // 此处代码在重新检测二维码目的在于，让小车更加靠近二维码而停下来
@@ -201,6 +201,7 @@ void Camera::on_next_frame()
                     } else {
                         qDebug() << "小车朝向为反向";
                     }
+                    check_direction();
                     qDebug() << "*****************************************";
                     qDebug() << "  Arrived terminate, stop the turltebot";
                     qDebug() << "*****************************************";
@@ -235,6 +236,7 @@ void Camera::on_next_frame()
         }
 
         if(arrived_flag == true){
+            // 还需增加小车掉头程序
             adjust_orentation();
             return;
         }
@@ -269,6 +271,65 @@ void Camera::on_next_frame()
             return;
         }
         path_plan();
+    }
+}
+
+void Camera::check_direction()
+{
+    /*
+     * 1. 如果小车朝向正向，但小车在垂直路线上面，那么需要掉头
+     * 2. 如果小车朝向反向，但小车不在垂直路线上面，那么需要掉头
+     */
+    bool direction_tmp;
+    if(turltebot_direction == FORWARD)
+    {
+        if(start_stop_node_array.split('\n').at(1) == '1')
+        {
+            direction_tmp = turltebot_direction;
+            turn_tail_start();
+
+            while (turltebot_direction == direction_tmp) // 直到检测到方向改变，那么说明掉头成功
+            {
+                get_next_frame();
+            }
+                return;
+        }
+    } else {
+        if(start_stop_node_array.split('\n').at(1) == '5')
+        {
+            direction_tmp = turltebot_direction;
+            turn_tail_start();
+            get_next_frame();
+            while (turltebot_direction == direction_tmp) // 直到检测到方向改变，那么说明掉头成功
+            {
+                get_next_frame();
+            }
+            return;
+        }
+    }
+    return;
+}
+
+void Camera::get_next_frame()
+{
+    capture >> frame;
+    if (!frame.empty())
+    {
+        qint16 dilate_threshold_qr=30;
+        qint16 erode_threshold=60;//60
+        qint16 dilate_threshold =30 /*- dilate_threshold_qr*/;//30
+        Mat element_dilateImage_qr = getStructuringElement(MORPH_RECT, Size(dilate_threshold_qr, dilate_threshold_qr));
+        Mat element_dilateImage = getStructuringElement(MORPH_RECT, Size(dilate_threshold, dilate_threshold));
+        Mat element_erodeImage = getStructuringElement(MORPH_RECT, Size(erode_threshold, erode_threshold));
+        // gray
+        cvtColor(frame,grayImage,CV_BGR2GRAY);
+        threshold(grayImage,binaryImage,threshold_img,255,THRESH_BINARY);
+        // dilate
+        dilate(binaryImage, dilateImage, element_dilateImage_qr);
+        // erode
+        erode(dilateImage, erodeImage,element_erodeImage);
+        //dilate
+        dilate(erodeImage, dilateImage, element_dilateImage);
     }
 }
 
@@ -508,42 +569,47 @@ void Camera::on_timer_turn_tail(){
     // Timer is 100ms, 20 * 100ms = 2s
     if (on_turn_tail_counter >= 20) {
 
-        qint16 cols = dilateImage.cols;
-        // get 100th line pix data
-        char *data_1 = dilateImage.ptr<char>(150);
-        QByteArray color_line_100 = QByteArray(data_1,cols);
-
-        len_frame = cols;
-        black_count_100 = 0;
-        memset(black_index_100,0,len_frame);
-        count_100 = 0;
-
-        for (int i = 1; i < len_frame - 1; ++i) {
-            if (color_line_100[i] == 0) {
-                black_count_100 ++;
-                black_index_100[count_100 ++] = i;
-            }
-        }
-
-        black_center = (black_index_100[0] + black_index_100[black_count_100 - 1]) / 2;
-
-        //如果黑色带中心位于摄像头视野中间，那么判定转弯完成
-        if( (black_center > len_frame / 2 - 20) && (black_center < len_frame / 2 + 20) )
+        capture >> frame;
+        if (!frame.empty())
         {
-            timer_turn->stop();
-            timer_turn_flag = true;
-            on_turn_tail_counter = 0;
-            qDebug() << "Update path command";
-            qDebug() << "The next path command is:" << path_plan_array.split(',').at(index);
-            qDebug() << "小乌龟改变了行驶方向";
-            flag_on_timer_turn_tail_over = true;
-            if(turltebot_direction == FORWARD)
-                turltebot_direction = BACKWARD;
-            else
-                turltebot_direction = FORWARD;
-            emit update_trultebot_direction(turltebot_direction);
-        } else {
+            cvtColor(frame,grayImage,CV_BGR2GRAY);
+            qint16 cols = dilateImage.cols;
+            // get 100th line pix data
+            char *data_1 = dilateImage.ptr<char>(150);
+            QByteArray color_line_100 = QByteArray(data_1,cols);
 
+            len_frame = cols;
+            black_count_100 = 0;
+            memset(black_index_100,0,len_frame);
+            count_100 = 0;
+
+            for (int i = 1; i < len_frame - 1; ++i) {
+                if (color_line_100[i] == 0) {
+                    black_count_100 ++;
+                    black_index_100[count_100 ++] = i;
+                }
+            }
+
+            black_center = (black_index_100[0] + black_index_100[black_count_100 - 1]) / 2;
+
+            //如果黑色带中心位于摄像头视野中间，那么判定转弯完成
+            if( (black_center > len_frame / 2 - 20) && (black_center < len_frame / 2 + 20) )
+            {
+                timer_turn->stop();
+                timer_turn_flag = true;
+                on_turn_tail_counter = 0;
+                qDebug() << "Update path command";
+                qDebug() << "The next path command is:" << path_plan_array.split(',').at(index);
+                qDebug() << "小乌龟改变了行驶方向";
+                flag_on_timer_turn_tail_over = true;
+                if(turltebot_direction == FORWARD)
+                    turltebot_direction = BACKWARD;
+                else
+                    turltebot_direction = FORWARD;
+                emit update_trultebot_direction(turltebot_direction);
+            } else {
+
+            }
         }
     }
 }

@@ -60,6 +60,8 @@ public:
 
     void lock_status(qint8);
     void adjust_orentation();
+    void check_direction();
+    void get_next_frame();
 
     VideoCapture capture;
     VideoWriter vw;
