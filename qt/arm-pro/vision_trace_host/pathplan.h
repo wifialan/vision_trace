@@ -35,6 +35,7 @@ private:
 signals:
     void read_path_plan();
     void send_path_info_to_camera(QByteArray);
+    void send_road_boundary(quint16, quint16);
 
 
 

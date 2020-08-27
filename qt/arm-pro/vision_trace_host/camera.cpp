@@ -96,7 +96,6 @@ void Camera::on_update_path()
 ///auto get next frame
 void Camera::on_next_frame()
 {
-
     capture >> frame;
     if (!frame.empty())
     {
@@ -283,7 +282,7 @@ void Camera::check_direction()
     bool direction_tmp;
     if(turltebot_direction == FORWARD)
     {
-        if(start_stop_node_array.split('\n').at(1) == '1')
+        if(start_stop_node_array.split('\n').at(1).toInt() <= this->road_boundary1)
         {
             direction_tmp = turltebot_direction;
             turn_tail_start();
@@ -295,7 +294,7 @@ void Camera::check_direction()
                 return;
         }
     } else {
-        if(start_stop_node_array.split('\n').at(1) == '5')
+        if(start_stop_node_array.split('\n').at(1).toInt() >= this->road_boundary2)
         {
             direction_tmp = turltebot_direction;
             turn_tail_start();
@@ -1761,6 +1760,12 @@ void Camera::send_path_node_to_pc()
         flag_update_path_node = false;
     }
 
+}
+
+void Camera::on_send_road_boundary(quint16 road_boundary1, quint16 road_boundary2)
+{
+    this->road_boundary1 = road_boundary1;
+    this->road_boundary2 = road_boundary2;
 }
 
 void Camera::on_send_path_info_to_camera(QByteArray path_info)

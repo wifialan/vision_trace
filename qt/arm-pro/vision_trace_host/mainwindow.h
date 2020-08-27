@@ -196,6 +196,7 @@ public slots:
     void        on_disconnected();
     void        on_new_connect_tcp();
 
+
 private slots:
     void on_pushButton_clicked();
 

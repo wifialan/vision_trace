@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ros->move_mode = 0;
     connect( (QObject*)this->path, SIGNAL(read_path_plan()), (QObject*)this->cam, SLOT(on_read_path_plan()));
     connect( (QObject*)this->path, SIGNAL(send_path_info_to_camera(QByteArray)), (QObject*)this->cam, SLOT(on_send_path_info_to_camera(QByteArray)));
+    connect( (QObject*)this->path, SIGNAL(send_road_boundary(quint16, quint16)), (QObject*)this->cam, SLOT(on_send_road_boundary(quint16, quint16)));
     connect( (QObject*)this->cam, SIGNAL(show_tutlebot_status(qint16)), this, SLOT(on_show_tutlebot_status(qint16)));
     connect( (QObject*)this->cam, SIGNAL(show_frame(QImage)), this, SLOT(on_show_frame(QImage)));
     connect( (QObject*)this->cam, SIGNAL(show_frame_2(QImage)), this, SLOT(on_show_frame_2(QImage)));
@@ -60,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( (QObject*)this->cam, SIGNAL(update_path_node(QByteArray)), this, SLOT(on_update_path_node(QByteArray)));
     connect( (QObject*)this->cam, SIGNAL(update_path_start_node(QByteArray)), this, SLOT(on_update_path_start_node(QByteArray)));
     connect( (QObject*)this->cam, SIGNAL(update_trultebot_direction(bool)), this, SLOT(on_update_trultebot_direction(bool)));
+
 
     connect( this, SIGNAL(lanuch_turltebot_go()), this, SLOT(on_pushButton_go_clicked()));
     connect( timer_serial, SIGNAL(timeout()),SLOT(on_timer_serial()));
@@ -995,13 +997,16 @@ void MainWindow::on_pushButton_go_clicked()
 
     send_start_stop_node_to_pc();
 
+
+
     qDebug() << "start cap";
     if (cam->capture.isOpened()){
         cam->capture.release();     //decide if capture is already opened; if so,close it
     }
     cam->capture.open(cam->camera_number);           //open the default camera
     qDebug() << "open cap";
-    path->proc->execute("python3 /home/igosens/huawei/softeware/path.py");
+    //path->proc->execute("python3 /home/igosens/huawei/softeware/path.py");
+    path->proc->execute("python3 ../vision_trace_host/path.py");
     emit path->read_path_plan();
     cam->timer->start();
 

@@ -45,6 +45,12 @@ void Pathplan::read_json_file(){
         {
             QJsonArray subArray = rootObj.value(keys.at(i)).toArray();
             for (int j = 0; j < subArray.size(); ++j) {
+                if(subArray.at(j).toInt() == 0)
+                {
+                    emit send_road_boundary(subArray.at(j-1).toInt(), subArray.at(j+1).toInt());
+                    continue;
+                }
+
                 path_node_origin.append(QString(subArray.at(j).toInt()) + ',');
             }
             path_node_origin.append('#');
@@ -63,6 +69,6 @@ void Pathplan::run()
 
 void Pathplan::path_plan()
 {
-    //proc->execute("python3 ../vison_trace_host/path.py");
+    //proc->execute("python3 ../vision_trace_host/path.py");
     //    emit read_path_plan();
 }

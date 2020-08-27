@@ -13,7 +13,7 @@ path_start = line[0].strip('\n')
 path_stop  = line[1]
 
 target_path_node.close()
-
+print('----------------------------------')
 print(path_start)
 print(path_stop)
 
@@ -22,8 +22,7 @@ path_plan = open("path_plan.txt", 'w')
 
 # path.path_node_restore()
 if 1:
-    pass
-    data = path.get_path_info(int(path_start), int(path_stop))
+    data = path.plan_straight_road(int(path_start), int(path_stop))
     #Convert list to strings
     dat = ','.join(data)
     path_plan.write(dat)
@@ -50,6 +49,7 @@ else:
     for i in range(0, arry_len):
         print(data[i])
 
+print('----------------------------------')
 
 # data_2 = path.find_coordinate(1, 7)
 # path.path_plan(data)

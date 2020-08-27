@@ -72,20 +72,6 @@ class PathRoute:
                 crossraod_node.write(str(self.path_node[i][self.cross_exit_coord - j]))
             crossraod_node.close()
 
-    def plan_straight_road(self, start_node, stop_node):
-            # 直线规划，设A为当前节点，B为目标节点，共有两种情况
-            # 1. A在B前
-            # 2. A在B后
-            self.path_plan_indicate.clear()
-            if start_node < stop_node:
-                for i in range(start_node, stop_node):
-                    self.path_plan_indicate.append('UP')
-            else:
-                self.path_plan_indicate.append('TURN')
-                for i in range(stop_node, start_node):
-                    self.path_plan_indicate.append('UP')
-            print(self.path_plan_indicate)
-            return self.path_plan_indicate
 
     def get_path_info(self, current_node, target_node):
         self.target_node_coord = [[0, 0], [0, 0]]

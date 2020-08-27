@@ -152,6 +152,9 @@ private:
 
     bool path_plan_pre_flag;
     bool flag_through_crossroad;
+    quint16 road_boundary1;
+    quint16 road_boundary2;
+
     void init_status();
 
 private slots:
@@ -162,6 +165,7 @@ private slots:
     void on_timer_through_crossroad();
     void on_timer_crossroad_qr();
     void on_send_path_info_to_camera(QByteArray path_info);
+    void on_send_road_boundary(quint16, quint16);
 
 signals:
     void show_frame(QImage);
