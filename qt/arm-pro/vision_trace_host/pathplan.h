@@ -10,6 +10,8 @@
 #include <QProcess>
 #include <camera.h>
 
+#define REALEASE 1
+
 class Pathplan : public QThread
 {
     Q_OBJECT

@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QNetworkInterface>
+#include <QSettings>
 #include "ros.h"
 #include "camera.h"
 #include "pathplan.h"
@@ -64,6 +65,8 @@
 #define             LED_STATE_OFFLINE       0x01
 #define             LED_STATE_DEFAULT       0x02
 
+#define             PLC_BASE_HEIGHT         1000UL
+#define             PLC_TIMER_RESEND        8000
 
 namespace Ui {
 class MainWindow;
@@ -108,6 +111,8 @@ typedef struct {
 #define             LIFTER_SET_ZERO         0x03
 #define             LIFTER_STOP             0x04
 #define             LIFTER_EXCUTE           0x05
+#define             LIFTER_ARRIVED          0x06
+
 
     int     lifter_data_type;
     int lifter_height_hight;
@@ -147,6 +152,9 @@ private:
     //    Pathplan    *path;
     QTimer      *timer_serial;
     QTimer      *timer_range;
+    QTimer      *timer_plc;
+    QTimer      *timer_plc_resend;
+
     QSerialPort *serial;
 
     QString     ip;
@@ -156,7 +164,22 @@ private:
     QStringList oldPortStringList;
     QByteArray read_serial;
 
+    volatile qint32    plc_set_height;
+    volatile qint32    plc_current_height;
+    volatile qint32    plc_last_height;
+    volatile qint32    plc_compare_height_counter;
+    volatile qint32    plc_detect_arrived_counter;
+
+
+    volatile bool       flag_plc_run;
+    volatile bool    flag_comboBox_direction;
+    volatile qint32 data_height_old;
+    volatile quint8 data_height_old_counter;
+
     bool OpenSuccess;
+
+    bool on_read_serial_cmd_flag;
+
 public:
     void update_remote_turltebot_status(qint16);
 
@@ -193,6 +216,8 @@ public slots:
     void        on_read_serial();
     void        on_timer_serial();
     void        on_timer_range();
+    void        on_timer_plc();
+    void        on_timer_plc_resend();
     void        on_disconnected();
     void        on_new_connect_tcp();
 

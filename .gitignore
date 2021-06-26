@@ -1,2 +1,4 @@
 ./qt/arm-pro/build*
 ./qt/arm-pro/vision_trace_host/*pro.*
+
+*pro.*

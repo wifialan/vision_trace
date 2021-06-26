@@ -42,6 +42,64 @@ void Camera::run()
 
 }
 
+QString Camera::get_current_location()
+{
+
+//    qDebug() << "start cap";
+//    if (capture.isOpened()){
+//        capture.release();     //decide if capture is already opened; if so,close it
+
+//    }
+//    capture.open(camera_number);           //open the default camera
+//    qDebug() << "open cap";
+
+    QString current_location = "0";
+    quint8 counter = 0;
+    capture.grab();
+    capture.grab();
+    capture.grab();
+    capture.grab();
+    capture.grab();
+    capture.grab();
+    capture.grab();
+    capture >> frame;
+    while (!frame.empty())
+    {
+        emit show_frame_2(Mat2QImage(frame));
+        counter++;
+        // gray
+        cvtColor(frame,grayImage,CV_BGR2GRAY);
+        //QR
+        zbar::ImageScanner scanner;
+        scanner.set_config(zbar::ZBAR_NONE, zbar::ZBAR_CFG_ENABLE, 1);
+        pix_offset_qr = 50;
+        int width 	= grayImage.cols;
+        int height 	= grayImage.rows;
+
+        //Rect(x,y,w,h)
+        // x,y is coordinate, w,h calc banse x and y, final pic is (x,x+w),(y,y+h)
+        Mat roi(grayImage, Rect(0,grayImage.rows - height,width,height));
+
+        unsigned char *pdata = (unsigned char *)roi.data;
+        zbar::Image imageZbar(width, height, "Y800", pdata, width * height);
+        int n = scanner.scan(imageZbar);
+        if (n > 0){
+            // extract results
+            for (zbar::Image::SymbolIterator symbol = imageZbar.symbol_begin();
+                 symbol != imageZbar.symbol_end();
+                 ++symbol) {
+                // do something useful with results
+                current_location = QString::fromStdString(symbol->get_data());
+            }
+            return current_location;
+        }
+        if(counter >= 20){
+            current_location = "0";
+            return current_location;
+        }
+    }
+}
+
 void Camera::show()
 {
     qDebug() << "show cap";
@@ -61,7 +119,7 @@ void Camera::show()
 
 void Camera::open()
 {
-    qDebug() << "start cap";
+    qDebug() << "start cap...";
     if (capture.isOpened()){
         capture.release();     //decide if capture is already opened; if so,close it
     }
@@ -123,9 +181,11 @@ void Camera::on_next_frame()
         //        grayImage.copyTo(dst, detected_edges);
 
         image = Mat2QImage(dilateImage);
+        //image = Mat2QImage(frame);
         //        image = image.mirrored(true, false);
         emit show_frame(image);
         emit show_frame_2(Mat2QImage(frame));
+
         if(turltebot_go == false)
         {
             return;
@@ -136,11 +196,12 @@ void Camera::on_next_frame()
         scanner.set_config(zbar::ZBAR_NONE, zbar::ZBAR_CFG_ENABLE, 1);
         pix_offset_qr = 50;
         int width 	= grayImage.cols;
-        int height 	= grayImage.rows/2;
+        int height 	= grayImage.rows / 3;
 
         //Rect(x,y,w,h)
         // x,y is coordinate, w,h calc banse x and y, final pic is (x,x+w),(y,y+h)
-        Mat roi(grayImage, Rect(0,height,width,height));
+        Mat roi(grayImage, Rect(0,grayImage.rows - height,width,height));
+
         unsigned char *pdata = (unsigned char *)roi.data;
         zbar::Image imageZbar(width, height, "Y800", pdata, width * height);
         int n = scanner.scan(imageZbar);
@@ -153,7 +214,11 @@ void Camera::on_next_frame()
                  ++symbol) {
                 // do something useful with results
                 QRData_current_update = QString::fromStdString(symbol->get_data());
-                //qDebug() << "QR Code: " << QRData_current_update;
+                qDebug() << "QR Code: " << QRData_current_update;
+                if(!path_node_distribute_info.contains( QRData_current_update.toUtf8() )){
+                    qDebug() << "rescan picture to get QR code!";
+                    return;
+                }
             }
             if(QRData_stable != QRData_current_update){
                 QRData_stable.clear();
@@ -161,10 +226,14 @@ void Camera::on_next_frame()
                 QRData_store.append(QRData_current_update + ',');
                 QRData_store_index ++;
                 qDebug() << "新扫描的QR内容为：" << QRData_current_update;
+
                 //turltebot_direction_judgement();
                 counter_check_next_stop_node = 0;
+                flag_check_stay_close_qr = false;
                 // update path command
+
                 if(QRData_current_update != start_stop_node_array.split('\n').at(0) && \
+                        QRData_current_update != start_stop_node_array.split('\n').at(1) && \
                         flag_path_plan == true){
                     index ++;
                     if (index != path_plan_array.split(',').length() && \
@@ -178,15 +247,37 @@ void Camera::on_next_frame()
             }
         }
 
+        if(flag_check_go_through_next_node == true){
+            if(QRData_current_update.isEmpty()){
+                counter_check_next_stop_node ++;
+                if(counter_check_next_stop_node > 100){
+                    flag_check_go_through_next_node2 = true;
+                    qDebug() << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
+                    counter_check_next_stop_node = 0;
+                }
+            }
+        }
+
         if(QRData_current_update == (start_stop_node_array.split('\n').at(1)) && arrived_flag == false){
-            counter_check_next_stop_node ++;
-            if(counter_check_next_stop_node >= 10) //设置大于等于10的目的在于，越过第一个目标节点，在这里实现下车到第二个stop节点停下
+            flag_check_go_through_next_node = true;
+            qDebug() << "----------*******************%%%%%%%%%%%%*************------------------";
+            qDebug() << QRData_current_update;
+            //            counter_check_next_stop_node ++;
+
+            if(flag_check_go_through_next_node2 == true) //设置大于等于10的目的在于，越过第一个目标节点，在这里实现下车到第二个stop节点停下
+                //            if(counter_check_next_stop_node > 20)
             {
+                qDebug() << "********************************************";
                 counter_check_next_stop_node = 0;
                 // 此处代码在重新检测二维码目的在于，让小车更加靠近二维码而停下来
                 //Rect(x,y,w,h)
                 // x,y is coordinate, w,h calc banse x and y, final pic is (x,x+w),(y,y+h)
-                Mat roi(grayImage, Rect(0,height,width,height));
+                int width 	= grayImage.cols;
+                int height 	= grayImage.rows / 2;
+                qDebug() << "width: " << width;
+                qDebug() << "height: " << height;
+
+                Mat roi(grayImage, Rect(0,grayImage.rows - height,width,height));
                 unsigned char *pdata2 = (unsigned char *)roi.data;
                 zbar::Image imageZbar2(width, height, "Y800", pdata2, width * (height));
                 int qr_data = scanner.scan(imageZbar2);
@@ -200,10 +291,14 @@ void Camera::on_next_frame()
                     } else {
                         qDebug() << "小车朝向为反向";
                     }
-                    check_direction();
+                    //                    if (check_direction() == true){
+                    //                        return;
+                    //                    }
                     qDebug() << "*****************************************";
                     qDebug() << "  Arrived terminate, stop the turltebot";
                     qDebug() << "*****************************************";
+                    flag_check_direction = false;
+                    flag_check_stay_close_qr = true;
                     start_stop_node_array.clear();
                     start_stop_node_array.append(QRData_stable);
                     start_stop_node_array.append('\n');
@@ -234,8 +329,35 @@ void Camera::on_next_frame()
             }
         }
 
+        if (arrived_flag == true && check_direction() == true){
+            qDebug() << "TRUN TAIL...";
+            return;
+        }
+
+        // check if the robot stay in QR line
+        if (arrived_flag == true && flag_check_stay_close_qr == true){
+            qDebug() << "Stay QR more close...";
+
+            int width 	= grayImage.cols;
+            int height 	= grayImage.rows * 2 / 3;
+
+            //Rect(x,y,w,h)
+            // x,y is coordinate, w,h calc banse x and y, final pic is (x,x+w),(y,y+h)
+            Mat roi(grayImage, Rect(0, grayImage.rows - height,width,height));
+            unsigned char *pdata = (unsigned char *)roi.data;
+            zbar::Image imageZbar(width, height, "Y800", pdata, width * height);
+            int n = scanner.scan(imageZbar);
+            if( n > 0 ){
+                flag_check_stay_close_qr = false;
+                qDebug() << "stay QR close enough";
+            } else {
+                path_plan();
+                return;
+            }
+        }
+
         if(arrived_flag == true){
-            // 还需增加小车掉头程序
+            // xiuzheng
             adjust_orentation();
             return;
         }
@@ -263,6 +385,7 @@ void Camera::on_next_frame()
         if (path_plan_pre_flag == true) {
             qDebug() << "检测是否需要调整路线";
             path_plan_pre();
+            qDebug() << "path_plan_array" << path_plan_array;
             emit show_command(path_plan_array);
             path_plan_pre_flag = false;
         }
@@ -273,44 +396,74 @@ void Camera::on_next_frame()
     }
 }
 
-void Camera::check_direction()
+bool Camera::check_direction()
 {
     /*
      * 1. 如果小车朝向正向，但小车在垂直路线上面，那么需要掉头
      * 2. 如果小车朝向反向，但小车不在垂直路线上面，那么需要掉头
      */
-    bool direction_tmp;
+    //    if(flag_check_direction == true)
+    //        return;
+    //    flag_check_direction = true;
+
+    volatile int data = start_stop_node_array.split('\n').at(1).toInt();
+    qDebug() << data;
+    qDebug() << this->road_boundary1;
+    if(turltebot_direction == FORWARD) {
+        qDebug() << "FORWARD";
+    } else {
+        qDebug() << "BACKWARD";
+    }
+
     if(turltebot_direction == FORWARD)
     {
-        if(start_stop_node_array.split('\n').at(1).toInt() <= this->road_boundary1)
-        {
-            direction_tmp = turltebot_direction;
-            turn_tail_start();
+        qDebug() << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
 
-            while (turltebot_direction == direction_tmp) // 直到检测到方向改变，那么说明掉头成功
-            {
-                get_next_frame();
+        if( data <=  road_boundary1)
+        {
+            qDebug() << data;
+            qDebug() << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+            if (flag_turn_tail_start == false) {
+                flag_on_timer_turn_tail_over = false;// 掉头完成标志位
+                turn_tail_start();
+                flag_turn_tail_start = true; // 保证在一次掉头动作中，完成一次开启定时器
             }
-                return;
+            if (flag_on_timer_turn_tail_over == true) {
+                flag_turn_tail_start = false; //为下一次定时器开启作准备
+                //            turltebot_direction = !turltebot_direction; //改变小车朝向
+                qDebug() << "完成掉头";
+                return false;//完成掉头
+            } else {
+                qDebug() << "正在掉头...";
+                return true;//没有完成掉头
+            }
         }
     } else {
-        if(start_stop_node_array.split('\n').at(1).toInt() >= this->road_boundary2)
+        if(data >= this->road_boundary2)
         {
-            direction_tmp = turltebot_direction;
-            turn_tail_start();
-            get_next_frame();
-            while (turltebot_direction == direction_tmp) // 直到检测到方向改变，那么说明掉头成功
-            {
-                get_next_frame();
+            qDebug() << "BACKWARD";
+            if (flag_turn_tail_start == false) {
+                flag_on_timer_turn_tail_over = false;// 掉头完成标志位
+                turn_tail_start();
+                flag_turn_tail_start = true; // 保证在一次掉头动作中，完成一次开启定时器
             }
-            return;
+            if (flag_on_timer_turn_tail_over == true) {
+                flag_turn_tail_start = false; //为下一次定时器开启作准备
+                //            turltebot_direction = !turltebot_direction; //改变小车朝向
+                qDebug() << "完成掉头";
+                return false;//完成掉头
+            } else {
+                qDebug() << "正在掉头...";
+                return true;//没有完成掉头
+            }
         }
     }
-    return;
+    return false;
 }
 
 void Camera::get_next_frame()
 {
+    //qDebug() << "get_next_frame";
     capture >> frame;
     if (!frame.empty())
     {
@@ -329,6 +482,7 @@ void Camera::get_next_frame()
         erode(dilateImage, erodeImage,element_erodeImage);
         //dilate
         dilate(erodeImage, dilateImage, element_dilateImage);
+        qDebug() << "get_next_frame success";
     }
 }
 
@@ -338,7 +492,7 @@ void Camera::adjust_orentation()
     qint16 x_offset=0,y_offset=0;
     qint16 cols = dilateImage.cols;
     // get 150th line pix data
-    char *data_1 = dilateImage.ptr<char>(100);
+    char *data_1 = dilateImage.ptr<char>(50);
     QByteArray color_line_100 = QByteArray(data_1,cols);
     // get 500th line pix data
     char *data_2 = dilateImage.ptr<char>(400);
@@ -384,24 +538,31 @@ void Camera::adjust_orentation()
     y_offset = y1 - y2;
 
     //如果机器人姿态已经和轨道在误差允许范围内视为平行，那么修正姿态完成
-    if(qAbs(x_offset) < 10 || qAbs(y_offset) < 10)
+    if(qAbs(x_offset) <= 10 && qAbs(y_offset) <= 10)
     {
-        qDebug() << "机器人姿态调整完成";
+        qDebug() << "x1 - y1 : " << x1 << " " << y1 << " " << x_offset;
+        qDebug() << "x2 - y2 : " << x2 << " " << y2 << " " << y_offset;
+        arrived_terminate_counter ++;
+        if(arrived_terminate_counter > 100){
+            qDebug() << "机器人姿态调整完成";
+            turltebot_go = false;
+            arrived_terminate();
+        }
         return;
     }
 
     qDebug() << "第100行黑色像素共有:" << black_count_100;
-    qDebug() << "x1 - y1 : " << x1 << " " << y1;
-    qDebug() << "x2 - y2 : " << x2 << " " << y2;
+    qDebug() << "x1 - y1 : " << x1 << " " << y1 << " " << x_offset;
+    qDebug() << "x2 - y2 : " << x2 << " " << y2 << " " << y_offset;
 
-
-    if(x_offset > 0)
+    arrived_terminate_counter = 0;
+    if(x_offset < 0)
     {
         qDebug() << "逆时针调整机器人姿态";
-        emit turltebot_turn_counterclockwise(0.0, 3.14159 / 180.0);
+        emit turltebot_turn_counterclockwise(0.0, 3.14159 / 30.0);
     } else {
         qDebug() << "顺时针调整机器人姿态";
-        emit turltebot_turn_clockwise(0.0, 3.14159 / 180.0);
+        emit turltebot_turn_clockwise(0.0, 3.14159 / 30.0);
     }
 
 }
@@ -475,10 +636,6 @@ void Camera::path_plan()
             }
         }
     }
-    //    } else {
-    //        qDebug() << "此处为曲线";
-    //        this->speed_angular = 4 * this->doubleSpinBox_angular_speed;
-    //    }
 
     // 判断是否需要加速调整
     if (black_index_100[0] < 100 || black_index_100[black_count_100 - 1] > len_frame - 100) {
@@ -555,26 +712,28 @@ void Camera::turn_tail_start(){
         lock_status(TURLTEBOT_TURN);
     }
     if (timer_turn_flag == true) {
-        timer_turn->start();
+        qDebug() << "turn_tail_start";
+        on_turn_tail_counter = 0;
+        timer_turn->start(100);
         timer_turn_flag = false;
     }
 }
 
 void Camera::on_timer_turn_tail(){
 
+    qDebug() << "on_timer_turn_tail";
     emit turltebot_turn(0.0, 3.14159 / 6.0);
-
     on_turn_tail_counter ++;
     // Timer is 100ms, 20 * 100ms = 2s
     if (on_turn_tail_counter >= 20) {
 
-        capture >> frame;
+        get_next_frame();
         if (!frame.empty())
         {
-            cvtColor(frame,grayImage,CV_BGR2GRAY);
+            //cvtColor(frame,grayImage,CV_BGR2GRAY);
             qint16 cols = dilateImage.cols;
             // get 100th line pix data
-            char *data_1 = dilateImage.ptr<char>(150);
+            char *data_1 = dilateImage.ptr<char>(120);
             QByteArray color_line_100 = QByteArray(data_1,cols);
 
             len_frame = cols;
@@ -592,7 +751,7 @@ void Camera::on_timer_turn_tail(){
             black_center = (black_index_100[0] + black_index_100[black_count_100 - 1]) / 2;
 
             //如果黑色带中心位于摄像头视野中间，那么判定转弯完成
-            if( (black_center > len_frame / 2 - 20) && (black_center < len_frame / 2 + 20) )
+            if( (black_center > len_frame / 2 - 220) && (black_center < len_frame / 2 + 200) )
             {
                 timer_turn->stop();
                 timer_turn_flag = true;
@@ -615,647 +774,6 @@ void Camera::on_timer_turn_tail(){
 
 bool Camera::turn_tail(qint16 index)
 {
-    /*
-     * 掉头规则：
-     * 在小车朝向为反向的条件下：(判断是否改变小车朝向)
-     *      1. 若检测到第一个命令为“TURN”:(判断是否改变小车朝向)
-     *          a. 若后续命令中仅有“UP”命令 +++
-     *              A.this->index ++ B.不掉头 C.不改变小车朝向，小车朝向仍为反向
-     *          b. 若检测到后续岔道口入口点命令为“LEFT”或“RIGHT”
-     *              a) 若小车在第一行
-     *                  1) 命令为“LEFT”，那么 A. 改变小车朝向，小车朝向为反向
-     *                  2) 命令为“RIGHT”，那么 不做任何改动
-     *              b) 若小车在第二行：
-     *                  1) 命令为“LEFT”，那么 不做任何改动
-     *                  2) 命令为“RIGHT”，那么 A. 改变小车朝向，小车朝向为反向
-     *      2. 若检测到第一个命令不为“TURN”：(改变小车朝向)
-     *          a. 若第一个命令为“UP”，那么 A.掉头 B.改变小车朝向，小车朝向为正向
-     *          b. 若第一个命令为“LEFT”或“RIGHT”，那么 A. 改变小车朝向，小车朝向为正向
-     * 在小车朝向为正向的条件下：
-     *      1. 若检测到第一个命令为“TURN”：(判断是否改变小车朝向)
-     *          a. 若后续命令中仅有“UP”命令 +++
-     *              A.this->index ++ B.掉头 C.改变小车朝向，小车朝向为反向
-     *          b. 若检测到后续岔道口入口点命令为“LEFT”或“RIGHT”
-     *              a) 若小车在第一行，在岔道口出口右边(不包含岔道口)
-     *                  1) 检测到第一个转向命令为“LEFT”
-     *                      a> 第二个为“RIGHT”  A. 不改变小车朝向，朝向正向 B. 掉头 C. this->index ++
-     *                      b> 第二个为“LEFT”   A. 改变小车朝向，朝向反向 B. 掉头 C. this->index ++
-     *                  2) 检测到第一个转向命令为“RIGHT”
-     *                      a> 第二个为“RIGHT”  A. 改变小车朝向，朝向反向 B. 掉头 C. this->index ++
-     *                      b> 第二个为“LEFT”   A. 不改变小车朝向，朝向正向 B. 掉头 C. this->index ++
-     *              b) 若小车在第二行：
-     *                  1) 转向命令为“LEFT”     A. 改变小车朝向，朝向反向 B. 掉头 C. this->index ++
-     *                  2) 转向命令为“RIGHT”    A. 改变小车朝向，小车朝向为正向 B. 掉头 C. this->index ++
-     *      2. 若检测到第一个命令不为“TURN”：(判断是否改变小车朝向)
-     *          a. 若检测到后续岔道口出口点命令为“LEFT”或“RIGHT”
-     *              a) 若小车在第一行
-     *                  1) 命令为“LEFT”，那么 不做任何改动
-     *                  2) 命令为“RIGHT”，那么 A. 改变小车朝向，小车朝向为反向
-     *              b) 若小车在第二行：
-     *                  1) 命令为“LEFT”，那么 A. 改变小车朝向，小车朝向为反向
-     *                  2) 命令为“RIGHT”，那么 不做任何改动
-     */
-    int i = 0;
-    if(i != 0){
-        if (turltebot_direction == BACKWARD) {
-            qDebug() << "小车当前朝向为反向";
-            if (path_plan_array.split(',').at(0) == "TURN" && flag_first_turn_tail == true) {
-                qDebug() << "路线第一个命令为“TURN”";
-                //第 1 行的节点为： "1,2,3,4,5,6,"
-                //第 2 行的节点为： "7,10,9,"
-                int crossroad_coord_start = path_node_distribute_info.split('\n').at(0).split(',').indexOf(\
-                            crossraod_node_array.split(',').at(0));
-                int crossroad_coord_end = path_node_distribute_info.split('\n').at(0).split(',').indexOf(\
-                            crossraod_node_array.split(',').at(1));
-                qDebug() << "岔道口入口坐标：" << crossroad_coord_start;
-                qDebug() << "岔道口出口坐标：" << crossroad_coord_end;
-                qDebug() << "第二行节点数量为：" << path_node_distribute_info.split('\n').at(1).split(',').length()-1;
-                //判断起点位于岔道口入口和出口之间，且在第一行
-                //遍历第一行节点：第 1 行的节点为： "1,2,3,4,5,6,"
-                for (int i = crossroad_coord_start + 1; i < path_node_distribute_info.split('\n').at(0).split(',').length()-1; ++i) {
-                    if (start_stop_node_array.split('\n').at(0) == \
-                            path_node_distribute_info.split('\n').at(0).split(',').at(i)) {
-                        qDebug() << "小车为反向，起点位于岔道口入口右边(不含岔道口)，且在第一行，起始点坐标为：" << i;
-                        /*
-                     * 小车为反向
-                     *      1.路线第一个命令为“TURN”，小车期望朝向为反向，但实际朝向为反向，因此这里不需要掉头
-                     *      (A.不需要执行掉头命令 B.this->index++(跳过TURN指令) C.接下来根据不同情况，调整小车朝向)
-                     *          a.起始坐标在岔道口内(不含岔道口)
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                  1)小车在第一行
-                     *                      a>转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                  2)小车在第二行
-                     *                      a>转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>转向命令为RIGHT    C.调整朝向，调为正向
-                     *              b)后续有两个转向命令
-                     *                  1)小车在第一行
-                     *                      (a)第一个转向命令为LEFT
-                     *                          a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                          b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          ------------------      C.不调整朝向，朝向反向
-                     *                  2)小车在第二行
-                     *                      (a)第一个转向命令为LEFT
-                     *                          ------------------      C.不调整朝向，朝向反向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                          b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *              c)后续没有转向命令
-                     *                   --------------------------     C.调整朝向，调为正向
-                     *
-                     *           b.起始坐标不在在岔道口内(不含岔道口)，那么小车坐标肯定在第一行上面
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                          ------------------      C.不调整朝向，朝向反向
-                     *              b)后续有两个转向命令
-                     *                  (a)第一个转向命令为LEFT
-                     *                      a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *                  (b)第一个转向命令为RIGHT
-                     *                      a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *
-                     *
-                     *      2.路线第一个命令不为“TURN”，小车期望朝向为正向，但实际朝向为反向，因此这里需要掉头
-                     *      (A.需要执行掉头命令 B.不执行this->index++(没有TURN指令跳过) C.接下来根据不同情况，调整小车朝向)
-                     *          a.起始坐标在岔道口内(不含岔道口)
-                     *              a)后续只有一个转向命令(LEFT或RIGHT) --- 掉头完成后重置朝向 ---
-                     *                  1)小车在第一行
-                     *                      a>转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                  2)小车在第二行
-                     *                      a>转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>转向命令为RIGHT    C.调整朝向，调为正向
-                     *              b)后续有两个转向命令
-                     *                  1)小车在第一行
-                     *                      (a)第一个转向命令为LEFT
-                     *                           ------------------      C.调整朝向，调为正向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                          b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *                  2)小车在第二行
-                     *                      (a)第一个转向命令为LEFT
-                     *                          a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                          b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          ------------------      C.调整朝向，调为正向
-                     *              c)后续没有转向命令
-                     *                   --------------------------     C.调整朝向，调为正向
-                     *
-                     *           b.起始坐标不在在岔道口内(不含岔道口)，那么小车坐标肯定在第一行上面
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                          ------------------      C.调整朝向，朝向正向
-                     *              b)后续有两个转向命令
-                     *                  (a)第一个转向命令为LEFT
-                     *                      a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                  (b)第一个转向命令为RIGHT
-                     *                      a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *              c)后续没有转向命令
-                     *                          ------------------      C.调整朝向，朝向正向
-                     * 小车为正向
-                     *      1.路线第一个命令为“TURN”，小车期望朝向为反向，但实际朝向为正向，因此这里需要掉头
-                     *      (A.需要执行掉头命令 B.掉头完成后this->index++ C.接下来根据不同情况，调整小车朝向)
-                     *          a.起始坐标在岔道口内(不含岔道口)         --- 掉头完成后重置朝向 ---
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                  1)小车在第一行
-                     *                      a>转向命令为LEFT     C.调整朝向，调为反向
-                     *                      b>转向命令为RIGHT    C.不调整朝向，朝向正向
-                     *                  2)小车在第二行
-                     *                      a>转向命令为LEFT     C.调整朝向，调为反向
-                     *                      b>转向命令为RIGHT    C.不调整朝向，朝向正向
-                     *              b)后续有两个转向命令
-                     *                  1)小车在第一行
-                     *                      (a)第一个转向命令为LEFT
-                     *                          ------------------      C.调整朝向，调为反向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          a>转向命令为LEFT     C.不调整朝向，朝向正向
-                     *                          b>转向命令为RIGHT    C.调整朝向，调为反向
-                     *                  2)小车在第二行
-                     *                      (a)第一个转向命令为LEFT
-                     *                          ------------------      C.不调整朝向，朝向反向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                          b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *              c)后续没有转向命令
-                     *                   --------------------------     C.调整朝向，调为正向
-                     *
-                     *           b.起始坐标不在在岔道口内(不含岔道口)，那么小车坐标肯定在第一行上面
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                          ------------------      C.不调整朝向，朝向反向
-                     *              b)后续有两个转向命令
-                     *                  (a)第一个转向命令为LEFT
-                     *                      a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *                  (b)第一个转向命令为RIGHT
-                     *                      a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *
-                     *
-                     *      2.路线第一个命令不为“TURN”，小车期望朝向为正向，但实际朝向为反向，因此这里需要掉头
-                     *      (A.需要执行掉头命令 B.不执行this->index++(没有TURN指令跳过) C.接下来根据不同情况，调整小车朝向)
-                     *          a.起始坐标在岔道口内(不含岔道口)
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                  1)小车在第一行
-                     *                      a>转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                  2)小车在第二行
-                     *                      a>转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>转向命令为RIGHT    C.调整朝向，调为正向
-                     *              b)后续有两个转向命令
-                     *                  1)小车在第一行
-                     *                      (a)第一个转向命令为LEFT
-                     *                           ------------------      C.调整朝向，调为正向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                          b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *                  2)小车在第二行
-                     *                      (a)第一个转向命令为LEFT
-                     *                          a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                          b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                      (b)第一个转向命令为RIGHT
-                     *                          ------------------      C.调整朝向，调为正向
-                     *              c)后续没有转向命令
-                     *                   --------------------------     C.调整朝向，调为正向
-                     *
-                     *           b.起始坐标不在在岔道口内(不含岔道口)，那么小车坐标肯定在第一行上面
-                     *              a)后续只有一个转向命令(LEFT或RIGHT)
-                     *                          ------------------      C.调整朝向，朝向正向
-                     *              b)后续有两个转向命令
-                     *                  (a)第一个转向命令为LEFT
-                     *                      a>第二个转向命令为LEFT     C.调整朝向，调为正向
-                     *                      b>第二个转向命令为RIGHT    C.不调整朝向，朝向反向
-                     *                  (b)第一个转向命令为RIGHT
-                     *                      a>第二个转向命令为LEFT     C.不调整朝向，朝向反向
-                     *                      b>第二个转向命令为RIGHT    C.调整朝向，调为正向
-                     *              c)后续没有转向命令
-                     *                          ------------------      C.调整朝向，朝向正向
-                     */
-
-
-
-
-
-                        if (i > crossroad_coord_end) {
-                            /*
-                         * 如果起始点在岔道口出口右边(不包含岔道口出口),在命令长度下检测到，路线命令中出现过两次“转向”命令
-                         * 1. 第一个为“LEFT”(下面第二个就是岔道口入口处命令)
-                         *      a. 第二个为“LEFT”   A. 不改变小车朝向，朝向为反向 B. this->index ++
-                         *      b. 第二个为“RIGHT”  A. 改变小车朝向，朝向为正向 B. this->index ++
-                         * 2. 第一个为“RIGHT”(下面第二个就是岔道口入口处命令)
-                         *      a. 第二个为“LEFT”   A. 改变小车朝向，朝向为正向 B. this->index ++
-                         *      b. 第二个为“RIGHT”  A. 不改变小车朝向，朝向为反向 B. this->index ++
-                         */
-                            qDebug() << "起点坐标位于岔道口出口右边";
-                            bool left_x_command_flag = false;
-                            bool right_x_command_flag = false;
-                            //有两个转向命令
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "LEFT") {
-                                    if (left_x_command_flag == false) {
-                                        left_x_command_flag = true;
-                                        continue;
-                                    }
-                                    if (path_plan_array.split(',').at(i) == "LEFT") {
-                                        qDebug() << "第一个为“LEFT”，第二个为“LEFT，不掉头，不改变朝向，仍为反向";
-                                        turltebot_direction = BACKWARD;
-                                        flag_first_turn_tail = false;
-                                        this->index ++;
-                                        return false;
-                                    } else if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                        qDebug() << "第一个为“LEFT”，第二个为“RIGHT，不掉头，改变朝向，朝向正向";
-                                        turltebot_direction = FORWARD;
-                                        flag_first_turn_tail = false;
-                                        this->index ++;
-                                        return false;
-                                    }
-                                }
-                            }
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "LEFT") {
-                                    if (right_x_command_flag == false) {
-                                        right_x_command_flag = true;
-                                        continue;
-                                    }
-                                    if (path_plan_array.split(',').at(i) == "LEFT") {
-                                        qDebug() << "第一个为“RIGHT”，第二个为“LEFT”，不掉头，改变朝向，朝向正向";
-                                        turltebot_direction = FORWARD;
-                                        flag_first_turn_tail = false;
-                                        this->index ++;
-                                        return false;
-                                    } else if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                        qDebug() << "第一个为“RIGHT”，第二个为“RIGHT”，不掉头，不改变朝向，朝向反向";
-                                        turltebot_direction = BACKWARD;
-                                        flag_first_turn_tail = false;
-                                        this->index ++;
-                                        return false;
-                                    }
-                                }
-                            }
-                            //仅有一个转向命令
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "LEFT" || \
-                                        path_plan_array.split(',').at(i) == "RIGHT") {
-                                    qDebug() << "小车为反向，仅有一个转向命令，命令为“LEFT”或“RIGHT”，不掉头，不改变朝向，朝向反向";
-                                    turltebot_direction = BACKWARD;
-                                    flag_first_turn_tail = false;
-                                    this->index ++;
-                                    return false;
-                                }
-                            }
-                            //没有转向命令
-                            qDebug() << "小车为反向，没有转向命令，不掉头，不改变朝向，朝向反向";
-                            turltebot_direction = BACKWARD;
-                            flag_first_turn_tail = false;
-                            return false;
-                        }
-                        else if(crossroad_coord_start < i && i < crossroad_coord_end){
-                            qDebug() << "起点坐标位于岔道口内";
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(j) == "LEFT") {
-                                    qDebug() << "第一个为“LEFT”，不掉头，改变朝向，朝向正向";
-                                    turltebot_direction = FORWARD;
-                                    flag_first_turn_tail = false;
-                                    this->index ++;
-                                    return false;
-                                }
-                                else if (path_plan_array.split(',').at(j) == "RIGHT") {
-                                    qDebug() << "第一个为“RIGHT”，不掉头，不改变朝向，朝向反向";
-                                    turltebot_direction = BACKWARD;
-                                    flag_first_turn_tail = false;
-                                    this->index ++;
-                                    return false;
-                                }
-                            }
-                            //没有转向命令
-                            qDebug() << "小车为反向，没有转向命令，不掉头，不改变朝向，朝向反向";
-                            turltebot_direction = BACKWARD;
-                            flag_first_turn_tail = false;
-                            return false;
-                        }
-                    }
-                }
-                //遍历第二行节点：第 2 行的节点为： "7,10,9,"
-                for (int i = 0; i < path_node_distribute_info.split('\n').at(1).split(',').length()-1; ++i) {
-                    if (start_stop_node_array.split('\n').at(0) == \
-                            path_node_distribute_info.split('\n').at(1).split(',').at(i)) {
-                        qDebug() << "小车为反向，起点位于岔道口入口和出口之间(不含岔道口)，且在第二行";
-                        for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                            if (path_plan_array.split(',').at(j) == "RIGHT") {
-                                turltebot_direction = FORWARD;
-                                flag_first_turn_tail = false;
-                                this->index ++;
-                                return false;
-                            }
-                            else if (path_plan_array.split(',').at(j) == "LEFT") {
-                                turltebot_direction = BACKWARD;
-                                flag_first_turn_tail = false;
-                                this->index ++;
-                                return false;
-                            }
-                        }
-                        qDebug() << "无需调整3";
-                        flag_first_turn_tail = false;
-                        return false;
-                    }
-                }
-                qDebug() << "无需调整";
-                flag_first_turn_tail = false;
-                return false;
-            }
-            else if (path_plan_array.split(',').at(0) != "TURN" && flag_first_turn_tail == true) {
-                if (path_plan_array.split(',').at(0) == "UP") {
-                    //A.掉头 B.改变小车朝向，小车朝向为正向
-                    if (flag_turn_tail_start == false) {
-                        qDebug() << "开始掉头";
-                        flag_on_timer_turn_tail_over = false;// 掉头完成标志位
-                        turn_tail_start();
-                        flag_turn_tail_start = true; // 保证在一次掉头动作中，完成一次开启定时器
-                    }
-                    if (flag_on_timer_turn_tail_over == true) {
-                        flag_turn_tail_start = false; //为下一次定时器开启作准备
-                        flag_first_turn_tail = false; //当前路线命令下，不再执行此逻辑下代码
-                        turltebot_direction = FORWARD;
-                        flag_first_turn_tail = false;
-                        qDebug() << "小车朝向为正向，掉头完成";
-                        return false;//完成掉头
-                    } else {
-                        return true;//没有完成掉头
-                    }
-                }
-                else if (path_plan_array.split(',').at(0) == "LEFT" || path_plan_array.split(',').at(0) == "RIGHT") {
-                    //A. 改变小车朝向，小车朝向为正向
-                    turltebot_direction = FORWARD;
-                    flag_first_turn_tail = false;
-                    return false;
-                }
-            }
-        }
-        else if (turltebot_direction == FORWARD) {
-            qDebug() << "小车当前朝向为正向";
-            if (path_plan_array.split(',').at(0) == "TURN" && flag_first_turn_tail == true) {
-                //检验路线命令除第一个为TURN，后续是否都为UP
-                int up_command_number = 0;
-                for (int i = 0; i < path_plan_array.split(',').length(); ++i) {
-                    if (path_plan_array.split(',').at(i) == "UP") {
-                        up_command_number ++;
-                    }
-                }
-                if (up_command_number == path_plan_array.split(',').length() - 1) {
-                    qDebug() << "除第一个为“TURN”，后续命令中仅有“UP”命令";
-                    ////a. 若后续命令中仅有“UP”命令 +++
-                    //A.this->index ++ B.掉头 C.改变小车朝向，小车朝向为反向
-                    //------------------ A. this->index ++ B.掉头 C.改变小车朝向，小车朝向为反向 -----------------
-                    if (flag_turn_tail_start == false) {
-                        qDebug() << "后续命令中仅有“UP”命令，开始掉头";
-                        flag_on_timer_turn_tail_over = false;// 掉头完成标志位
-                        turn_tail_start();
-                        flag_turn_tail_start = true; // 保证在一次掉头动作中，完成一次开启定时器
-                    }
-                    if (flag_on_timer_turn_tail_over == true) {
-                        this->index ++;
-                        turltebot_direction = BACKWARD;
-                        flag_turn_tail_start = false; //为下一次定时器开启作准备
-                        flag_first_turn_tail = false;
-                        qDebug() << "小车朝向为正向，掉头完成";
-                        return false;//完成掉头
-                    } else {
-                        return true;//没有完成掉头
-                    }
-                    //------------------ A. this->index ++ B.掉头 C.改变小车朝向，小车朝向为反向 -----------------
-                }
-                ////b. 若检测到后续岔道口入口点命令为“LEFT”或“RIGHT”
-                //第 1 行的节点为： "1,2,3,4,5,6,"
-                //第 2 行的节点为： "7,10,9,"
-                int crossroad_coord_start = path_node_distribute_info.split('\n').at(0).split(',').indexOf(\
-                            crossraod_node_array.split(',').at(0));
-                int crossroad_coord_end = path_node_distribute_info.split('\n').at(0).split(',').indexOf(\
-                            crossraod_node_array.split(',').at(1));
-                qDebug() << "岔道口入口坐标：" << crossroad_coord_start;
-                qDebug() << "岔道口出口坐标：" << crossroad_coord_end;
-                qDebug() << "第二行节点数量为：" << path_node_distribute_info.split('\n').at(1).split(',').length()-1;
-
-                bool turltebot_direction_tmp;//临时存储小车的朝向，等掉头需求完成后更新到turltebot_direction
-                //遍历第一行节点：第 1 行的节点为： "1,2,3,4,5,6,"
-                for (int i = crossroad_coord_start + 1; i < path_node_distribute_info.split('\n').at(0).split(',').length()-1; ++i) {
-                    if (start_stop_node_array.split('\n').at(0) == \
-                            path_node_distribute_info.split('\n').at(0).split(',').at(i)) {
-                        qDebug() << "小车为正向，起点位于岔道口入口右边(不含岔道口)，且在第一行，起始点坐标为：" << i;
-
-                        if (i > crossroad_coord_end) {
-                            /*
-                         * 如果起始点在岔道口出口右边(不包含岔道口出口),在命令长度下检测到，路线命令中出现过两次“转向”命令
-                         * 1. 第一个为“LEFT”(下面第二个就是岔道口入口处命令)
-                         *      a. 第二个为“LEFT”   A. 改变小车朝向，朝向为反向 B. 掉头 C.this->index ++
-                         *      b. 第二个为“RIGHT”  A. 不改变小车朝向，朝向为正向 B. 掉头 C.this->index ++
-                         * 2. 第一个为“RIGHT”(下面第二个就是岔道口入口处命令)
-                         *      a. 第二个为“LEFT”   A. 不改变小车朝向，朝向为正向 B. 掉头 C.this->index ++
-                         *      b. 第二个为“RIGHT”  A. 改变小车朝向，朝向为反向 B. 掉头 C.this->index ++
-                         */
-                            qDebug() << "起点坐标位于岔道口出口右边";
-                            bool left_x_command_flag = false;
-                            bool right_x_command_flag = false;
-                            // 命令中有两次转向
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "LEFT") {
-                                    if (left_x_command_flag == false) {
-                                        left_x_command_flag = true;
-                                        continue;
-                                    }
-                                    if (path_plan_array.split(',').at(i) == "LEFT") {
-                                        //第一个为“LEFT”，第二个为“LEFT”，掉头，改变朝向，朝向反向";
-                                        turltebot_direction_tmp = BACKWARD;
-                                    } else if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                        //第一个为“LEFT”，第二个为“RIGHT”，掉头，不改变朝向，朝向正向";
-                                        turltebot_direction_tmp = FORWARD;
-                                    }
-                                }
-                            }
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                    if (right_x_command_flag == false) {
-                                        right_x_command_flag = true;
-                                        continue;
-                                    }
-                                    if (path_plan_array.split(',').at(i) == "LEFT") {
-                                        //第一个为“RIGHT”，第二个为“LEFT”，掉头，不改变朝向，朝向正向";
-                                        turltebot_direction = FORWARD;
-                                    } else if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                        //第一个为“RIGHT”，第二个为“RIGHT”，掉头，改变朝向，朝向反向";
-                                        turltebot_direction = BACKWARD;
-                                    }
-                                }
-                            }
-                            // 命令中只有一次转向
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "LEFT") {
-                                    if (left_x_command_flag == false) {
-                                        left_x_command_flag = true;
-                                        continue;
-                                    }
-                                    if (path_plan_array.split(',').at(i) == "LEFT") {
-                                        //第一个为“LEFT”，第二个为“LEFT”，掉头，改变朝向，朝向反向";
-                                        turltebot_direction_tmp = BACKWARD;
-                                    } else if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                        //第一个为“LEFT”，第二个为“RIGHT”，掉头，不改变朝向，朝向正向";
-                                        turltebot_direction_tmp = FORWARD;
-                                    }
-                                }
-                            }
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                    if (right_x_command_flag == false) {
-                                        right_x_command_flag = true;
-                                        continue;
-                                    }
-                                    if (path_plan_array.split(',').at(i) == "LEFT") {
-                                        //第一个为“RIGHT”，第二个为“LEFT”，掉头，不改变朝向，朝向正向";
-                                        turltebot_direction = FORWARD;
-                                    } else if (path_plan_array.split(',').at(i) == "RIGHT") {
-                                        //第一个为“RIGHT”，第二个为“RIGHT”，掉头，改变朝向，朝向反向";
-                                        turltebot_direction = BACKWARD;
-                                    }
-                                }
-                            }
-                        }
-                        else if(crossroad_coord_start < i && i < crossroad_coord_end){
-                            qDebug() << "起点坐标位于岔道口内";
-                            for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                                if (path_plan_array.split(',').at(j) == "LEFT") {
-                                    qDebug() << "转向命令为“LEFT”，掉头，不改变朝向，朝向正向";
-                                    turltebot_direction_tmp = FORWARD;
-                                }
-                                else if (path_plan_array.split(',').at(j) == "RIGHT") {
-                                    qDebug() << "转向命令为“RIGHT”，掉头，改变朝向，朝向反向";
-                                    turltebot_direction_tmp = BACKWARD;
-                                }
-                            }
-                        }
-                    }
-                }
-                //遍历第二行节点：第 2 行的节点为： "7,10,9,"
-                for (int i = 0; i < path_node_distribute_info.split('\n').at(1).split(',').length()-1; ++i) {
-                    if (start_stop_node_array.split('\n').at(0) == \
-                            path_node_distribute_info.split('\n').at(1).split(',').at(i)) {
-                        qDebug() << "小车为正向，起点位于岔道口入口和出口之间(不含岔道口)，且在第二行";
-                        for (int j = 0; j < path_plan_array.split(',').length(); ++j) {
-                            if (path_plan_array.split(',').at(j) == "RIGHT") {
-                                turltebot_direction_tmp = FORWARD;
-                            }
-                            else if (path_plan_array.split(',').at(j) == "LEFT") {
-                                turltebot_direction_tmp = BACKWARD;
-                            }
-                        }
-                    }
-                }
-                //------------------------ 掉头 + this->index ++ ----------------------------------
-                if (flag_turn_tail_start == false) {
-                    qDebug() << "后续命令中有转向命令，开始掉头";
-                    flag_on_timer_turn_tail_over = false;// 掉头完成标志位
-                    turn_tail_start();
-                    flag_turn_tail_start = true; // 保证在一次掉头动作中，完成一次开启定时器
-                }
-                if (flag_on_timer_turn_tail_over == true) {
-                    this->index ++;
-                    turltebot_direction = turltebot_direction_tmp;
-                    flag_turn_tail_start = false; //为下一次定时器开启作准备
-                    flag_first_turn_tail = false;
-                    qDebug() << "小车朝向为正向，掉头完成";
-                    return false;//完成掉头
-                } else {
-                    qDebug() << "正在掉头...";
-                    return true;//没有完成掉头
-                }
-                //------------------------ 掉头 + this->index ++ ----------------------------------
-            }
-            else if(path_plan_array.split(',').at(0) != "TURN" && flag_first_turn_tail == true){
-                /*
-             *路线命令第一个不是TURN，后续命令中行驶到岔道口处的命令恰好为“LEFT”或“RIGHT”，则需要考虑是否要调整朝向
-             * e.g UP,UP,LEFT,UP
-             * 1. 首先确定小车在第几行上面
-             *      a. 若在第一行
-             *          a) 判断起点位于岔道口入口左边(不含岔道口)
-             *              不改变朝向
-             *          b) 判断起点位于岔道口入口和出口之间(不含岔道口)
-             *              1) 检测到岔道口出口处的命令为“RIGHT”
-             *                  改变朝向，小车朝向为反向
-             *              2) 检测到岔道口出口处的命令为“LEFT”
-             *                  不改变朝向，小车朝向为正向
-             *          c) 判断起点位于岔道口出口右边(不含岔道口)
-             *              不改变朝向
-             *      a. 若在第二行
-             *          起点位于岔道口入口和出口之间(不含岔道口)
-             *              1) 检测到岔道口出口处的命令为“RIGHT”
-             *                  不改变朝向，小车朝向为正向
-             *              2) 检测到岔道口出口处的命令为“LEFT”
-             *                  改变朝向，小车朝向为反向s
-             *
-             */
-                //第 1 行的节点为： "1,2,3,4,5,6,"
-                //第 2 行的节点为： "7,10,9,"
-                int crossroad_coord_start = path_node_distribute_info.split('\n').at(0).split(',').indexOf(\
-                            crossraod_node_array.split(',').at(0));
-                int crossroad_coord_end = path_node_distribute_info.split('\n').at(0).split(',').indexOf(\
-                            crossraod_node_array.split(',').at(1));
-                qDebug() << "岔道口入口坐标：" << crossroad_coord_start;
-                qDebug() << "岔道口出口坐标：" << crossroad_coord_end;
-                qDebug() << "第二行节点数量为：" << path_node_distribute_info.split('\n').at(1).split(',').length()-1;
-                //判断起点位于岔道口入口和出口之间，且在第一行
-                //遍历第一行节点：第 1 行的节点为： "1,2,3,4,5,6,"
-                for (int i = crossroad_coord_start + 1; i < crossroad_coord_end; ++i) {
-                    if (start_stop_node_array.split('\n').at(0) == \
-                            path_node_distribute_info.split('\n').at(0).split(',').at(i)) {
-                        qDebug() << "起点位于岔道口入口和出口之间(不含岔道口)，且在第一行";
-                        for (int j = 0; j < path_plan_array.length(); ++j) {
-                            if (path_plan_array.split(',').at(j) == "RIGHT") {
-                                turltebot_direction = BACKWARD;
-                                flag_first_turn_tail = false;
-                                return false;
-                            }
-                            else if (path_plan_array.split(',').at(j) == "LEFT") {
-                                turltebot_direction = FORWARD;
-                                flag_first_turn_tail = false;
-                                return false;
-                            }
-                        }
-                        qDebug() << "无需调整33";
-                        flag_first_turn_tail = false;
-                        return false;
-                    }
-                }
-                //遍历第二行节点：第 2 行的节点为： "7,10,9,"
-                for (int i = 0; i < path_node_distribute_info.split('\n').at(1).split(',').length()-1; ++i) {
-                    if (start_stop_node_array.split('\n').at(0) == \
-                            path_node_distribute_info.split('\n').at(1).split(',').at(i)) {
-                        qDebug() << "起点位于岔道口入口和出口之间(不含岔道口)，且在第二行";
-                        qDebug() << "path_plan_array" << path_plan_array;
-                        qDebug() << "path_plan_array len" << path_plan_array.split(',').length();
-                        qint16 kkk;
-                        for (kkk = 0; kkk < path_plan_array.split(',').length(); kkk++) {
-                            qDebug() << "path_plan_array" << path_plan_array.split(',').at(kkk);
-                            if (path_plan_array.split(',').at(kkk) == "RIGHT") {
-                                turltebot_direction = FORWARD;
-                                flag_first_turn_tail = false;
-                                return false;
-                            }
-                            else if (path_plan_array.split(',').at(kkk) == "LEFT") {
-                                turltebot_direction = BACKWARD;
-                                flag_first_turn_tail = false;
-                                return false;
-                            }
-                        }
-                        qDebug() << "无需调整4";
-                        flag_first_turn_tail = false;
-                        return false;
-                    }
-                }
-                qDebug() << "无需调整5";
-                flag_first_turn_tail = false;
-                return false;
-            }
-        }
-    }
     // 除路线命令第一个以外，若再有TURN，则按照如下逻辑进行掉头，若没有则返回掉头完成命令
     if (path_plan_array.split(',').at(index) == "TURN" /*&& flag_first_turn_tail == false*/) {
         //        qDebug() << "除路线命令第一个以外，若再有TURN，则按照如下逻辑进行掉头";
@@ -1659,6 +1177,18 @@ void Camera::on_read_path_plan()
 
 }
 
+void Camera::arrived_terminate()
+{
+    QByteArray info_1;
+
+    // 信息类型
+    info_1.append(0x01);
+    info_1.append(0x03);
+    qDebug() << info_1;
+
+    emit send_info_to_pc(info_1);
+}
+
 void Camera::send_status_to_pc()
 {
     QByteArray info_1;
@@ -1666,20 +1196,15 @@ void Camera::send_status_to_pc()
     // 信息类型
     info_1.append(0x01);
     // 小车朝向
-    QFile file("direction.txt");
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    QTextStream stream(&file);
-    stream.seek(file.size());
+    QSettings settings("info.ini",QSettings::IniFormat);
     if (turltebot_direction == FORWARD) {
         // forward
         info_1.append(0x01);
-        stream << "0";
+        settings.setValue("node/direction","forward");
     } else {
         info_1.append(0x02);
-        stream << "1";
+        settings.setValue("node/direction","backward");
     }
-    file.flush();
-    file.close();
     // 起始节点
     if (!start_stop_node_array.isEmpty()) {
         QString str;
@@ -1845,21 +1370,14 @@ void Camera::on_send_path_info_to_camera(QByteArray path_info)
     }
 
     // 从文件记录中获取小车朝向
-    QFile file("direction.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (file.isOpen()) {
-        qDebug() << "open direction.txt file";
-        QByteArray dir = file.readLine();
-        qDebug() << dir;
-        //        QString str = file.readLine();
-        if (dir.contains("0")) {
-            turltebot_direction = FORWARD;
-            qDebug() << "小车朝向为正向";
-        } else {
-            turltebot_direction = BACKWARD;
-            qDebug() << "小车朝向为反向";
-        }
-        file.close();
+    QSettings settings("info.ini", QSettings::IniFormat);
+    settings.value("node/direction").toString();
+    if (settings.value("node/direction").toString() == "forward") {
+        turltebot_direction = FORWARD;
+        qDebug() << "小车朝向为正向";
+    } else {
+        turltebot_direction = BACKWARD;
+        qDebug() << "小车朝向为反向";
     }
 
     arrived_flag = true;

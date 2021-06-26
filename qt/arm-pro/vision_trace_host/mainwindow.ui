@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1754</width>
-    <height>567</height>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,27 +55,30 @@
         <string>config</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="3" column="1">
-         <widget class="QComboBox" name="comboBox_direction"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_7">
+        <item row="5" column="2">
+         <widget class="QLabel" name="label_9">
           <property name="text">
-           <string>角速度</string>
+           <string>rad/s</string>
           </property>
          </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>m/s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBox_start_node"/>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="comboBox_direction"/>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>朝向</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>STOP:</string>
           </property>
          </widget>
         </item>
@@ -89,33 +92,23 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>m/s</string>
-          </property>
-         </widget>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="comboBox_stop_node"/>
         </item>
         <item row="5" column="1">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_angular_speed"/>
         </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="comboBox_start_node"/>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>STOP:</string>
+          </property>
+         </widget>
         </item>
         <item row="5" column="0">
          <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>线速度</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboBox_stop_node"/>
-        </item>
-        <item row="5" column="2">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>rad/s</string>
+           <string>角速度</string>
           </property>
          </widget>
         </item>
@@ -136,6 +129,13 @@
          <widget class="QLabel" name="label_3">
           <property name="text">
            <string>STATR:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>线速度</string>
           </property>
          </widget>
         </item>
@@ -254,16 +254,6 @@
           </item>
          </layout>
         </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_stop">
-          <property name="text">
-           <string>STOP</string>
-          </property>
-          <property name="shortcut">
-           <string>Space</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </item>
@@ -297,9 +287,9 @@
    <widget class="QLineEdit" name="lineEdit_command">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>480</y>
-      <width>511</width>
+      <x>310</x>
+      <y>490</y>
+      <width>261</width>
       <height>25</height>
      </rect>
     </property>
@@ -474,6 +464,35 @@
      </rect>
     </property>
    </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>1180</x>
+      <y>300</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>----------------------------------------------------</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_stop">
+    <property name="geometry">
+     <rect>
+      <x>13</x>
+      <y>450</y>
+      <width>261</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>STOP</string>
+    </property>
+    <property name="shortcut">
+     <string>Space</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -481,7 +500,7 @@
      <x>0</x>
      <y>0</y>
      <width>1754</width>
-     <height>22</height>
+     <height>28</height>
     </rect>
    </property>
   </widget>

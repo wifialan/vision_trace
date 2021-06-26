@@ -81,8 +81,8 @@ LIBS += -L/opt/ros/kinetic/lib/x86_64-linux-gnu/ -lopencv_videoio3
 #include(/home/alan/work/vision_trace/qt/QZXing/source/QZXing.pri)
 #include(../qzxing-master/src/QZXing.pri)
 INCLUDEPATH += -I /usr/local/zbar/include
-LIBS += -L/usr/local/zbar/lib/ -lzbar
-#LIBS += -L/home/igosens/huawei/zbar-0.10/output/lib/ -lzbar
+#LIBS += -L/usr/local/zbar/lib/ -lzbar
+LIBS += -L/home/igosens/huawei/zbar-0.10/output/lib/ -lzbar
 
 ## ROS
 

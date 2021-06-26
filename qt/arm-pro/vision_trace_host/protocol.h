@@ -11,11 +11,11 @@ public:
     Protocol();
 
 public:
-    static const char *GetRCSCmd(int addr);
-    static const char *GetRCCCmd(int addrBegin,int addrEnd);
-    static const char* GetSRCmd(int addr,bool on);
-    static const char* GetWriteDWordCmd(int addr,quint64 value);
-    static const char* GetRDCmd(int addr_begin,int addr_end);
+    QString GetRCSCmd(int addr);
+    QString GetRCCCmd(int addrBegin,int addrEnd);
+    QString GetSRCmd(int addr,bool on);
+    QString GetWriteDWordCmd(int addr,quint64 value);
+    QString GetRDCmd(int addr_begin,int addr_end);
 
     static bool IsBccFailure(const char* data);
 

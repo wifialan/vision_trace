@@ -11,6 +11,7 @@
 #include <qmath.h>
 #include <QFile>
 #include <QPixmap>
+#include <QSettings>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -60,8 +61,10 @@ public:
 
     void lock_status(qint8);
     void adjust_orentation();
-    void check_direction();
+    bool check_direction();
     void get_next_frame();
+    void arrived_terminate();
+    QString get_current_location();
 
     VideoCapture capture;
     VideoWriter vw;
@@ -108,6 +111,11 @@ public:
     bool flag_on_timer_turn_tail_over;
     bool flag_path_plan;
     bool flag_update_path_node;
+    bool flag_check_direction;
+    bool flag_check_go_through_next_node;
+    bool flag_check_go_through_next_node2;
+    bool flag_check_stay_close_qr;
+    bool direction_tmp;
 
     bool arrived_flag;
     qint16 pix_offset_qr;
@@ -121,7 +129,8 @@ public:
 
     bool turltebot_go;
     bool update_path_node_flag;
-    quint16 counter_check_next_stop_node;
+    volatile quint16 counter_check_next_stop_node;
+    quint32 arrived_terminate_counter;
 
 private:
     double speed_line;
@@ -152,8 +161,8 @@ private:
 
     bool path_plan_pre_flag;
     bool flag_through_crossroad;
-    quint16 road_boundary1;
-    quint16 road_boundary2;
+    int road_boundary1;
+    int road_boundary2;
 
     void init_status();
 

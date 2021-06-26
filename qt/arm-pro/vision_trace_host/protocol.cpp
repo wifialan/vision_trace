@@ -9,7 +9,7 @@ Protocol::Protocol()
 //获取写R寄存器命令
 //addr，R寄存器地址
 //on, 写入寄存器的值，0或者1。一般来说执行某项功能时写入1
-const char* Protocol::GetSRCmd(int addr,bool on)
+QString Protocol::GetSRCmd(int addr,bool on)
 {
     QString cmd;
 
@@ -22,22 +22,25 @@ const char* Protocol::GetSRCmd(int addr,bool on)
     QByteArray ba = cmd.toLatin1();
     str_cmd = ba.data();
     cmd.append(QString(QLatin1String(GetBcc(str_cmd))));
+    cmd = cmd.toUpper();
     cmd.append("\r");
 
     ba = cmd.toLatin1();
     str_cmd = ba.data();
 
-    //qDebug() << str_cmd;
+    QString string_cmd = QString(QLatin1String(str_cmd));
+
+//    qDebug() << string_cmd;
 
     //qDebug() << "-*-*-*-*-*-";
-    return str_cmd;
+    return string_cmd;
 }
 
 
 //获取写入DT寄存器值的命令，写入的是双字
 //addr，DT寄存器地址
 //value，写入DT寄存器的值
-const char* Protocol::GetWriteDWordCmd(int addr,quint64 value)
+QString Protocol::GetWriteDWordCmd(int addr,quint64 value)
 {
     QString cmd;
 
@@ -84,18 +87,21 @@ const char* Protocol::GetWriteDWordCmd(int addr,quint64 value)
     QByteArray ba_bcc = cmd.toLatin1();
     str_cmd = ba_bcc.data();
     cmd.append(QString(QLatin1String(GetBcc(str_cmd))));
+    cmd = cmd.toUpper();
     cmd.append("\r");
 
     ba = cmd.toLatin1();
     str_cmd = ba.data();
 
-    //qDebug() << str_cmd;
+    QString string_cmd = QString(QLatin1String(str_cmd));
 
-    return str_cmd;
+    //qDebug() << string_cmd;
+
+    return string_cmd;
 }
 
 #if 1
-const char* Protocol::GetRDCmd(int addr_Begin,int addr_End)
+QString Protocol::GetRDCmd(int addr_Begin,int addr_End)
 {
 
     QString cmd;
@@ -111,17 +117,20 @@ const char* Protocol::GetRDCmd(int addr_Begin,int addr_End)
     QByteArray ba_bcc = cmd.toLatin1();
     str_cmd = ba_bcc.data();
     cmd.append(QString(QLatin1String(GetBcc(str_cmd))));
+    cmd = cmd.toUpper();
     cmd.append("\r");
 
     QByteArray ba = cmd.toLatin1();
     str_cmd = ba.data();
 
-    qDebug() << str_cmd;
+    QString string_cmd = QString(QLatin1String(str_cmd));
 
-    return str_cmd;
+//    qDebug() << string_cmd;
+
+    return string_cmd;
 }
 
-const char *Protocol::GetRCSCmd(int addr)
+QString Protocol::GetRCSCmd(int addr)
 {
 
     QString cmd;
@@ -130,23 +139,26 @@ const char *Protocol::GetRCSCmd(int addr)
     QString addr_begin;
     addr_begin.sprintf("%04X",addr);
     cmd.append("%01#RCSR");
-    cmd.append(addr);
+    cmd.append(addr_begin);
 
     QByteArray ba_bcc = cmd.toLatin1();
     str_cmd = ba_bcc.data();
     cmd.append(QString(QLatin1String(GetBcc(str_cmd))));
+    cmd = cmd.toUpper();
     cmd.append("\r");
 
     QByteArray ba = cmd.toLatin1();
     str_cmd = ba.data();
 
-    qDebug() << "RCSR: " << str_cmd;
+    QString string_cmd = QString(QLatin1String(str_cmd));
+
+//    qDebug() << "GetRCSCmd" << string_cmd;
 
     return str_cmd;
 
 }
 
-const char *Protocol::GetRCCCmd(int addrBegin,int addrEnd)
+QString Protocol::GetRCCCmd(int addrBegin,int addrEnd)
 {
 
     QString cmd;
@@ -162,12 +174,14 @@ const char *Protocol::GetRCCCmd(int addrBegin,int addrEnd)
     QByteArray ba_bcc = cmd.toLatin1();
     str_cmd = ba_bcc.data();
     cmd.append(QString(QLatin1String(GetBcc(str_cmd))));
+    cmd = cmd.toUpper();
     cmd.append("\r");
 
     QByteArray ba = cmd.toLatin1();
     str_cmd = ba.data();
 
-    qDebug() << "RCCR: " << str_cmd;
+    QString string_cmd = QString(QLatin1String(str_cmd));
+//    qDebug() << "RCCR: " << string_cmd;
 
     return str_cmd;
 }
